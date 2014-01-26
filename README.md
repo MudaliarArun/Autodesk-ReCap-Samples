@@ -28,10 +28,11 @@ A set of samples demonstrating how to use the Autodesk ReCap APIs
 The samples
 ------------------------
 
-1. The WPF C# sample 
+1. The [WPF C# sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/WpfCSharp)
 
 
 Use of the sample:
+
 See the sample README.md file in the sample folders.
 
 
