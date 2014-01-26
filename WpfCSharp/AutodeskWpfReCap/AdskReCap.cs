@@ -228,8 +228,6 @@ namespace AutodeskWpfReCap {
 			request.AlwaysMultipartFormData =true ;
 			request.AddParameter ("clientID", UserSettings.ReCapClientID) ;
 			request.AddParameter ("timestamp", DateTime.Now.Ticks.ToString ()) ;
-			request.AddParameter ("photosceneid", photosceneid) ;
-request.AddParameter ("debug", "1");
 			//_lastResponse =_Client.Execute (request) ;
 			var method =Enum.GetName (typeof (Method), Method.DELETE) ;
 			_lastResponse =_Client.ExecuteAsPost (request, method) ;
