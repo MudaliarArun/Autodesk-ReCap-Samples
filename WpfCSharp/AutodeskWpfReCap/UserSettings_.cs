@@ -26,7 +26,7 @@ namespace AutodeskWpfReCap {
 		// One approach is to encrypt and/or obfuscate these values
 		public const string CONSUMER_KEY ="your consumer key" ;
 		public const string CONSUMER_SECRET ="your consumer secret key" ;
-		public const string O2_HOST ="https://accounts.autodesk.com/" ; // Autodesk pruction accounts server
+		public const string O2_HOST ="https://accounts.autodesk.com/" ; // Autodesk production accounts server
 		//public const string O2_HOST ="https://accounts-staging.autodesk.com/" ; // Autodesk staging accounts server
 
 		// ReCap: Fill in these macros with the correct information (only the 2 first are important)
