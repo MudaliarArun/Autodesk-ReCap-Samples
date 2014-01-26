@@ -1,0 +1,31 @@
+﻿<!--
+// (C) Copyright 2014 by Autodesk, Inc.
+//
+// The information contained herein is confidential, proprietary
+// to Autodesk, Inc., and considered a trade secret as defined
+// in section 499C of the penal code of the State of California.
+// Use of this information by anyone other than authorized
+// employees of Autodesk, Inc. is granted only under a written
+// non-disclosure agreement, expressly prescribing the scope
+// and manner of such use.
+
+//- Written by Cyrille Fauvel, Autodesk Developer Network (ADN)
+//- http://www.autodesk.com/joinadn
+//- January 20th, 2014
+//
+-->
+<Window x:Class="AutodeskWpfReCap.PropertiesWnd"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        Title="Properties"
+		Height="600" Width="350"
+		Style="{DynamicResource MayaStyle}"
+		Loaded="Window_Loaded"
+		>
+	<Grid>
+		<!--xctk:PropertyGrid x:Name="propertyGrid" Margin="10" /-->
+		<xctk:PropertyGrid x:Name="propertyGrid" Margin="10" AutoGenerateProperties="True">
+		</xctk:PropertyGrid>
+	</Grid>
+</Window>
