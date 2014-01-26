@@ -32,7 +32,10 @@ using System.ComponentModel;
 
 namespace AutodeskWpfReCap {
 
+	public delegate void DownloadResultForPreviewCompletedDelegate (string photoscene) ;
+
 	public partial class DownloadFileWnd : Window {
+		public DownloadResultForPreviewCompletedDelegate _callback =null ;
 		protected WebClient _webClient ;
 		protected Stopwatch _sw =new Stopwatch () ;
 
@@ -84,6 +87,8 @@ namespace AutodeskWpfReCap {
 			//	MessageBox.Show ("Download completed!") ;
 			//}
 			_webClient =null ;
+			string photosceneid =System.IO.Path.GetFileNameWithoutExtension (_location) ;
+			this.Dispatcher.Invoke (_callback, new Object [] { photosceneid }) ;
 			this.Close () ;
 		}
 

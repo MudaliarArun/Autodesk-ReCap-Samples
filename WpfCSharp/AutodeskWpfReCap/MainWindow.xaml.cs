@@ -207,7 +207,8 @@ namespace AutodeskWpfReCap {
 		}
 
 		private void PhotoScenes_DownloadResult (object sender, RoutedEventArgs e) {
-			e.Handled =true ;
+			if ( e != null )
+				e.Handled =true ;
 			if ( PhotoScenes.SelectedItems.Count != 1 )
 				return ;
 			ReCapPhotosceneidItem item =PhotoScenes.SelectedItem as ReCapPhotosceneidItem ;
@@ -217,6 +218,8 @@ namespace AutodeskWpfReCap {
 				wnd._urlAddress =link ;
 				wnd._location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory)
 					+ item.Name + System.IO.Path.GetExtension (link) ;
+				if ( e == null ) // Preview
+					wnd._callback =new DownloadResultForPreviewCompletedDelegate (this.DownloadResultForPreviewCompleted) ;
 				wnd.Show () ;
 			}
 			textBox1.ScrollToEnd () ;
@@ -224,16 +227,17 @@ namespace AutodeskWpfReCap {
 
 		// If not using .NET 4.5, http://dotnetzip.codeplex.com/
 		private void PhotoScenes_Preview (object sender, RoutedEventArgs e) {
-			e.Handled =true ;
+			if ( e != null )
+				e.Handled =true ;
 			if ( PhotoScenes.SelectedItems.Count != 1 )
 				return ;
 			ReCapPhotosceneidItem item =PhotoScenes.SelectedItem as ReCapPhotosceneidItem ;
-			string location = System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + item.Name + ".zip" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + item.Name + ".zip" ;
 			if ( !File.Exists (location) ) {
-				PhotoScenes_DownloadResult (sender, e) ;
+				if ( e != null )
+					PhotoScenes_DownloadResult (null, null) ;
 				return ;
 			}
-			//string location = System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + _test_sceneid_ + ".zip";
 
 			FileStream zipStream =File.OpenRead (location) ;
 			using ( ZipArchive zip =new ZipArchive (zipStream) ) {
@@ -252,6 +256,10 @@ namespace AutodeskWpfReCap {
 			}
 
 			textBox1.ScrollToEnd () ;
+		}
+
+		public void DownloadResultForPreviewCompleted (string photosceneid) {
+			PhotoScenes_Preview (null, null) ;
 		}
 
 		private void PhotoScenes_DeletePhotoscene (object sender, RoutedEventArgs e) {

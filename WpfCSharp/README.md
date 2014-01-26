@@ -67,7 +67,7 @@ If you are, it will refresh your access token immediately. If not, it will ask y
    You can also call this method as many time you want as properties can be queried anytime.
    * Process Scene -  This command will ask the ReCap server to process the PhotoScene. You need a minimum of 3 photos to launch the processing, and this command is configured
    to for re-processing in case the scene was already processed.
-   * Download - If a PhotoScene was successfully processed, you can get the resulting ZIP file containing the mesh, texture, and material. The sample is configured to use OBJ file format.
+   * Download result - If a PhotoScene was successfully processed, you can get the resulting ZIP file containing the mesh, texture, and material. The sample is configured to use OBJ file format.
    Other  file format will be supported in future whenever possible.
    * Preview - This command load the PhotoScene mesh into the 'Polygon 3D View' panel.
    * Delete - This command will ask the ReCap server to delete the PhotoScene and all its resources from the Autodesk server.

@@ -130,7 +130,7 @@
 							<MenuItem Header="Process Scene" Click="PhotoScenes_ProcessPhotoscene" />
 							<MenuItem Header="Properties" Click="PhotoScenes_Properties" />
 							<MenuItem Header="Download result" Click="PhotoScenes_DownloadResult" />
-							<MenuItem Header="Upload in preview" Click="PhotoScenes_Preview" />
+							<MenuItem Header="Preview" Click="PhotoScenes_Preview" />
 							<Separator />
 							<MenuItem Header="Delete" Click="PhotoScenes_DeletePhotoscene" />
 							<Separator />
