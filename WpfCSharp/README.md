@@ -31,7 +31,6 @@ This sample is dependent of four 3rd party assemblies:
 1. The RestSharp assembly
 
      RestSharp - Simple REST and HTTP Client for .NET
-	 
 	 you need at least version 104.3.3. You can get this component source code [here](http://restsharp.org/)
 
 2. The ObjLoader from Chris Janson
@@ -41,7 +40,7 @@ This sample is dependent of four 3rd party assemblies:
 3. The Xceed WPF Toolkit Community Edition
 
      this assembly is only used if you want to display the ReCap properties in a Property window. Properties are anyway dumped into a text window. 
-	 You can get the binaries and documentation from [https://wpftoolkit.codeplex.com/)](https://wpftoolkit.codeplex.com/)
+	 You can get the binaries and documentation from [https://wpftoolkit.codeplex.com/](https://wpftoolkit.codeplex.com/)
 
 4. The Autodesk Dark color theme assembly
 
