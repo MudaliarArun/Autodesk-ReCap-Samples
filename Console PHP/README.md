@@ -40,7 +40,7 @@ This sample is a command line sample where you control the various ReCap stage i
 
 Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
-	-r		Refresh Access token only
+	-r	Refresh Access token only
 	-d	Debug mode. Display the RESTful response
 
 	-c	Command list
