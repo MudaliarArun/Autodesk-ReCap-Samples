@@ -19,10 +19,10 @@
  DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
  UNINTERRUPTED OR ERROR FREE.
  
-*/
-require 'vendor/autoload.php' ;
-use Guzzle\Http\Client ;
-use Guzzle\Plugin\Oauth\OauthPlugin ;
+ This sample is a modified version of the Autodesk oAuth sample that you can find here:
+ https://github.com/ADN-DevTech/AutodeskOAuthSamples/tree/master/AdskOAuth%20PHP
+ 
+ */
 require_once ('UserSettings.php') ;
 
 $access =null ;

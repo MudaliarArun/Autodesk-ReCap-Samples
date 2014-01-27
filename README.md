@@ -29,7 +29,7 @@ The samples
 ------------------------
 
 1. The [WPF C# sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/WpfCSharp)
-
+2. The [PHP Console sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Console%20PHP)
 
 Use of the sample:
 

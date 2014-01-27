@@ -34,21 +34,21 @@ if ( array_key_exists ('h', $options) !== false ) {
 	echo "\n-r\tRefresh Access token only\n" ;
 	echo "-d\tDebug mode. Display the RESTful response\n" ;
 
-	echo "\n-c\tCommand list\n" ;
-	echo "\n\t   version - Displays the current ReCap server version\n" ;
-	echo "\n\t   current - Displays the current photosceneid in use\n" ;
-	echo "\n\t   create - Create a new Photoscene\n" ;
-	echo "\n\t   set - Set the current Photoscene ID - requires -i option\n" ;
-	echo "\n\t   release - Release the current photosceneid\n" ;
-	echo "\n\t   list - List all photoscenes present on your account\n" ;
-	echo "\n\t   properties - Displays current Photoscene properties\n" ;
-	echo "\n\t   upload - Upload photo(s) on your current Photoscene - requires -p option (could be a single file, a folder, or a search string)\n" ;
-	echo "\n\t   start - Launch your Photoscene\n" ;
-	echo "\n\t   progress - Launch your Photoscene\n" ;
-	echo "\n\t   result - Get the result\n" ;
-	echo "\n\t   delete - Delete the Photoscene and resources from server\n" ;
+	echo "-c\tCommand list\n" ;
+	echo "\t   version - Displays the current ReCap server version\n" ;
+	echo "\t   current - Displays the current photosceneid in use\n" ;
+	echo "\t   create - Create a new Photoscene\n" ;
+	echo "\t   set - Set the current Photoscene ID - requires -i option\n" ;
+	echo "\t   release - Release the current photosceneid\n" ;
+	echo "\t   list - List all photoscenes present on your account\n" ;
+	echo "\t   properties - Displays current Photoscene properties\n" ;
+	echo "\t   upload - Upload photo(s) on your current Photoscene - requires -p option (could be a single file, a folder, or a search string)\n" ;
+	echo "\t   start - Launch your Photoscene\n" ;
+	echo "\t   progress - Launch your Photoscene\n" ;
+	echo "\t   result - Get the result\n" ;
+	echo "\t   delete - Delete the Photoscene and resources from server\n" ;
 	
-	echo "\n-h\tHelp - this message\n" ;
+	echo "-h\tHelp - this message\n" ;
 	exit ;
 }
 
