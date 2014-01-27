@@ -38,6 +38,8 @@ Use of the sample
 
 This sample is a command line sample where you control the various ReCap stage individually using one of the command below.
 
+You first need to modify (or create) the UserSettings.php file and put your oAuth /ReCap credentials in it.
+
 Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
 	-r	Refresh Access token only

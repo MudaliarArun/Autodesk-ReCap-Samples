@@ -47,6 +47,12 @@ This sample is dependent of four 3rd party assemblies:
      you can either remove or use that assembly as you wish since it only change the WPF window colors.
 	 You can get the source code [here](https://github.com/ADN-DevTech/Maya-Net-Wpf-DarkScheme)
 
+Building the sample
+---------------------------
+
+The sample was created using Visual Studio 2012 Service Pack 1, but should build/work fine with Visual Studio 2010 and 2013.
+
+You first need to modify (or create) the UserSettings.cs file and put your oAuth /ReCap credentials in it.
 	 
 Use of the sample
 -------------------------
