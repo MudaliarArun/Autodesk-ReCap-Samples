@@ -28,8 +28,9 @@ Dependencies
 --------------------
 This sample is dependent of a 3rd party extension:
 
-1. The Guzzle PHP extension
+1. The [Guzzle PHP](https://github.com/guzzle/guzzle) extension
 
+    You can install Guzzle using Composer or Phar
      
 	 
 Use of the sample
