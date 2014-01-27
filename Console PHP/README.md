@@ -40,6 +40,13 @@ This sample is a command line sample where you control the various ReCap stage i
 
 You first need to modify (or create) the UserSettings.php file and put your oAuth /ReCap credentials in it.
 
+And then log on the Autodesk Oxygen server using the oAuthLog.php script, i.e:
+
+	oAuthLog.php
+	
+this command needs to be ran only once, unless your credential expired. It saves your access token into a file named oauth.txt that the ReCap sample will consume.
+
+
 Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
 	-r	Refresh Access token only
