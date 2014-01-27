@@ -2,7 +2,7 @@ Copyright (c) Autodesk, Inc. All rights reserved
 
 Autodesk ReCap API samples
 by Cyrille Fauvel - Autodesk Developer Network (ADN)
-January 2014
+August 2013
 
 Permission to use, copy, modify, and distribute this software in
 object code form for any purpose and without fee is hereby granted, 
