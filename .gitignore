@@ -17,6 +17,7 @@ UserSettings.*
 oauth.txt
 recap.txt
 
+
 # PHP libraries
 vendor/
 
