@@ -264,12 +264,14 @@ namespace AutodeskWpfReCap {
 
 		private void PhotoScenes_DeletePhotoscene (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
+			ObservableCollection<ReCapPhotosceneidItem> items =new ObservableCollection<ReCapPhotosceneidItem> ((IEnumerable<ReCapPhotosceneidItem>)PhotoScenes.ItemsSource) ;
 			foreach ( ReCapPhotosceneidItem item in PhotoScenes.SelectedItems ) {
 				if ( DeletePhotoscene (item.Name) )
-					PhotoScenes.Items.Remove (item) ;
+					items.Remove (item) ;
 			}
+			PhotoScenes.ItemsSource =items ;
 			PhotoScenes.Items.Refresh () ;
-			textBox1.ScrollToEnd ();
+			textBox1.ScrollToEnd () ;
 		}
 
 		private void TabControl1_SelectionChanged (object sender, SelectionChangedEventArgs e) {
@@ -284,6 +286,9 @@ namespace AutodeskWpfReCap {
 					XmlDocument doc =_recap.xml () ;
 					XmlNodeList nodes =doc.SelectNodes ("/Response/Photoscenes/Photoscene") ;
 					foreach ( XmlNode fnode in nodes ) {
+						XmlNode p0 =fnode.SelectSingleNode ("deleted") ;
+						if ( p0 != null && p0.InnerText == "true" )
+							continue ;
 						XmlNode p1 =fnode.SelectSingleNode ("photosceneid") ;
 						XmlNode p2 =fnode.SelectSingleNode ("status") ;
 						textBox1.Text +=string.Format ("\n\t{0} [{1}]", p1.InnerText, p2.InnerText) ;
@@ -311,6 +316,7 @@ namespace AutodeskWpfReCap {
 				UserSettings.CONSUMER_KEY, UserSettings.CONSUMER_SECRET,
 				Properties.Settings.Default.oauth_token, Properties.Settings.Default.oauth_token_secret
 			) ;
+			System.Diagnostics.Debug.WriteLine ("tokens: " + Properties.Settings.Default.oauth_token + " - " + Properties.Settings.Default.oauth_token_secret) ;
 			if ( _recap.ServerTime () ) { // Test connection
 				XmlDocument doc =_recap.xml () ;
 				XmlNode node =doc.SelectSingleNode ("/Response/date") ; // doc.DocumentElement.SelectSingleNode ("/Response/date/text()").Value
@@ -428,7 +434,7 @@ namespace AutodeskWpfReCap {
 		protected bool PhotosceneProperties (string photosceneid) {
 			if ( photosceneid == "" || !ConnectWithReCap () )
 				return (false) ;
-			bool ret = _recap.SceneProperties (photosceneid) ;
+			bool ret =_recap.SceneProperties (photosceneid) ;
 			textBox1.Text +="\n" + _recap._lastResponse.Content ;
 			if ( !ret ) {
 				textBox1.Text += "\nError while getting properties!" ;
@@ -456,7 +462,8 @@ namespace AutodeskWpfReCap {
 		protected bool DeletePhotoscene (string photosceneid) {
 			if ( photosceneid == "" || !ConnectWithReCap () )
 				return (false) ;
-			bool ret =_recap.DeleteScene (photosceneid) ;
+			//bool ret =_recap.DeleteScene (photosceneid) ;
+			bool ret =_recap.DeleteScene2 (photosceneid) ;
 			textBox1.Text +="\n" + _recap._lastResponse.Content ;
 			if ( !ret ) {
 				textBox1.Text +="\nError - DeletePhotoscene call failed!" ;

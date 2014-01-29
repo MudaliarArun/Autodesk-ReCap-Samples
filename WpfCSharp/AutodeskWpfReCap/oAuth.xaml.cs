@@ -68,14 +68,14 @@ namespace AutodeskWpfReCap {
             var request =new RestRequest (UserSettings.O2_REQUESTTOKEN, Method.POST) ;
             var response =_Client.Execute (request) ;
 			if ( response.StatusCode != HttpStatusCode.OK ) {
-				Console.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
 				return (false) ;
 			}
         
 			// The HTTP request succeeded. Get the request token and associated parameters.
 			var requestToken =HttpUtility.ParseQueryString (response.Content) ;
 			if ( requestToken.Count < 2 ) {
-				Console.WriteLine ("Failure!\nCould not get request token!\nMaybe the credentials are incorrect?") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nCould not get request token!\nMaybe the credentials are incorrect?") ;
 				return (false) ;
 			}
 			Properties.Settings.Default.oauth_token =requestToken ["oauth_token"] ;
@@ -111,10 +111,10 @@ namespace AutodeskWpfReCap {
 				return ;
 			// Let's check if we got redirected to the correct page
 			if ( isAuthorizeCallBack () ) {
-				Console.WriteLine ("Success!\nYou are authorized!\nYOu can now request your Access token.");
+				System.Diagnostics.Trace.WriteLine ("Success!\nYou are authorized!\nYOu can now request your Access token.") ;
 				AccessToken (false, null) ;
 			} else {
-				Console.WriteLine ("Failure!\nYou are not authorized!") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nYou are not authorized!") ;
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace AutodeskWpfReCap {
 
 			var response =_Client.Execute (request) ;
 			if ( response.StatusCode != HttpStatusCode.OK ) {
-				Console.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
 				return (false) ;
 			}
 
@@ -177,15 +177,15 @@ namespace AutodeskWpfReCap {
 			var accessToken =HttpUtility.ParseQueryString (response.Content) ;
 			if ( accessToken.Count < 3 || accessToken ["oauth_session_handle"] == null ) {
 				if ( refresh )
-					Console.WriteLine ("Failure!\nCould not refresh token!") ;
+					System.Diagnostics.Trace.WriteLine ("Failure!\nCould not refresh token!") ;
 				else
-					Console.WriteLine ("Failure!\nCould not get access token!") ;
+					System.Diagnostics.Trace.WriteLine ("Failure!\nCould not get access token!") ;
 				return (false) ;
 			}
 			if ( refresh )
-				Console.WriteLine ("Success!\nManaged to refresh token!") ;
+				System.Diagnostics.Trace.WriteLine ("Success!\nManaged to refresh token!") ;
 			else
-				Console.WriteLine ("Success!\nManaged to log in and get access token!") ;
+				System.Diagnostics.Trace.WriteLine ("Success!\nManaged to log in and get access token!") ;
 			Properties.Settings.Default.oauth_token =accessToken ["oauth_token"] ;
 			Properties.Settings.Default.oauth_token_secret =accessToken["oauth_token_secret"] ;
 			Properties.Settings.Default.oauth_session_handle =accessToken ["oauth_session_handle"] ;
@@ -207,7 +207,7 @@ namespace AutodeskWpfReCap {
 			) ;
 			var response =_Client.Execute (request) ;
 			if ( response.StatusCode != HttpStatusCode.OK ) {
-				Console.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nHTTP request did not work!\nMaybe you are having a connection problem?") ;
 				return ;
 			}
 
@@ -217,9 +217,9 @@ namespace AutodeskWpfReCap {
 				Properties.Settings.Default.oauth_token_secret ="" ;
 				Properties.Settings.Default.oauth_session_handle ="" ;
 				Properties.Settings.Default.Save () ;
-				Console.WriteLine ("Success!\nManaged to log out!");
+				System.Diagnostics.Trace.WriteLine ("Success!\nManaged to log out!") ;
 			} else {
-				Console.WriteLine ("Failure!\nCould not log out!") ;
+				System.Diagnostics.Trace.WriteLine ("Failure!\nCould not log out!") ;
 			}
 		}
 
@@ -239,7 +239,7 @@ namespace AutodeskWpfReCap {
 				// If the page contains the word "oauth_problem" then there is clearly a problem
 				//string content =webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"] ;
 				//if ( content.IndexOf ("oauth_problem") > -1 )
-				//	Console.WriteLine ("Failure!\nCould not log in!\nTry again!") ;
+				//	System.Diagnostics.Trace.WriteLine ("Failure!\nCould not log in!\nTry again!") ;
 			}
 			return (false) ;
 		}
