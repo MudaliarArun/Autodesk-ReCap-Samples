@@ -113,7 +113,7 @@ namespace AutodeskWpfReCap {
 
 		public bool CreatePhotoscene (string format, string meshQuality, Dictionary<string, string> options) {
 			var request =new RestRequest ("photoscene", Method.POST) ;
-			request.AddParameter ("clientID", UserSettings.ReCapClientID) ;
+			request.AddParameter ("clientID", UserSettings.ReCapClientID);
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			request.AddParameter ("format", format) ;
 			request.AddParameter ("meshquality", meshQuality) ;
@@ -165,8 +165,16 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
 			request.AddParameter ("type", "image") ;
-			foreach ( KeyValuePair<string, string> entry in files )
-				request.AddFile (entry.Key, entry.Value) ;
+			int n =0 ;
+			foreach ( KeyValuePair<string, string> entry in files ) {
+				string key =string.Format ("file[{0}]", n++) ;
+				if ( File.Exists (entry.Value) ) {
+					request.AddFile (key, entry.Value) ;
+				} else {
+					byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+					request.AddFile (key, img, entry.Key) ;
+				}
+			}
 			_lastResponse =_Client.Execute (request) ;
 			NSLog ("file response: {0}", _lastResponse) ;
 			return (isOk ()) ;
@@ -192,8 +200,16 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
 			request.AddParameter ("type", "image") ;
-			foreach ( KeyValuePair<string, string> entry in files )
-				request.AddFile (entry.Key, entry.Value) ;
+			int n =0 ;
+			foreach ( KeyValuePair<string, string> entry in files ) {
+				string key =string.Format ("file[{0}]", n++) ;
+				if ( File.Exists (entry.Value) ) {
+					request.AddFile (key, entry.Value) ;
+				} else {
+					byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+					request.AddFile (key, img, entry.Key) ;
+				}
+			}
 			// Inline example
 			//var asyncHandle =_Client.ExecuteAsync (request, response => { if ( response.StatusCode == HttpStatusCode.OK ) {} else {} }) ;
 			var asyncHandle =_Client.ExecuteAsync (request, callback) ;
@@ -240,7 +256,7 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			_lastResponse =_Client.Execute (request) ;
 			//var method =Enum.GetName (typeof (Method), Method.DELETE) ;
-			//_lastResponse =_Client.ExecuteAsPost (request, method) ;
+			//_lastResponse =_Client.ExecuteAsPost (request, method) ; // sign as POST :(
 			NSLog ("(delete) photoscene/... response: {0}", _lastResponse) ;
 			return (isOk ()) ;
 		}

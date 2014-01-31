@@ -250,8 +250,15 @@ function ListScenes () {
 	} else {
 		$nb =$xml->Photoscenes->children ()->count () ;
 		echo "\tPhotoscenes already created: $nb Photoscene(s)\n" ;
-		foreach ( $xml->Photoscenes->children () as $f )
-			echo "\t\t{$f->photosceneid} [{$f->status}]\n" ;
+		foreach ( $xml->Photoscenes->children () as $f ) {
+			if ( empty ($f->deleted) || $f->deleted != "true" )
+				echo "\t\t{$f->photosceneid} [{$f->status}]\n" ;
+		}
+		echo "\tDeleted Photoscenes\n" ;
+		foreach ( $xml->Photoscenes->children () as $f ) {
+			if ( !empty ($f->deleted) && $f->deleted == "true" )
+				echo "\t\t{deleted} - {$f->photosceneid} [{$f->status}]\n" ;
+		}
 	}
 }
 

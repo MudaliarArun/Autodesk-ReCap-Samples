@@ -24,11 +24,13 @@ using System.Net;
 using System.Xml;
 using System.ComponentModel;
 using System.Web;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
+using System.Windows.Resources;
 
 using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Loaders;
@@ -77,7 +79,6 @@ namespace AutodeskWpfReCap {
 			}
 
 			ConnectWithReCap () ;
-			Tirelire_Click (null, null) ; // Cyrille: Debug only
 		}
 
 		private void Window_SizeChanged (object sender, SizeChangedEventArgs e) {
@@ -102,6 +103,7 @@ namespace AutodeskWpfReCap {
 			}
 		}
 
+		// Example from resource
 		private void Alligator_Click (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ();
@@ -114,7 +116,8 @@ namespace AutodeskWpfReCap {
 			Thumbnails.SelectAll () ;
 		}
 
-		private void Tirelire_Click (object sender, RoutedEventArgs e) {
+		// Example from wildcard search on disc
+		/*private void Tirelire_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
@@ -126,15 +129,27 @@ namespace AutodeskWpfReCap {
 			}
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
-		}
+		}*/
 
 		private void Thumbnails_CreateNewScene (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
 			if ( Thumbnails.SelectedItems.Count == 0 )
 				return ;
 			string photosceneid =CreateReCapPhotoscene () ;
-			if ( photosceneid != "" )
+			if ( photosceneid != "" ) {
+				textBox1.Text +=string.Format ("\nCreatePhotoscene succeeded - PhotoSceneid = {0}", photosceneid) ;
+				if ( PhotoScenes.ItemsSource != null ) {
+					ObservableCollection<ReCapPhotosceneidItem> items =new ObservableCollection<ReCapPhotosceneidItem> ((IEnumerable<ReCapPhotosceneidItem>)PhotoScenes.ItemsSource) ;
+					items.Add (new ReCapPhotosceneidItem () {
+						Name =photosceneid,
+						Type ="CREATED",
+						Image =@"Images\ReCap.jpg"
+					}) ;
+					PhotoScenes.ItemsSource =items ;
+					PhotoScenes.Items.Refresh () ;
+				}
 				UploadPhotos (photosceneid) ;
+			}
 			textBox1.ScrollToEnd () ;
 		}
 
@@ -160,8 +175,14 @@ namespace AutodeskWpfReCap {
 
 		private void PhotoScenes_UploadPhotos (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			if ( Thumbnails.SelectedItems.Count == 0 || PhotoScenes.SelectedItems.Count != 1 )
+			if ( Thumbnails.SelectedItems.Count == 0 || Thumbnails.SelectedItems.Count > 20 ) {
+				MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
 				return ;
+			}
+			if ( PhotoScenes.SelectedItems.Count != 1 ) {
+				MessageBox.Show ("No Photoscene selected!") ;
+				return ;
+			}
 			ReCapPhotosceneidItem item =PhotoScenes.SelectedItem as ReCapPhotosceneidItem ;
 			UploadPhotos (item.Name) ;
 			textBox1.ScrollToEnd () ;
@@ -345,26 +366,32 @@ namespace AutodeskWpfReCap {
 			}
 			XmlDocument doc =_recap.xml () ;
 			XmlNode node =doc.SelectSingleNode ("/Response/Photoscene/photosceneid") ;
-			photosceneid =node.InnerText ;
-			textBox1.Text +=string.Format ("\nCreatePhotoscene succeeded - PhotoSceneid = {0}", photosceneid) ;
-			PhotoScenes.Items.Add (new ReCapPhotosceneidItem () {
-				Name =photosceneid,
-				Type ="CREATED",
-				Image =@"Images\ReCap.jpg"
-			}) ;
-			PhotoScenes.Items.Refresh () ;
-			return (photosceneid) ;
+			return (node.InnerText) ;
 		}
 
 		protected bool UploadPhotos (string photosceneid) {
 			if ( photosceneid == "" || !ConnectWithReCap () )
 				return (false) ;
 			//- Upload images to the project
-			int n =0 ;
+			
 			Dictionary<string, string> files =new Dictionary<string, string> () ;
 			foreach ( ReCapPhotoItem item in Thumbnails.SelectedItems ) {
 				//files.Add (item.Name, item.Image) ;
-				files.Add (string.Format ("file[{0}]", n++), item.Image) ;
+				if ( File.Exists (item.Name) ) {
+					files.Add (item.Name, item.Image) ;
+				} else {
+					// This is coming from our resources
+					StreamResourceInfo stri =Application.GetResourceStream (new Uri (
+						item.Image,
+						UriKind.Relative
+					)) ;
+					if ( stri != null ) {
+						Stream str =stri.Stream ;
+						Byte [] byts =new Byte [str.Length] ;
+						str.Read (byts, 0, (int)str.Length) ;
+						files.Add (System.IO.Path.GetFileName (item.Image), Convert.ToBase64String (byts)) ;
+					}
+				}
 			}
 
 			// Synchronous sample
