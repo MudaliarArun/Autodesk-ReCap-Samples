@@ -171,7 +171,7 @@ namespace AutodeskWpfReCap {
 				if ( File.Exists (entry.Value) ) {
 					request.AddFile (key, entry.Value) ;
 				} else {
-					byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+					byte [] img =Convert.FromBase64String (entry.Value) ;
 					request.AddFile (key, img, entry.Key) ;
 				}
 			}
@@ -206,7 +206,8 @@ namespace AutodeskWpfReCap {
 				if ( File.Exists (entry.Value) ) {
 					request.AddFile (key, entry.Value) ;
 				} else {
-					byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+					//byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+					byte [] img =Convert.FromBase64String (entry.Value) ;
 					request.AddFile (key, img, entry.Key) ;
 				}
 			}

@@ -30,7 +30,7 @@ using System.Xml;
 
 namespace AutodeskWpfReCap {
 
-	public delegate void ProcessPhotosceneCompletedDelegate (string photoscene) ;
+	public delegate void ProcessPhotosceneCompletedDelegate (string photoscene, string status) ;
 
 	// http://codereview.stackexchange.com/questions/20820/use-and-understanding-of-async-await-in-net-4-5
 
@@ -62,7 +62,7 @@ namespace AutodeskWpfReCap {
 				}
 				progress.Report (task.Result) ;
 				if ( task.Result.pct >= 100 ) {
-					this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid }) ;
+					this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid, task.Result.msg }) ;
 					break ;
 				}
 			}

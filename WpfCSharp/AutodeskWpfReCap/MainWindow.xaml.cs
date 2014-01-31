@@ -202,10 +202,10 @@ namespace AutodeskWpfReCap {
 			textBox1.ScrollToEnd () ;
 		}
 
-		public void ProcessPhotosceneCompleted (string photosceneid) {
+		public void ProcessPhotosceneCompleted (string photosceneid, string status) {
 			foreach ( ReCapPhotosceneidItem item in PhotoScenes.Items ) {
 				if ( item.Name == photosceneid ) {
-					item.Type ="DONE" ;
+					item.Type =status ;
 					PhotoScenes.Items.Refresh () ;
 					break ;
 				}
@@ -377,7 +377,7 @@ namespace AutodeskWpfReCap {
 			Dictionary<string, string> files =new Dictionary<string, string> () ;
 			foreach ( ReCapPhotoItem item in Thumbnails.SelectedItems ) {
 				//files.Add (item.Name, item.Image) ;
-				if ( File.Exists (item.Name) ) {
+				if ( File.Exists (item.Image) ) {
 					files.Add (item.Name, item.Image) ;
 				} else {
 					// This is coming from our resources
