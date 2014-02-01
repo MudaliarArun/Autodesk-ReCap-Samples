@@ -106,7 +106,7 @@ namespace AutodeskWpfReCap {
 			}
 		}
 
-		// Example from wildcard search on disc
+		// Example getting images with wildcard search on local disc
 		/*private void Tirelire_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
@@ -121,14 +121,13 @@ namespace AutodeskWpfReCap {
 			Thumbnails.SelectAll () ;
 		}*/
 
-		// Examples from the WEB
+		// Examples referencing images on the WEB
 		private void Tirelire_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			//for ( int i =0 ; i < 40 ; i++ )
-			//	items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"Images\Tirelire" + i.ToString () + ".jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name = "Tirelire", Type = "jpg", Image =@"http://blog.elle.fr/injections-et-bistouri/wp-content/uploads/sites/33/2011/12/tirelire.jpg" }) ;
+			for ( int i =0 ; i < 38 ; i++ )
+				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -138,12 +137,12 @@ namespace AutodeskWpfReCap {
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 63 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"Images\KidSnail" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
 
-		// Example from Application Resource
+		// Example taking images from the Application Resource
 		private void Alligator_Click (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ();
