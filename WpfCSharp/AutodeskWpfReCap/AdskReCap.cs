@@ -145,7 +145,7 @@ namespace AutodeskWpfReCap {
 			return (isOk ()) ;
 		}
 
-		public bool UploadFiles (string photosceneid, Dictionary<string, string> files) {
+		public bool UploadFiles (string photosceneid, Dictionary<string, string> files, Dictionary<string, string> filesRef) {
 			// ReCap returns the following if no file uploaded (or referenced), setup an error instead
 			//<Response>
 			//        <Usage>0.81617307662964</Usage>
@@ -155,7 +155,7 @@ namespace AutodeskWpfReCap {
 			//
 			//        </Files>
 			//</Response>
-			if ( files == null || files.Count == 0 ) {
+			if ( (files == null || files.Count == 0) && (filesRef == null || filesRef.Count == 0) ) {
 				_lastResponse =null ;
 				return (false) ;
 			}
@@ -164,23 +164,29 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("clientID", UserSettings.ReCapClientID) ;
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
-			request.AddParameter ("type", "image") ;
+			request.AddParameter ("type", (files != null && files.Count != 0) ? "image" : "source") ;
 			int n =0 ;
 			foreach ( KeyValuePair<string, string> entry in files ) {
 				string key =string.Format ("file[{0}]", n++) ;
 				if ( File.Exists (entry.Value) ) {
 					request.AddFile (key, entry.Value) ;
+				//} else if ( entry.Value.Substring (0, 4).ToLower () == "http" || entry.Value.Substring (0, 3).ToLower () == "ftp" ) {
+				//	request.AddParameter (key, entry.Value) ;
 				} else {
 					byte [] img =Convert.FromBase64String (entry.Value) ;
 					request.AddFile (key, img, entry.Key) ;
 				}
+			}
+			foreach ( KeyValuePair<string, string> entry in filesRef ) {
+				string key =string.Format ("file[{0}]", n++) ;
+				request.AddParameter (key, entry.Value) ;
 			}
 			_lastResponse =_Client.Execute (request) ;
 			NSLog ("file response: {0}", _lastResponse) ;
 			return (isOk ()) ;
 		}
 
-		public RestRequestAsyncHandle UploadFilesAsync (string photosceneid, Dictionary<string, string> files, Action<IRestResponse, RestRequestAsyncHandle> callback) {
+		public RestRequestAsyncHandle UploadFilesAsync (string photosceneid, Dictionary<string, string> files, Dictionary<string, string> filesRef, Action<IRestResponse, RestRequestAsyncHandle> callback) {
 			// ReCap returns the following if no file uploaded (or referenced), setup an error instead
 			//<Response>
 			//        <Usage>0.81617307662964</Usage>
@@ -190,7 +196,7 @@ namespace AutodeskWpfReCap {
 			//
 			//        </Files>
 			//</Response>
-			if ( files == null || files.Count == 0 ) {
+			if ( (files == null || files.Count == 0) && (filesRef == null || filesRef.Count == 0) ) {
 				_lastResponse =null ;
 				return (null) ;
 			}
@@ -199,17 +205,23 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("clientID", UserSettings.ReCapClientID) ;
 			request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
-			request.AddParameter ("type", "image") ;
+			request.AddParameter ("type", (files != null && files.Count != 0) ? "image" : "image") ;
 			int n =0 ;
 			foreach ( KeyValuePair<string, string> entry in files ) {
 				string key =string.Format ("file[{0}]", n++) ;
 				if ( File.Exists (entry.Value) ) {
 					request.AddFile (key, entry.Value) ;
+				//} else if ( entry.Value.Substring (0, 4).ToLower () == "http" || entry.Value.Substring (0, 3).ToLower () == "ftp" ) {
+				//	request.AddParameter (key, entry.Value) ;
 				} else {
 					//byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
 					byte [] img =Convert.FromBase64String (entry.Value) ;
 					request.AddFile (key, img, entry.Key) ;
 				}
+			}
+			foreach ( KeyValuePair<string, string> entry in filesRef ) {
+				string key =string.Format ("file[{0}]", n++) ;
+				request.AddParameter (key, entry.Value) ;
 			}
 			// Inline example
 			//var asyncHandle =_Client.ExecuteAsync (request, response => { if ( response.StatusCode == HttpStatusCode.OK ) {} else {} }) ;

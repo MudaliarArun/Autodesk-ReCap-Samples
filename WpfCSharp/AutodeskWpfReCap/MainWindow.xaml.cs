@@ -31,6 +31,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using System.Windows.Resources;
+using System.Resources;
 
 using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Loaders;
@@ -79,6 +80,8 @@ namespace AutodeskWpfReCap {
 			}
 
 			ConnectWithReCap () ;
+			LoadAUcubeExample () ;
+			//LoadTest () ;
 		}
 
 		private void Window_SizeChanged (object sender, SizeChangedEventArgs e) {
@@ -103,26 +106,13 @@ namespace AutodeskWpfReCap {
 			}
 		}
 
-		// Example from resource
-		private void Alligator_Click (object sender, RoutedEventArgs e) {
-			e.Handled =true ;
-			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ();
-			items.Add (new ReCapPhotoItem () { Name ="ReCap0", Type ="jpg", Image =@"Images\ReCap0.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap1", Type ="jpg", Image =@"Images\ReCap1.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap2", Type ="jpg", Image =@"Images\ReCap2.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap3", Type ="jpg", Image =@"Images\ReCap3.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap4", Type ="jpg", Image =@"Images\ReCap4.jpg" }) ;
-			Thumbnails.ItemsSource =items ;
-			Thumbnails.SelectAll () ;
-		}
-
 		// Example from wildcard search on disc
 		/*private void Tirelire_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			DirectoryInfo folder =new DirectoryInfo (@"C:\Program Files\PHP\Recap\tirelire") ;
-			FileInfo [] images =folder.GetFiles ("*.jpg") ;
+			DirectoryInfo folder =new DirectoryInfo (@"C:\Program Files\Autodesk\AutodeskWpfReCap\Images") ;
+			FileInfo [] images =folder.GetFiles ("Tirelire*.jpg") ;
 			foreach ( FileInfo img in images ) {
 				items.Add (new ReCapPhotoItem () { Name =img.Name, Type =img.Extension, Image =img.FullName }) ;
 				//new BitmapImage (new Uri (img.FullName))
@@ -131,10 +121,47 @@ namespace AutodeskWpfReCap {
 			Thumbnails.SelectAll () ;
 		}*/
 
+		// Examples from the WEB
+		private void Tirelire_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
+			//for ( int i =0 ; i < 40 ; i++ )
+			//	items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"Images\Tirelire" + i.ToString () + ".jpg" }) ;
+			items.Add (new ReCapPhotoItem () { Name = "Tirelire", Type = "jpg", Image =@"http://blog.elle.fr/injections-et-bistouri/wp-content/uploads/sites/33/2011/12/tirelire.jpg" }) ;
+			Thumbnails.ItemsSource =items ;
+			Thumbnails.SelectAll () ;
+		}
+
+		private void KidSnail_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
+			for ( int i =0 ; i < 63 ; i++ )
+				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"Images\KidSnail" + i.ToString () + ".jpg" }) ;
+			Thumbnails.ItemsSource =items ;
+			Thumbnails.SelectAll () ;
+		}
+
+		// Example from Application Resource
+		private void Alligator_Click (object sender, RoutedEventArgs e) {
+			e.Handled =true ;
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ();
+			items.Add (new ReCapPhotoItem () { Name ="ReCap0", Type ="jpg", Image =@"Images\Alligator0.jpg" }) ;
+			items.Add (new ReCapPhotoItem () { Name ="ReCap1", Type ="jpg", Image =@"Images\Alligator1.jpg" }) ;
+			items.Add (new ReCapPhotoItem () { Name ="ReCap2", Type ="jpg", Image =@"Images\Alligator2.jpg" }) ;
+			items.Add (new ReCapPhotoItem () { Name ="ReCap3", Type ="jpg", Image =@"Images\Alligator3.jpg" }) ;
+			items.Add (new ReCapPhotoItem () { Name ="ReCap4", Type ="jpg", Image =@"Images\Alligator4.jpg" }) ;
+			Thumbnails.ItemsSource =items ;
+			Thumbnails.SelectAll () ;
+		}
+
 		private void Thumbnails_CreateNewScene (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			if ( Thumbnails.SelectedItems.Count == 0 )
+			if ( Thumbnails.SelectedItems.Count == 0 || Thumbnails.SelectedItems.Count > 20 ) {
+				MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
 				return ;
+			}
 			string photosceneid =CreateReCapPhotoscene () ;
 			if ( photosceneid != "" ) {
 				textBox1.Text +=string.Format ("\nCreatePhotoscene succeeded - PhotoSceneid = {0}", photosceneid) ;
@@ -277,9 +304,17 @@ namespace AutodeskWpfReCap {
 			}
 
 			textBox1.ScrollToEnd () ;
+			TabControl1.SelectedItem =tabItem3 ;
 		}
 
 		public void DownloadResultForPreviewCompleted (string photosceneid) {
+			foreach ( ReCapPhotosceneidItem item in PhotoScenes.Items ) {
+				if ( item.Name == photosceneid ) {
+					item.Image =photosceneid + ".zip:icon.png" ;
+					PhotoScenes.Items.Refresh () ;
+					break ;
+				}
+			}
 			PhotoScenes_Preview (null, null) ;
 		}
 
@@ -297,7 +332,7 @@ namespace AutodeskWpfReCap {
 
 		private void TabControl1_SelectionChanged (object sender, SelectionChangedEventArgs e) {
 			e.Handled =true ;
-			if ( TabControl1.SelectedIndex == 1 && ConnectWithReCap () ) { // If the 'Go to ReCap' was selected
+			if ( TabControl1.SelectedIndex == 1 && ConnectWithReCap () ) { // If the 'ReCap Projects' panel was selected
 				if ( PhotoScenes.Items.Count == 0 ) {
 					bool ret =_recap.SceneList ("userID", UserSettings.ReCapUserID) ;
 					textBox1.Text +="\n" + _recap._lastResponse.Content ;
@@ -311,12 +346,16 @@ namespace AutodeskWpfReCap {
 						if ( p0 != null && p0.InnerText == "true" )
 							continue ;
 						XmlNode p1 =fnode.SelectSingleNode ("photosceneid") ;
+						string photosceneid =p1.InnerText ;
 						XmlNode p2 =fnode.SelectSingleNode ("status") ;
 						textBox1.Text +=string.Format ("\n\t{0} [{1}]", p1.InnerText, p2.InnerText) ;
+
+						// If we have the result downloaded, displays the resulting icon instead of the generic image
 						items.Add (new ReCapPhotosceneidItem () {
-							Name =p1.InnerText,
+							Name =photosceneid,
 							Type =p2.InnerText,
-							Image =@"Images\ReCap.jpg"
+							//Image =@"Images\ReCap.jpg"
+							Image =(File.Exists (photosceneid + ".zip") ? photosceneid + ".zip:icon.png" : @"Images\ReCap.jpg")
 						}) ;
 					}
 					PhotoScenes.ItemsSource =items ;
@@ -373,12 +412,14 @@ namespace AutodeskWpfReCap {
 			if ( photosceneid == "" || !ConnectWithReCap () )
 				return (false) ;
 			//- Upload images to the project
-			
 			Dictionary<string, string> files =new Dictionary<string, string> () ;
+			Dictionary<string, string> filesRef =new Dictionary<string, string> () ;
 			foreach ( ReCapPhotoItem item in Thumbnails.SelectedItems ) {
 				//files.Add (item.Name, item.Image) ;
 				if ( File.Exists (item.Image) ) {
 					files.Add (item.Name, item.Image) ;
+				} else if ( item.Image.Substring (0, 4).ToLower () == "http" || item.Image.Substring (0, 3).ToLower () == "ftp" ) {
+					filesRef.Add (item.Name, item.Image) ;
 				} else {
 					// This is coming from our resources
 					StreamResourceInfo stri =Application.GetResourceStream (new Uri (
@@ -395,7 +436,7 @@ namespace AutodeskWpfReCap {
 			}
 
 			// Synchronous sample
-			//bool ret =_recap.UploadFiles (photosceneid, files) ;
+			//bool ret =_recap.UploadFiles (photosceneid, files, filesRef) ;
 			//textBox1.Text +="\n" + _recap._lastResponse.Content ;
 			//if ( !ret ) {
 			//	textBox1.Text +="\nUploadFiles error" ;
@@ -413,7 +454,7 @@ namespace AutodeskWpfReCap {
 			// Async call
 			UploadProgress wnd =new UploadProgress () ;
 			wnd._photosceneid =photosceneid ;
-			var asyncHandle =_recap.UploadFilesAsync (photosceneid, files, wnd.callback) ;
+			var asyncHandle =_recap.UploadFilesAsync (photosceneid, files, filesRef, wnd.callback) ;
 			if ( asyncHandle != null ) {
 				textBox1.Text +="\nUploadFiles async successfully started" ;
 				wnd._asyncHandle =asyncHandle ;
@@ -509,6 +550,48 @@ namespace AutodeskWpfReCap {
 		#endregion
 
 		#region Utilities to create a 3D model our of OBJ meshes
+		//protected void LoadTest () {
+		//	//FileStream zipStream =File.OpenRead ("kRi3rCR0kqu14I7Logtp7J1fYEE.zip") ;
+		//	//FileStream zipStream =File.OpenRead ("D9hVhzPKXNyKs1nmwdkF06PfWrg.zip") ;
+		//	FileStream zipStream =File.OpenRead ("TAY0M381eVQyEsRhLXHdTQZRGdE.zip") ;
+		//	using ( ZipArchive zip =new ZipArchive (zipStream) ) {
+		//		ZipArchiveEntry mesh =zip.GetEntry ("mesh.obj") ;
+		//		ZipArchiveEntry mtl =zip.GetEntry ("mesh.mtl") ;
+		//		ZipArchiveEntry texture =zip.GetEntry ("tex_0.jpg") ;
+
+		//		using ( new CursorSwitcher (null) ) {
+		//			var objLoaderFactory =new ObjLoaderFactory () ;
+		//			var objLoader =objLoaderFactory.Create (new ObjMaterialStreamProvider (mtl)) ;
+		//			var result =objLoader.Load (mesh.Open ()) ;
+		//			// Reset the model & transform(s)
+		//			this.model.Children.Clear () ;
+		//			model.Children.Add (MakeVisualModel (result, texture)) ;
+		//		}
+		//	}
+		//}
+
+		protected void LoadAUcubeExample () {
+			// This is coming from our resources
+			StreamResourceInfo stri =Application.GetResourceStream (new Uri (
+				@"Examples\AUquads.zip",
+				UriKind.Relative
+			)) ;
+			using ( ZipArchive zip = new ZipArchive (stri.Stream) ) {
+				ZipArchiveEntry mesh =zip.GetEntry ("mesh.obj") ;
+				ZipArchiveEntry mtl =zip.GetEntry ("mesh.mtl") ;
+				ZipArchiveEntry texture =zip.GetEntry ("tex_0.jpg") ;
+
+				using ( new CursorSwitcher (null) ) {
+					var objLoaderFactory =new ObjLoaderFactory () ;
+					var objLoader =objLoaderFactory.Create (new ObjMaterialStreamProvider (mtl)) ;
+					var result =objLoader.Load (mesh.Open ()) ;
+					// Reset the model & transform(s)
+					this.model.Children.Clear () ;
+					model.Children.Add (MakeVisualModel (result, texture)) ;
+				}
+			}
+		}
+
 		public MeshGeometry3D MakeGeometry (LoadResult objmesh) {
 			var r =new MeshGeometry3D () ;
 			var mesh =new TriangleMeshAdapater (objmesh) ;
@@ -531,17 +614,17 @@ namespace AutodeskWpfReCap {
 			var byteStream =new System.IO.MemoryStream (buffer) ;
 
 			//ImageBrush imgBrush =new ImageBrush (new BitmapImage (new Uri (@"C:\Users\cyrille\Documents\Visual Studio 2012\Projects\tex_0.jpg"))) ;
-			BitmapImage bitmap = new BitmapImage ();
+			BitmapImage bitmap =new BitmapImage () ;
 			bitmap.BeginInit () ;
 			bitmap.CacheOption =BitmapCacheOption.OnLoad ;
 			bitmap.StreamSource =byteStream ;
 			bitmap.EndInit () ;
 			ImageBrush imgBrush =new ImageBrush (bitmap) ;
-			//imgBrush.ViewportUnits =BrushMappingMode.Absolute ;
-			imgBrush.ViewportUnits =BrushMappingMode.RelativeToBoundingBox ;
+			imgBrush.ViewportUnits =BrushMappingMode.Absolute ;
+			//imgBrush.ViewportUnits =BrushMappingMode.RelativeToBoundingBox ;
 
-			Brush brush =new SolidColorBrush (Color.FromScRgb (material.Transparency, material.DiffuseColor.X, material.DiffuseColor.Y, material.DiffuseColor.Z)) ;
-			brush.Opacity =material.Transparency ;
+			//Brush brush =new SolidColorBrush (Color.FromScRgb (material.Transparency, material.DiffuseColor.X, material.DiffuseColor.Y, material.DiffuseColor.Z)) ;
+			//brush.Opacity =material.Transparency ;
 
 			DiffuseMaterial diffuse =new DiffuseMaterial (imgBrush) ;
 			diffuse.AmbientColor =Color.FromScRgb (material.Transparency, material.AmbientColor.X, material.AmbientColor.Y, material.AmbientColor.Z) ;

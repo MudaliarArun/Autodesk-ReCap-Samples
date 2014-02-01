@@ -85,6 +85,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CursorSwitcher.cs" />
+    <Compile Include="ImageSourceConverter.cs" />
     <Compile Include="JobProgress.xaml.cs">
       <DependentUpon>JobProgress.xaml</DependentUpon>
     </Compile>
@@ -102,6 +103,7 @@
     <Compile Include="DownloadFileWnd.xaml.cs">
       <DependentUpon>DownloadFileWnd.xaml</DependentUpon>
     </Compile>
+    <Resource Include="Examples\AUquads.zip" />
     <None Include="UserSettings_.cs" />
     <Page Include="JobProgress.xaml">
       <SubType>Designer</SubType>
@@ -163,16 +165,14 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\ReCap0.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\ReCap1.jpg" />
-    <Resource Include="Images\ReCap2.jpg" />
-    <Resource Include="Images\ReCap3.jpg" />
-    <Resource Include="Images\ReCap4.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Images\ReCap.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Alligator0.jpg" />
+    <Resource Include="Images\Alligator1.jpg" />
+    <Resource Include="Images\Alligator2.jpg" />
+    <Resource Include="Images\Alligator3.jpg" />
+    <Resource Include="Images\Alligator4.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
