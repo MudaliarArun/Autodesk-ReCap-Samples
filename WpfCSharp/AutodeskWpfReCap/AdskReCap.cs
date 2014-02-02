@@ -207,21 +207,25 @@ namespace AutodeskWpfReCap {
 			request.AddParameter ("photosceneid", photosceneid) ;
 			request.AddParameter ("type", (files != null && files.Count != 0) ? "image" : "image") ;
 			int n =0 ;
-			foreach ( KeyValuePair<string, string> entry in files ) {
-				string key =string.Format ("file[{0}]", n++) ;
-				if ( File.Exists (entry.Value) ) {
-					request.AddFile (key, entry.Value) ;
-				//} else if ( entry.Value.Substring (0, 4).ToLower () == "http" || entry.Value.Substring (0, 3).ToLower () == "ftp" ) {
-				//	request.AddParameter (key, entry.Value) ;
-				} else {
-					//byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
-					byte [] img =Convert.FromBase64String (entry.Value) ;
-					request.AddFile (key, img, entry.Key) ;
+			if ( files != null ) {
+				foreach ( KeyValuePair<string, string> entry in files ) {
+					string key =string.Format ("file[{0}]", n++) ;
+					if ( File.Exists (entry.Value) ) {
+						request.AddFile (key, entry.Value) ;
+					//} else if ( entry.Value.Substring (0, 4).ToLower () == "http" || entry.Value.Substring (0, 3).ToLower () == "ftp" ) {
+					//	request.AddParameter (key, entry.Value) ;
+					} else {
+						//byte [] img =Encoding.UTF8.GetBytes (entry.Value) ;
+						byte [] img =Convert.FromBase64String (entry.Value) ;
+						request.AddFile (key, img, entry.Key) ;
+					}
 				}
 			}
-			foreach ( KeyValuePair<string, string> entry in filesRef ) {
-				string key =string.Format ("file[{0}]", n++) ;
-				request.AddParameter (key, entry.Value) ;
+			if ( filesRef != null ) {
+				foreach ( KeyValuePair<string, string> entry in filesRef ) {
+					string key =string.Format ("file[{0}]", n++) ;
+					request.AddParameter (key, entry.Value) ;
+				}
 			}
 			// Inline example
 			//var asyncHandle =_Client.ExecuteAsync (request, response => { if ( response.StatusCode == HttpStatusCode.OK ) {} else {} }) ;

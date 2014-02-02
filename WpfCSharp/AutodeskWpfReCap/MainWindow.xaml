@@ -109,7 +109,8 @@
 				<Label x:Name="label4" Grid.Column="2" Grid.Row="1" Content="Examples:" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,0,0,0" />
 				<Button x:Name="Tirelire" Grid.Column="2" Grid.Row="1" Content="Tirelire" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Tirelire_Click" Margin="10,25,0,0" />
 				<Button x:Name="KidSnail" Grid.Column="2" Grid.Row="1" Content="Kid Snail" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="KidSnail_Click" Margin="10,60,0,0" />
-				<Button x:Name="Alligator" Grid.Column="2" Grid.Row="1" Content="Alligator" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Alligator_Click" Margin="10,95,0,0" />
+				<Button x:Name="Calc" Grid.Column="2" Grid.Row="1" Content="Calc" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Calc_Click" Margin="10,95,0,0" />
+				<Button x:Name="Alligator" Grid.Column="2" Grid.Row="1" Content="Alligator" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Alligator_Click" Margin="10,130,0,0" />
 			</Grid>
 		</TabItem>
 		<TabItem x:Name="tabItem2" Header="ReCap Projects" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">

@@ -13,8 +13,7 @@
 //- January 20th, 2014
 //
 using System;
-using System.Windows;
-using System.Windows.Controls;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
@@ -25,6 +24,7 @@ using System.Xml;
 using System.ComponentModel;
 using System.Web;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -32,6 +32,7 @@ using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using System.Windows.Resources;
 using System.Resources;
+using System.Linq;
 
 using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Loaders;
@@ -126,8 +127,9 @@ namespace AutodeskWpfReCap {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			for ( int i =0 ; i < 38 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
+			for ( int i =0 ; i < 5 ; i++ )
+				//items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -137,7 +139,19 @@ namespace AutodeskWpfReCap {
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 63 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
+				//items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
+			Thumbnails.ItemsSource =items ;
+			Thumbnails.SelectAll () ;
+		}
+
+		private void Calc_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
+			for ( int i =0 ; i < 60 ; i++ )
+				//items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="Calc" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/Calc/Calc" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -157,8 +171,9 @@ namespace AutodeskWpfReCap {
 
 		private void Thumbnails_CreateNewScene (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			if ( Thumbnails.SelectedItems.Count == 0 || Thumbnails.SelectedItems.Count > 20 ) {
-				MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+			if ( Thumbnails.SelectedItems.Count == 0 /*|| Thumbnails.SelectedItems.Count > 20*/ ) {
+				//MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+				MessageBox.Show ("No images selected!") ;
 				return ;
 			}
 			string photosceneid =CreateReCapPhotoscene () ;
@@ -201,8 +216,9 @@ namespace AutodeskWpfReCap {
 
 		private void PhotoScenes_UploadPhotos (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			if ( Thumbnails.SelectedItems.Count == 0 || Thumbnails.SelectedItems.Count > 20 ) {
-				MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+			if ( Thumbnails.SelectedItems.Count == 0 /*|| Thumbnails.SelectedItems.Count > 20*/ ) {
+				//MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+				MessageBox.Show ("No images selected!") ;
 				return ;
 			}
 			if ( PhotoScenes.SelectedItems.Count != 1 ) {
@@ -434,6 +450,45 @@ namespace AutodeskWpfReCap {
 				}
 			}
 
+
+			// ReCap only accepts 20 uploads at a time with image not larger than 128Mb
+			// Let's assume files size is ok and split calls by 20 max each time
+			//     return (UploadPhotosExecute (photosceneid, files, filesRef)) ;
+			int nRet =0 ;
+			if ( files != null && files.Count != 0 ) {
+				int i =0 ;
+				int n =1 + files.Count / 20 ;
+				nRet =+n ;
+				var splits =(from item in files
+							 group item by i++ % n into part
+							 select part).ToList () ; // ToDictionary (g => g.Key, g => g.Last ());
+				foreach ( var grp in splits ) {
+					Dictionary<string, string> dict =new Dictionary<string, string> () ;
+					foreach ( var entry in grp )
+						dict.Add (entry.Key, entry.Value) ;
+					if ( UploadPhotosExecute (photosceneid, dict, null) )
+						nRet-- ;
+				}
+			}
+			if ( filesRef != null && filesRef.Count != 0 ) {
+				int i =0 ;
+				int n =1 + filesRef.Count / 20 ;
+				nRet +=n ;
+				var splits =(from item in filesRef
+							 group item by i++ % n into part
+							 select part).ToList () ; // ToDictionary (g => g.Key, g => g.Last ());
+				foreach ( var grp in splits ) {
+					Dictionary<string, string> dict =new Dictionary<string, string> () ;
+					foreach ( var entry in grp )
+						dict.Add (entry.Key, entry.Value) ;
+					if ( UploadPhotosExecute (photosceneid, null, dict) )
+						nRet-- ;
+				}
+			}
+			return (nRet == 0) ;
+		}
+
+		protected bool UploadPhotosExecute (string photosceneid, Dictionary<string, string> files, Dictionary<string, string> filesRef) {
 			// Synchronous sample
 			//bool ret =_recap.UploadFiles (photosceneid, files, filesRef) ;
 			//textBox1.Text +="\n" + _recap._lastResponse.Content ;
