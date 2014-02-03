@@ -81,6 +81,7 @@ namespace AutodeskWpfReCap {
 			}
 
 			ConnectWithReCap () ;
+			label5.Content =UserSettings.ReCapAPIURL ;
 			LoadAUcubeExample () ;
 			//LoadTest () ;
 		}
