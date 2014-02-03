@@ -168,11 +168,12 @@
     <Resource Include="Images\ReCap.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Alligator0.jpg" />
-    <Resource Include="Images\Alligator1.jpg" />
-    <Resource Include="Images\Alligator2.jpg" />
-    <Resource Include="Images\Alligator3.jpg" />
-    <Resource Include="Images\Alligator4.jpg" />
+    <Resource Include="Images\Tirelire0.jpg" />
+    <Resource Include="Images\Tirelire1.jpg" />
+    <Resource Include="Images\Tirelire2.jpg" />
+    <Resource Include="Images\Tirelire3.jpg" />
+    <Resource Include="Images\Tirelire4.jpg" />
+    <Resource Include="Images\Tirelire5.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

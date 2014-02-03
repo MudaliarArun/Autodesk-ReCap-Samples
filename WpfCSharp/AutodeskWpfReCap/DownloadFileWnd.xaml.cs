@@ -88,8 +88,10 @@ namespace AutodeskWpfReCap {
 			//}
 			_webClient =null ;
 			string photosceneid =System.IO.Path.GetFileNameWithoutExtension (_location) ;
-			if ( _callback != null )
-				this.Dispatcher.Invoke (_callback, new Object [] { photosceneid }) ;
+			if ( e.Cancelled == false && _callback != null )
+				this.Dispatcher.Invoke (_callback, new Object [] { photosceneid });
+			else if ( e.Cancelled == true )
+				File.Delete (_location) ;
 			this.Close () ;
 		}
 

@@ -122,23 +122,34 @@ namespace AutodeskWpfReCap {
 			Thumbnails.SelectAll () ;
 		}*/
 
-		// Examples referencing images on the WEB
+		// Example taking images from the Application Resource
 		private void Tirelire_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			for ( int i =0 ; i < 5 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
+			for ( int i =0 ; i < 6 ; i++ ) {
+				items.Add (new ReCapPhotoItem () {
+					Name ="Tirelire" + i.ToString (),
+					Type ="jpg",
+					Image =@"Images\Tirelire" + i.ToString () + ".jpg"
+				}) ;
+			}
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
 
+		// Examples referencing images on the WEB
 		private void KidSnail_Click (object sender, RoutedEventArgs e) {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			for ( int i =0 ; i < 63 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
+			for ( int i =0 ; i < 63 ; i++ ) {
+				items.Add (new ReCapPhotoItem () {
+					Name ="KidSnail" + i.ToString (),
+					Type ="jpg",
+					Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg"
+				}) ;
+			}
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -147,30 +158,110 @@ namespace AutodeskWpfReCap {
 			if ( e != null )
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
-			for ( int i =0 ; i < 60 ; i++ )
-				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg" }) ;
+			for ( int i =0 ; i < 60 ; i++ ) {
+				items.Add (new ReCapPhotoItem () {
+					Name ="KidSnail" + i.ToString (),
+					Type ="jpg",
+					Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg"
+				}) ;
+				}
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
 
-		// Example taking images from the Application Resource
+		// Example getting images with images from a ZIP file on local disc
+		// These examples come from the ReCap offical site that need to be downloaded first
+		// as ReCap API cannot reference a ZIP file, or images in ZIP
+		private void GetReCapExample (string url, string location) {
+			if ( !File.Exists (location) ) {
+				if ( url != null ) {
+					if ( System.Windows.MessageBox.Show ("This sample is quite large, are you sure you want to proceed?\nThe file would be downloaded only once.", "ReCap Example download", MessageBoxButton.YesNo) == MessageBoxResult.Yes )
+						ReCapExample_Download (url, location) ;
+				}
+				return ;
+			}
+
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
+			FileStream zipStream =File.OpenRead (location) ;
+			using ( ZipArchive zip =new ZipArchive (zipStream) ) {
+				foreach ( ZipArchiveEntry entry in zip.Entries ) {
+					items.Add (new ReCapPhotoItem () {
+						Name =System.IO.Path.GetFileNameWithoutExtension (entry.Name),
+						Type =System.IO.Path.GetExtension (entry.Name).Trim (new char [] { '.' }),
+						Image =location + ":" + entry.FullName 
+					}) ;
+				}
+			}
+			Thumbnails.ItemsSource =items ;
+			Thumbnails.SelectAll () ;
+		}
+
+		private void ReCapExample_Download (string url, string location) {
+			DownloadFileWnd wnd =new DownloadFileWnd () ;
+			wnd._urlAddress =url ;
+			wnd._location =location ;
+			wnd._callback =new DownloadResultForPreviewCompletedDelegate (this.DownloadExampleCompleted) ;
+			wnd.Show () ;
+		}
+
+		public void DownloadExampleCompleted (string zip) {
+			GetReCapExample (null, System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + zip + ".zip") ;
+		}
+
+		private void Warrior_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=e0c8c37990674a24a561ba365009f5f4" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "Warrior.zip" ;
+			GetReCapExample (url, location) ;
+		}
+
+		private void Horns_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=8eca9c8f22f8458b9ea35cec2e1dc7e3" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "Horns.zip" ;
+			GetReCapExample (url, location) ;
+		}
+
 		private void Alligator_Click (object sender, RoutedEventArgs e) {
-			e.Handled =true ;
-			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ();
-			items.Add (new ReCapPhotoItem () { Name ="ReCap0", Type ="jpg", Image =@"Images\Alligator0.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap1", Type ="jpg", Image =@"Images\Alligator1.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap2", Type ="jpg", Image =@"Images\Alligator2.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap3", Type ="jpg", Image =@"Images\Alligator3.jpg" }) ;
-			items.Add (new ReCapPhotoItem () { Name ="ReCap4", Type ="jpg", Image =@"Images\Alligator4.jpg" }) ;
-			Thumbnails.ItemsSource =items ;
-			Thumbnails.SelectAll () ;
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=3e15e3b1064f41ff823d7e05ff8cae9b" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "Alligator.zip" ;
+			GetReCapExample (url, location) ;
 		}
 
+		private void Mask_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=3e152c36f6e6438581b36e7c9f9eed5f" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "Mask.zip" ;
+			GetReCapExample (url, location) ;
+		}
+
+		private void GymCenter_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=f92f89c676a7419a8e8bf9040a3280c7" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "GymCenter.zip" ;
+			GetReCapExample (url, location) ;
+		}
+
+		private void Marriot_Click (object sender, RoutedEventArgs e) {
+			if ( e != null )
+				e.Handled =true ;
+			string url ="https://360.autodesk.com/Public/Download?hash=bb90ed0616ea4078b9ef4da27f8fa975" ;
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + "Marriot.zip" ;
+			GetReCapExample (url, location) ;
+		}
+
+		// UI - Commands
 		private void Thumbnails_CreateNewScene (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
 			if ( Thumbnails.SelectedItems.Count == 0 /*|| Thumbnails.SelectedItems.Count > 20*/ ) {
-				//MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
-				MessageBox.Show ("No images selected!") ;
+				//System.Windows.MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+				System.Windows.MessageBox.Show ("No images selected!") ;
 				return ;
 			}
 			string photosceneid =CreateReCapPhotoscene () ;
@@ -214,12 +305,12 @@ namespace AutodeskWpfReCap {
 		private void PhotoScenes_UploadPhotos (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
 			if ( Thumbnails.SelectedItems.Count == 0 /*|| Thumbnails.SelectedItems.Count > 20*/ ) {
-				//MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
-				MessageBox.Show ("No images selected!") ;
+				//System.Windows.MessageBox.Show ("No images selected, or too many iamages selected (max 20 in one upload)!") ;
+				System.Windows.MessageBox.Show ("No images selected!") ;
 				return ;
 			}
 			if ( PhotoScenes.SelectedItems.Count != 1 ) {
-				MessageBox.Show ("No Photoscene selected!") ;
+				System.Windows.MessageBox.Show ("No Photoscene selected!") ;
 				return ;
 			}
 			ReCapPhotosceneidItem item =PhotoScenes.SelectedItem as ReCapPhotosceneidItem ;
@@ -425,13 +516,29 @@ namespace AutodeskWpfReCap {
 				return (false) ;
 			//- Upload images to the project
 			Dictionary<string, string> files =new Dictionary<string, string> () ;
-			Dictionary<string, string> filesRef =new Dictionary<string, string> () ;
+			//Dictionary<string, string> filesRef =new Dictionary<string, string> () ;
 			foreach ( ReCapPhotoItem item in Thumbnails.SelectedItems ) {
 				//files.Add (item.Name, item.Image) ;
 				if ( File.Exists (item.Image) ) {
 					files.Add (item.Name, item.Image) ;
 				} else if ( item.Image.Substring (0, 4).ToLower () == "http" || item.Image.Substring (0, 3).ToLower () == "ftp" ) {
-					filesRef.Add (item.Name, item.Image) ;
+					//filesRef.Add (item.Name, item.Image) ;
+					files.Add (item.Name, item.Image) ;
+				} else if ( item.Image.ToLower ().Contains (".zip:") == true ) {
+ 					// ReCap does not works with zip, we need to send images one by one
+					string [] sts =item.Image.Split (':') ;
+					if ( sts.Length == 3 ) {
+						sts [1] =sts [0] + ":" + sts [1] ;
+						sts =sts.Where (w => w != sts [0]).ToArray () ;
+					}
+					FileStream zipStream =File.OpenRead (sts [0]) ;
+					using ( ZipArchive zip =new ZipArchive (zipStream) ) {
+						ZipArchiveEntry entry =zip.GetEntry (sts [1]) ;
+						DeflateStream str =entry.Open () as DeflateStream ;
+						Byte [] byts =new Byte [entry.Length] ;
+						str.Read (byts, 0, (int)entry.Length) ;
+						files.Add (System.IO.Path.GetFileName (sts [1]), Convert.ToBase64String (byts)) ;
+					}
 				} else {
 					// This is coming from our resources
 					StreamResourceInfo stri =Application.GetResourceStream (new Uri (
@@ -446,7 +553,6 @@ namespace AutodeskWpfReCap {
 					}
 				}
 			}
-
 
 			// ReCap only accepts 20 uploads at a time with image not larger than 128Mb
 			// Let's assume files size is ok and split calls by 20 max each time
@@ -463,31 +569,16 @@ namespace AutodeskWpfReCap {
 					Dictionary<string, string> dict =new Dictionary<string, string> () ;
 					foreach ( var entry in grp )
 						dict.Add (entry.Key, entry.Value) ;
-					if ( UploadPhotosExecute (photosceneid, dict, null) )
-						nRet-- ;
-				}
-			}
-			if ( filesRef != null && filesRef.Count != 0 ) {
-				int i =0 ;
-				int n =1 + filesRef.Count / 20 ;
-				nRet +=n ;
-				var splits =(from item in filesRef
-							 group item by i++ % n into part
-							 select part).ToList () ; // ToDictionary (g => g.Key, g => g.Last ());
-				foreach ( var grp in splits ) {
-					Dictionary<string, string> dict =new Dictionary<string, string> () ;
-					foreach ( var entry in grp )
-						dict.Add (entry.Key, entry.Value) ;
-					if ( UploadPhotosExecute (photosceneid, null, dict) )
+					if ( UploadPhotosExecute (photosceneid, dict) )
 						nRet-- ;
 				}
 			}
 			return (nRet == 0) ;
 		}
 
-		protected bool UploadPhotosExecute (string photosceneid, Dictionary<string, string> files, Dictionary<string, string> filesRef) {
+		protected bool UploadPhotosExecute (string photosceneid, Dictionary<string, string> files) {
 			// Synchronous sample
-			//bool ret =_recap.UploadFiles (photosceneid, files, filesRef) ;
+			//bool ret =_recap.UploadFiles (photosceneid, files) ;
 			//textBox1.Text +="\n" + _recap._lastResponse.Content ;
 			//if ( !ret ) {
 			//	textBox1.Text +="\nUploadFiles error" ;
@@ -505,7 +596,7 @@ namespace AutodeskWpfReCap {
 			// Async call
 			UploadProgress wnd =new UploadProgress () ;
 			wnd._photosceneid =photosceneid ;
-			var asyncHandle =_recap.UploadFilesAsync (photosceneid, files, filesRef, wnd.callback) ;
+			var asyncHandle =_recap.UploadFilesAsync (photosceneid, files, wnd.callback) ;
 			if ( asyncHandle != null ) {
 				textBox1.Text +="\nUploadFiles async successfully started" ;
 				wnd._asyncHandle =asyncHandle ;

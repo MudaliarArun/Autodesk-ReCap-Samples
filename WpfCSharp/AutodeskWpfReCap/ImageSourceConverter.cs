@@ -20,7 +20,8 @@ namespace AutodeskWpfReCap {
 	public class ImageSourceConverter : IValueConverter {
 
 		public object Convert (object value, Type targetType, object parameter, CultureInfo culture) {
-			if ( value == null || !(value is string) || value == @"Images\ReCap.jpg"
+			if (   value == null || !(value is string)
+				|| (value as string).Substring (0, 7) == @"Images\"
 				|| File.Exists (value as string)
 				|| (value as string).Substring (0, 4).ToLower () == "http"
 				|| (value as string).Substring (0, 3).ToLower () == "ftp"
@@ -28,8 +29,12 @@ namespace AutodeskWpfReCap {
 				return (value) ;
 
 			string [] sts =(value as string).Split (':') ;
+			if ( sts.Length == 3 ) {
+				sts [1] =sts [0] + ":" + sts [1] ;
+				sts =sts.Where (w => w != sts [0]).ToArray () ;
+			}
 			BitmapImage bitmap =null ;
-			if ( File.Exists (sts[0]) ) {
+			if ( File.Exists (sts [0]) ) {
 				FileStream zipStream =File.OpenRead (sts [0]) ;
 				using ( ZipArchive zip =new ZipArchive (zipStream) ) {
 					ZipArchiveEntry icon =zip.GetEntry (sts [1]) ;
@@ -44,7 +49,22 @@ namespace AutodeskWpfReCap {
 					bitmap.EndInit () ;
 				}
 			}
-			return (AutoCropBitmap (bitmap)) ;
+			BitmapSource source =bitmap ;
+			if (   bitmap.Format == PixelFormats.Bgra32
+				|| bitmap.Format == PixelFormats.Prgba64
+				|| bitmap.Format == PixelFormats.Rgba128Float
+				|| bitmap.Format == PixelFormats.Rgba64
+			)
+				source =AutoCropBitmap (bitmap) as BitmapSource ;
+
+			TransformedBitmap scaledBitmap =new TransformedBitmap () ;
+			scaledBitmap.BeginInit () ;
+			scaledBitmap.Source =source ;
+			double scale =100 / source.Width ;
+			scaledBitmap.Transform =new ScaleTransform (scale, scale, source.Width / 2, source.Height / 2) ;
+			scaledBitmap.EndInit () ;
+
+			return (scaledBitmap) ;
 		}
 
 		public object ConvertBack (object value, Type targetTypes, object parameter, System.Globalization.CultureInfo culture) {

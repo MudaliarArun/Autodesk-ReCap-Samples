@@ -111,6 +111,11 @@
 				<Button x:Name="KidSnail" Grid.Column="2" Grid.Row="1" Content="Kid Snail" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="KidSnail_Click" Margin="10,60,0,0" />
 				<Button x:Name="Calc" Grid.Column="2" Grid.Row="1" Content="Calc" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Calc_Click" Margin="10,95,0,0" />
 				<Button x:Name="Alligator" Grid.Column="2" Grid.Row="1" Content="Alligator" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Alligator_Click" Margin="10,130,0,0" />
+				<Button x:Name="Warrior" Grid.Column="2" Grid.Row="1" Content="Warrior" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Warrior_Click" Margin="10,165,0,0" />
+				<Button x:Name="Horns" Grid.Column="2" Grid.Row="1" Content="Horns" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Horns_Click" Margin="10,200,0,0" />
+				<Button x:Name="Mask" Grid.Column="2" Grid.Row="1" Content="Mask" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Mask_Click" Margin="10,235,0,0" />
+				<Button x:Name="GymCenter" Grid.Column="2" Grid.Row="1" Content="Gym Ctr" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="GymCenter_Click" Margin="10,270,0,0" />
+				<Button x:Name="Marriot" Grid.Column="2" Grid.Row="1" Content="Marriot" Height="28" HorizontalAlignment="Left" VerticalAlignment="Top" Width="55" Click="Marriot_Click" Margin="10,305,0,0" />
 			</Grid>
 		</TabItem>
 		<TabItem x:Name="tabItem2" Header="ReCap Projects" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
