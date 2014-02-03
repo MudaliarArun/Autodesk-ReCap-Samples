@@ -160,7 +160,7 @@ namespace AutodeskWpfReCap {
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 60 ; i++ ) {
 				items.Add (new ReCapPhotoItem () {
-					Name ="KidSnail" + i.ToString (),
+					Name ="Calc" + i.ToString (),
 					Type ="jpg",
 					Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg"
 				}) ;
