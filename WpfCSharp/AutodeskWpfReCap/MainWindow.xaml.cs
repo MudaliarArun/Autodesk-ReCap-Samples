@@ -128,8 +128,7 @@ namespace AutodeskWpfReCap {
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 5 ; i++ )
-				//items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
-				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="Tirelire" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Tirelire/Tirelire" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -139,8 +138,7 @@ namespace AutodeskWpfReCap {
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 63 ; i++ )
-				//items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
-				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/KidSnail/KidSnail" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
@@ -150,8 +148,7 @@ namespace AutodeskWpfReCap {
 				e.Handled =true ;
 			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
 			for ( int i =0 ; i < 60 ; i++ )
-				//items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg" }) ;
-				items.Add (new ReCapPhotoItem () { Name ="Calc" + i.ToString (), Type ="jpg", Image =@"http://www.wikijeux.org/_recap/Images/Calc/Calc" + i.ToString () + ".jpg" }) ;
+				items.Add (new ReCapPhotoItem () { Name ="KidSnail" + i.ToString (), Type ="jpg", Image =@"https://raw.github.com/ADN-DevTech/Autodesk-ReCap-Samples/master/Examples/Calc/Calc" + i.ToString () + ".jpg" }) ;
 			Thumbnails.ItemsSource =items ;
 			Thumbnails.SelectAll () ;
 		}
