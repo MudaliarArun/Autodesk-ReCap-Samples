@@ -208,28 +208,93 @@
 		</TabItem>
 		<TabItem x:Name="tabItem3" Header="Polygon 3D View" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
 			<Grid x:Name="grid3">
-				<Viewport3D x:Name="viewport" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
+				<Border Margin="5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
+					<Border.Background>
+						<LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+							<GradientStop Color="#76889a" Offset="0" />
+							<GradientStop Color="#191a1c" Offset="1" />
+						</LinearGradientBrush>
+					</Border.Background>
+				</Border>
+
+				<Viewport3D x:Name="viewport" Margin="5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="Auto" Width="Auto">
 					<Viewport3D.Camera>
-						<PerspectiveCamera x:Name="camera" UpDirection="0,-1,0" Position="4 0 0" LookDirection="-1 0 0" FieldOfView="45" />
+						<PerspectiveCamera x:Name="camera" UpDirection="0,-1,0" Position="4,0,0" LookDirection="-1,0,0" FieldOfView="45" />
 					</Viewport3D.Camera>
 
 					<ModelVisual3D x:Name="model">
 						<ModelVisual3D.Content>
 							<Model3DGroup x:Name="lights">
+								<AmbientLight x:Name="ambientLightMain" Color="White" />
 								<DirectionalLight x:Name="dirLightMain" Color="White" Direction="-1,-1,-1" />
 							</Model3DGroup>
 						</ModelVisual3D.Content>
 					</ModelVisual3D>
-
-					<Viewport3D.OpacityMask>
-						<LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
-							<GradientStop Color="Black" Offset="0" />
-							<GradientStop Color="White" Offset="1" />
-						</LinearGradientBrush>
-					</Viewport3D.OpacityMask>
 				</Viewport3D>
 
-				<Canvas x:Name="canvas" Background="Transparent" MouseDown="Grid_MouseDown" MouseMove="Grid_MouseMove" MouseUp="Grid_MouseUp" MouseWheel="Grid_MouseWheel" />
+				<Canvas x:Name="canvas" Margin="5,5,5,5" Background="Transparent" MouseDown="Grid_MouseDown" MouseMove="Grid_MouseMove" MouseUp="Grid_MouseUp" MouseWheel="Grid_MouseWheel" >
+					<Button x:Name="Home" ToolTip="Home" Canvas.Right="10" Canvas.Top="10" Width="20" Height="20" Background="Transparent" BorderThickness="0" Click="Home_Click">
+						<Image>
+							<Image.Style>
+								<Style TargetType="{x:Type Image}">
+									<Setter Property="Source" Value="Images/home.png" />
+									<Style.Triggers>
+										<Trigger Property="IsMouseOver" Value="True">
+											<Setter Property="Source" Value="Images/homehighlighted.png" />
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</Image.Style>
+						</Image>
+					</Button>
+					<Button x:Name="Wireframe" ToolTip="Wireframe" Canvas.Right="10" Canvas.Top="35" Width="20" Height="20" Background="Transparent" BorderThickness="0" Click="Wireframe_Click">
+						<Image Source="Images/wireframe.png" />
+					</Button>
+					<Button x:Name="SmoothShade" ToolTip="Smooth Shade" Canvas.Right="10" Canvas.Top="60" Width="20" Height="20" Background="Transparent" BorderThickness="0" Click="SmoothShade_Click">
+						<Image Source="Images/smoothshade.png" />
+					</Button>
+					<Button x:Name="WireframeOnShaded" ToolTip="Wireframe on Shaded" Canvas.Right="10" Canvas.Top="85" Width="20" Height="20" Background="Transparent" BorderThickness="0" Click="WireframeOnShaded_Click">
+						<Image Source="Images/wireframeonshaded.png" />
+					</Button>
+					<Button x:Name="Textured" ToolTip="Textured" Canvas.Right="10" Canvas.Top="110" Width="20" Height="20" Background="Transparent" BorderThickness="0" Click="Textured_Click">
+						<Image Source="Images/textured.png" />
+					</Button>
+
+					<ToggleButton x:Name="ambiantlightToggle" IsChecked="True" ToolTip="Ambiant Light" Canvas.Right="10" Canvas.Bottom="35" Width="20" Height="20" Background="Transparent" BorderThickness="0" Checked="ambiantlightToggle_Checked" Unchecked="ambiantlightToggle_Unchecked">
+						<Image>
+							<Image.Style>
+								<Style TargetType="{x:Type Image}">
+									<Setter Property="Source" Value="Images/ambiantlightOn.png" />
+									<Style.Triggers>
+										<MultiDataTrigger>
+											<MultiDataTrigger.Conditions>
+												<Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=IsChecked}" Value="False" />
+											</MultiDataTrigger.Conditions>
+											<Setter Property="Source" Value="Images/ambiantlightOff.png" />
+										</MultiDataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Image.Style>
+						</Image>
+					</ToggleButton>
+					<ToggleButton x:Name="dirlightToggle" IsChecked="True" ToolTip="Dir Light" Canvas.Right="10" Canvas.Bottom="10" Width="20" Height="20" Background="Transparent" BorderThickness="0" Checked="dirlightToggle_Checked" Unchecked="dirlightToggle_Unchecked">
+						<Image>
+							<Image.Style>
+								<Style TargetType="{x:Type Image}">
+									<Setter Property="Source" Value="Images/dirlightOn.png" />
+									<Style.Triggers>
+										<MultiDataTrigger>
+											<MultiDataTrigger.Conditions>
+												<Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=IsChecked}" Value="False" />
+											</MultiDataTrigger.Conditions>
+											<Setter Property="Source" Value="Images/dirlightOff.png" />
+										</MultiDataTrigger>
+									</Style.Triggers>
+								</Style>
+							</Image.Style>
+						</Image>
+					</ToggleButton>					
+				</Canvas>
 			</Grid>
 		</TabItem>
 	</TabControl>

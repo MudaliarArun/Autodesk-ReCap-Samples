@@ -95,7 +95,8 @@
     <Compile Include="PropertiesWnd.xaml.cs">
       <DependentUpon>PropertiesWnd.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TriangleMeshAdapter.cs" />
+    <Compile Include="WireframeMeshAdapater.cs" />
+    <Compile Include="ObjTriangleMeshAdapter.cs" />
     <Compile Include="UploadProgress.xaml.cs">
       <DependentUpon>UploadProgress.xaml</DependentUpon>
     </Compile>
@@ -174,6 +175,22 @@
     <Resource Include="Images\Tirelire3.jpg" />
     <Resource Include="Images\Tirelire4.jpg" />
     <Resource Include="Images\Tirelire5.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\home.png" />
+    <Resource Include="Images\homehighlighted.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\smoothshade.png" />
+    <Resource Include="Images\textured.png" />
+    <Resource Include="Images\wireframe.png" />
+    <Resource Include="Images\wireframeonshaded.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ambiantlightOff.png" />
+    <Resource Include="Images\ambiantlightOn.png" />
+    <Resource Include="Images\dirlightOff.png" />
+    <Resource Include="Images\dirlightOn.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
