@@ -52,7 +52,7 @@ Use of the sample
 * When you launch the sample, the application will try to connect to the ReCap server and verifies that you are properly authorized on the Autodesk oAuth server. 
 If you are, it will refresh your access token immediately. If not, it will ask you to get authorized. 
 
-* The samples display a treeview that contains existing ReCap photoscenes, right-click on the root node o display a context menu that allows to create a new scene.
+* The samples display a treeview that contains existing ReCap photoscenes, right-click on the root node to display a context menu that allows to create a new scene.
 Right-click on each scene node to display options.
 
 
