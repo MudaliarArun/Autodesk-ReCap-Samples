@@ -30,6 +30,7 @@ The samples
 
 1. The [WPF C# sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/WpfCSharp)
 2. The [PHP Console sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Console%20PHP)
+3. The [.Net Samples + Toolkit](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/.Net%20Samples%20%2B%20Toolkit)
 
 Use of the sample:
 
