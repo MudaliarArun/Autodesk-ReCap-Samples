@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BACA9E28-024A-4A47-8437-E8A51B9C09CF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Autodesk.ADN.ReCapWinForm</RootNamespace>
+    <AssemblyName>Autodesk.ADN.ReCapWinForm</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\libs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SceneSettingsDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SceneSettingsDlg.Designer.cs">
+      <DependentUpon>SceneSettingsDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SceneProgressDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SceneProgressDlg.Designer.cs">
+      <DependentUpon>SceneProgressDlg.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserSettings.cs" />
+    <EmbeddedResource Include="MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="SceneSettingsDlg.resx">
+      <DependentUpon>SceneSettingsDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SceneProgressDlg.resx">
+      <DependentUpon>SceneProgressDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Autodesk.ADN.Toolkit\Autodesk.ADN.Toolkit.OAuth\Autodesk.ADN.Toolkit.OAuth.csproj">
+      <Project>{684c30aa-4564-49ab-a723-930b9b4198af}</Project>
+      <Name>Autodesk.ADN.Toolkit.OAuth</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Autodesk.ADN.Toolkit\Autodesk.ADN.Toolkit.ReCap\Autodesk.ADN.Toolkit.ReCap.csproj">
+      <Project>{cd19c325-887b-4c6c-bc20-c0f8dd574223}</Project>
+      <Name>Autodesk.ADN.Toolkit.ReCap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Autodesk.ADN.Toolkit\Autodesk.ADN.Toolkit.UI\Autodesk.ADN.Toolkit.UI.csproj">
+      <Project>{db529343-4636-459b-a3af-4a36a7743660}</Project>
+      <Name>Autodesk.ADN.Toolkit.UI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\category.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\cloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\cross.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\file.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\folder_close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\folder_open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\ok.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\props.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\refresh.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
