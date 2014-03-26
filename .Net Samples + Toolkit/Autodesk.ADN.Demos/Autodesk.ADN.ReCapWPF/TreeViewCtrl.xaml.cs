@@ -110,7 +110,7 @@ namespace Autodesk.ADN.ReCapWPF
             //throw new NotImplementedException();
         }
 
-        public void Expand()
+        private void Expand()
         {
             var generator = _treeView.ItemContainerGenerator;
 
@@ -118,6 +118,15 @@ namespace Autodesk.ADN.ReCapWPF
                 as TreeViewItem;
 
             item.IsExpanded = true;
+        }
+
+        private ReCapTreeItem GetNodeById(string photosceneId)
+        {
+            var node = RootNode.Children.Where(
+                item => item.Photoscene.PhotosceneId == photosceneId).
+                    FirstOrDefault();
+
+            return node;
         }
 
         private void OnTreeViewSelectedItemChanged(
@@ -179,19 +188,39 @@ namespace Autodesk.ADN.ReCapWPF
 
                     rootNode.AddNode(node);
 
-                    var sceneWithInfo = await RetrieveSceneInfo(
-                        scene.PhotosceneId);
-
-                    if (sceneWithInfo != null)
-                    {
-                        node.Photoscene = sceneWithInfo;
-                    }
-
                     Expand();
                 }
             }
 
+            List<Task> taskList = new List<Task>();
+
+            foreach(var node in RootNode.Children)
+            {
+                taskList.Add(RetrieveSceneInfoAndUpdateNode(
+                    node.Photoscene.PhotosceneId));
+            }
+
+            await Task.WhenAll(taskList);
+
             return true;
+        }
+
+        private async Task RetrieveSceneInfoAndUpdateNode(string photosceneId)
+        { 
+            var scene = await RetrieveSceneInfo(photosceneId);
+
+            if (scene != null)
+            {
+                var node = GetNodeById(photosceneId);
+
+                node.Photoscene = scene;
+
+                if (SelectedItem != null && 
+                    SelectedItem.Photoscene.PhotosceneId == photosceneId)
+                {
+                    _propertyGrid.SelectedObject = scene;
+                }
+            }
         }
 
         private async Task<ReCapPhotoscene> RetrieveSceneInfo(string photosceneId)
@@ -251,7 +280,12 @@ namespace Autodesk.ADN.ReCapWPF
                 scene.ConvertStatus,
                 scene.ProcessingTime,
                 scene.Deleted,
-                scene.Files);
+                scene.Files,
+                scene.Nb3dPoints,
+                scene.NbFaces,
+                scene.NbShots,
+                scene.NbStitchedShots,
+                scene.NbVertices);
         }
 
         void DownloadSceneResult(ReCapPhotoscene scene)
@@ -299,6 +333,8 @@ namespace Autodesk.ADN.ReCapWPF
                 scene.SceneName,
                 scene.MeshQuality,
                 MeshFormatEnumExtensions.FromString(scene.ConvertFormat));
+
+            settingsDlg.ShowDialog();
 
             if (!settingsDlg.DialogResult.HasValue || !settingsDlg.DialogResult.Value)
                 return;
@@ -435,11 +471,10 @@ namespace Autodesk.ADN.ReCapWPF
 
             if (sceneWithInfo != null)
             {
-                SelectedItem.Photoscene = sceneWithInfo;
-
                 if (_propertyGrid.SelectedObject == scene)
                 {
-                    _propertyGrid.SelectedObject = sceneWithInfo;
+                    _propertyGrid.SelectedObject = GetNodeById(
+                        scene.PhotosceneId).Photoscene;
                 }
 
                 OnLogMessage("Refreshed data for scene: " +
@@ -529,9 +564,7 @@ namespace Autodesk.ADN.ReCapWPF
                 OnLogMessage("Scene completed: " +
                     sceneWithInfo.SceneName);
 
-                var node = RootNode.Children.Where(
-                    item => item.Photoscene.PhotosceneId == id).
-                        FirstOrDefault();
+                var node = GetNodeById(id);
 
                 if (node != null)
                 {
@@ -683,10 +716,6 @@ namespace Autodesk.ADN.ReCapWPF
         {
             get
             {
-                //ImageSourceConverter c = new ImageSourceConverter();
-
-                //var obj = c.ConvertFrom(_image);
-
                 return BitmapConverter.ToBitmapSource(_image);
             }
         }

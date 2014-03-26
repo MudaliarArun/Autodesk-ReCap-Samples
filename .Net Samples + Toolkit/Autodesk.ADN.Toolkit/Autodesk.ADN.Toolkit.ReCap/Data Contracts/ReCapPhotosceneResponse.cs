@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
 {
@@ -15,7 +16,29 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public ReCapPhotoscene Photoscene
         {
             get;
-            set;
+            private set;
+        }
+
+        [JsonConstructor]
+        public ReCapPhotosceneResponse(
+           ReCapPhotoscene photoscene)
+        {
+            Photoscene = photoscene;
+        }
+
+        public ReCapPhotosceneResponse(
+           ReCapPhotoscene photoscene,
+            string usage,
+            string resource,
+            ReCapError error):
+            base(usage, resource, error)
+        {
+            Photoscene = photoscene;
+        }
+
+        public ReCapPhotosceneResponse()
+        {
+
         }
     }
 }

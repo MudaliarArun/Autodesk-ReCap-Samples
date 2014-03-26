@@ -51,13 +51,13 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public string Usage
         {
             get;
-            set;
+            private set;
         }
 
         public string Resource
         {
             get;
-            set;
+            private set;
         }
 
         public ReCapError Error
@@ -69,6 +69,22 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public bool IsOk()
         {
             return (Error == null);
+        }
+
+        [JsonConstructor]
+        public ReCapResponseBase(
+            string usage,
+            string resource,
+            ReCapError error)
+        {
+            Usage = usage;
+            Resource = resource;
+            Error = error;
+        }
+
+        public ReCapResponseBase()
+        { 
+        
         }
     }
 

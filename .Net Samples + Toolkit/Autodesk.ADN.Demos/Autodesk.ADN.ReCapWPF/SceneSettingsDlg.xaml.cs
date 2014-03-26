@@ -158,7 +158,7 @@ namespace Autodesk.ADN.ReCapWPF
             _saveSettings = false;
 
             _tbSceneName.Text = sceneName;
-            _tbSceneName.IsReadOnly = true;
+            _tbSceneName.IsEnabled = false;
 
             // Mesh Quality
             switch (quality)
@@ -232,8 +232,8 @@ namespace Autodesk.ADN.ReCapWPF
                     "Rcs",
                     MeshFormatEnum.kRcs));
 
-            _cbMeshFormat.SelectedIndex = 0;
-            _cbMeshFormat.IsEnabled = false;
+            _cbMeshQuality.SelectedIndex = 0;
+            _cbMeshQuality.IsEnabled = false;
 
             switch (format)
             {

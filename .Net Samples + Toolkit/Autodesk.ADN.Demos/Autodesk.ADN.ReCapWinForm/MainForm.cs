@@ -591,14 +591,19 @@ namespace Autodesk.ADN.ReCapDemo
                 progressMsg,
                 progress,
                 link,
-                scene.FileSize, 
+                scene.FileSize,
                 scene.UserId,
                 scene.MeshQuality,
                 scene.ConvertFormat,
                 scene.ConvertStatus,
                 scene.ProcessingTime,
-                scene.Deleted, 
-                scene.Files);
+                scene.Deleted,
+                scene.Files,
+                scene.Nb3dPoints,
+                scene.NbFaces,
+                scene.NbShots,
+                scene.NbStitchedShots,
+                scene.NbVertices);
         }
 
         private async Task<bool> LoadScenes()

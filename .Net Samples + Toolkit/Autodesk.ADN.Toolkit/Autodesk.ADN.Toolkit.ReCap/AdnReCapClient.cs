@@ -144,7 +144,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         //
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotoscenePropsResponse> 
+        public async Task<ReCapPhotosceneResponse> 
             GetPhotoscenePropertiesAsync(
                 string photosceneId)
         {
@@ -155,9 +155,11 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            var response = await _restClient.ExecuteAsync
                  <ReCapPhotoscenePropsResponse>(
                     request);
+
+            return response.ToPhotosceneResponse();
         }
 
         /////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +229,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             GetPhotosceneListByUserIdAsync(
                 string userId)
         {
-            var request = new RestRequest(
+            var request = new RestRequest(    
                 "photoscene/properties",
                 Method.GET);
  

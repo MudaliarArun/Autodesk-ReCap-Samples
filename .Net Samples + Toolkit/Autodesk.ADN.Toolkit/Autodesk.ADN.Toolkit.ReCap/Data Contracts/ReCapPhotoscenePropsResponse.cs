@@ -11,7 +11,7 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
     // ReCap Photoscene properties Response
     //
     /////////////////////////////////////////////////////////////////////////////////
-    public class ReCapPhotoscenePropsResponse : ReCapResponseBase
+    class ReCapPhotoscenePropsResponse : ReCapResponseBase
     {
         [JsonProperty(PropertyName = "Photoscenes")]
         [JsonConverter(typeof(ReCapPhotosceneContainerConverter))]
@@ -31,6 +31,15 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public ReCapPhotoscenePropsResponse()
         {
 
+        }
+
+        public ReCapPhotosceneResponse ToPhotosceneResponse()
+        {
+            return new ReCapPhotosceneResponse(
+                Photoscene,
+                Usage,
+                Resource,
+                Error);
         }
     }
 }

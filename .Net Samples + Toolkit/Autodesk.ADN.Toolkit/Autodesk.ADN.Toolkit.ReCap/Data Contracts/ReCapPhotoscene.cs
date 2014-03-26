@@ -99,6 +99,46 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
             private set;
         }
 
+        [JsonConverter(typeof(ReCapIntConverter))]
+        [DisplayName("3d Points")]
+        public int Nb3dPoints
+        {
+            get;
+            private set;
+        }
+
+        [JsonConverter(typeof(ReCapIntConverter))]
+        [DisplayName("Faces")]
+        public int NbFaces
+        {
+            get;
+            private set;
+        }
+
+        [JsonConverter(typeof(ReCapIntConverter))]
+        [DisplayName("Shots")]
+        public int NbShots
+        {
+            get;
+            private set;
+        }
+
+        [JsonConverter(typeof(ReCapIntConverter))]
+        [DisplayName("Stitched Shots")]
+        public int NbStitchedShots
+        {
+            get;
+            private set;
+        }
+
+        [JsonConverter(typeof(ReCapIntConverter))]
+        [DisplayName("Vertices")]
+        public int NbVertices
+        {
+            get;
+            private set;
+        }
+
         [JsonConverter(typeof(ReCapStringConverter))]
         [DisplayName("Convert Format")]
         public string ConvertFormat
@@ -161,7 +201,12 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
             string convertStatus,
             double processingTime,
             bool deleted,
-            List<ReCapFile> files)
+            List<ReCapFile> files,
+            int nb3dPoints,
+            int nbFaces,
+            int nbShots,
+            int nbStitchedShots,
+            int nbVertices)
         { 
             Name = name;
             PhotosceneId = photosceneId;
@@ -176,6 +221,11 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
             ProcessingTime = processingTime;
             Deleted = deleted;
             Files = files;   
+            Nb3dPoints = nb3dPoints;
+            NbFaces = nbFaces;
+            NbShots = nbShots;
+            NbStitchedShots = nbStitchedShots;
+            NbVertices = nbVertices;
         }
 
         public ReCapPhotoscene()
@@ -184,3 +234,4 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         }
     }
 }
+
