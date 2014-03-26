@@ -13,7 +13,6 @@ TestResults
 *.user
 *.sln.docstates
 *.bak
-UserSettings.*
 oauth.txt
 recap.txt
 

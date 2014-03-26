@@ -200,7 +200,7 @@ namespace Autodesk.ADN.ReCapWPF
                     node.Photoscene.PhotosceneId));
             }
 
-            await Task.WhenAll(taskList);
+            //await Task.WhenAll(taskList);
 
             return true;
         }
@@ -216,6 +216,7 @@ namespace Autodesk.ADN.ReCapWPF
                 node.Photoscene = scene;
 
                 if (SelectedItem != null && 
+                    SelectedItem.Photoscene != null &&
                     SelectedItem.Photoscene.PhotosceneId == photosceneId)
                 {
                     _propertyGrid.SelectedObject = scene;
@@ -225,67 +226,74 @@ namespace Autodesk.ADN.ReCapWPF
 
         private async Task<ReCapPhotoscene> RetrieveSceneInfo(string photosceneId)
         {
-            var scenePropsResponse = await _reCapClient.GetPhotoscenePropertiesAsync(
-                photosceneId);
-
-            if (!scenePropsResponse.IsOk())
+            try
             {
-                OnLogReCapError(scenePropsResponse.Error);
-                return null;
-            }
+                var scenePropsResponse = await _reCapClient.GetPhotoscenePropertiesAsync(
+                    photosceneId);
 
-            ReCapPhotoscene scene = scenePropsResponse.Photoscene;
+                if (!scenePropsResponse.IsOk())
+                {
+                    OnLogReCapError(scenePropsResponse.Error);
+                    return null;
+                }
 
-            var sceneProgResponse = await _reCapClient.GetPhotosceneProgressAsync(
-                photosceneId);
+                ReCapPhotoscene scene = scenePropsResponse.Photoscene;
 
-            if (!sceneProgResponse.IsOk())
-            {
-                OnLogReCapError(sceneProgResponse.Error);
-                return null;
-            }
+                var sceneProgResponse = await _reCapClient.GetPhotosceneProgressAsync(
+                    photosceneId);
 
-            double progress = sceneProgResponse.Photoscene.Progress;
-            string progressMsg = sceneProgResponse.Photoscene.ProgressMsg;
+                if (!sceneProgResponse.IsOk())
+                {
+                    OnLogReCapError(sceneProgResponse.Error);
+                    return null;
+                }
 
-            Uri link = null;
+                double progress = sceneProgResponse.Photoscene.Progress;
+                string progressMsg = sceneProgResponse.Photoscene.ProgressMsg;
 
-            if (progress == 100.0)
-            {
-                var sceneLinkResponse = await _reCapClient.GetPhotosceneLinkAsync(
+                Uri link = null;
+
+                if (progress == 100.0)
+                {
+                    var sceneLinkResponse = await _reCapClient.GetPhotosceneLinkAsync(
+                        scene.PhotosceneId,
+                        MeshFormatEnumExtensions.FromString(
+                            scene.ConvertFormat));
+
+                    if (!sceneLinkResponse.IsOk())
+                    {
+                        OnLogReCapError(sceneLinkResponse.Error);
+                    }
+                    else
+                    {
+                        link = sceneLinkResponse.Photoscene.SceneLink;
+                    }
+                }
+
+                return new ReCapPhotoscene(
+                    scene.SceneName,
                     scene.PhotosceneId,
-                    MeshFormatEnumExtensions.FromString(
-                        scene.ConvertFormat));
-
-                if (!sceneLinkResponse.IsOk())
-                {
-                    OnLogReCapError(sceneLinkResponse.Error);
-                }
-                else
-                {
-                    link = sceneLinkResponse.Photoscene.SceneLink;
-                }
+                    progressMsg,
+                    progress,
+                    link,
+                    scene.FileSize,
+                    scene.UserId,
+                    scene.MeshQuality,
+                    scene.ConvertFormat,
+                    scene.ConvertStatus,
+                    scene.ProcessingTime,
+                    scene.Deleted,
+                    scene.Files,
+                    scene.Nb3dPoints,
+                    scene.NbFaces,
+                    scene.NbShots,
+                    scene.NbStitchedShots,
+                    scene.NbVertices);
             }
-
-            return new ReCapPhotoscene(
-                scene.SceneName,
-                scene.PhotosceneId,
-                progressMsg,
-                progress,
-                link,
-                scene.FileSize,
-                scene.UserId,
-                scene.MeshQuality,
-                scene.ConvertFormat,
-                scene.ConvertStatus,
-                scene.ProcessingTime,
-                scene.Deleted,
-                scene.Files,
-                scene.Nb3dPoints,
-                scene.NbFaces,
-                scene.NbShots,
-                scene.NbStitchedShots,
-                scene.NbVertices);
+            catch
+            {
+                return null;
+            }
         }
 
         void DownloadSceneResult(ReCapPhotoscene scene)
