@@ -7,13 +7,28 @@
     <ProjectGuid>{C3AD96EC-8C52-4FC9-B4B1-724316D17B7C}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AutodeskWpfReCap</RootNamespace>
-    <AssemblyName>AutodeskWpfReCap</AssemblyName>
+    <RootNamespace>Autodesk.ADN.WpfReCap</RootNamespace>
+    <AssemblyName>Autodesk.ADN.WpfReCap</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,12 +52,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CjClutter.ObjLoader.Loader">
-      <HintPath>..\CjClutter.ObjLoader.Loader.dll</HintPath>
-    </Reference>
     <Reference Include="MayaTheme">
       <HintPath>..\MayaTheme.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RestSharp.104.3\RestSharp.dll</HintPath>
@@ -53,7 +66,6 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -78,8 +90,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AdskReCap.cs" />
-    <Compile Include="AdskRESTful.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -95,8 +105,9 @@
     <Compile Include="PropertiesWnd.xaml.cs">
       <DependentUpon>PropertiesWnd.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WireframeMeshAdapater.cs" />
-    <Compile Include="ObjTriangleMeshAdapter.cs" />
+    <Compile Include="ShotsWindow.xaml.cs">
+      <DependentUpon>ShotsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UploadProgress.xaml.cs">
       <DependentUpon>UploadProgress.xaml</DependentUpon>
     </Compile>
@@ -126,6 +137,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ShotsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -133,6 +148,10 @@
     <Page Include="DownloadFileWnd.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\xctk.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UploadProgress.xaml">
       <SubType>Designer</SubType>
@@ -177,20 +196,66 @@
     <Resource Include="Images\Tirelire5.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\home.png" />
-    <Resource Include="Images\homehighlighted.png" />
+    <Resource Include="Images\Adsk.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\smoothshade.png" />
-    <Resource Include="Images\textured.png" />
-    <Resource Include="Images\wireframe.png" />
-    <Resource Include="Images\wireframeonshaded.png" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\ambiantlightOff.png" />
-    <Resource Include="Images\ambiantlightOn.png" />
-    <Resource Include="Images\dirlightOff.png" />
-    <Resource Include="Images\dirlightOn.png" />
+    <ProjectReference Include="..\AutodeskReCapClient\Autodesk.ADN.Toolkit.ReCap.csproj">
+      <Project>{72902c19-b3b2-4e28-94f4-4e298ad9866a}</Project>
+      <Name>Autodesk.ADN.Toolkit.ReCap</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AutodeskWpfRestLogger\Autodesk.ADN.Toolkit.Wpf.RestLogger.csproj">
+      <Project>{da29f9fd-a954-4151-ac42-b5c2e7975f9e}</Project>
+      <Name>Autodesk.ADN.Toolkit.Wpf.RestLogger</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AutodeskWpfViewer\Autodesk.ADN.Toolkit.Wpf.Viewer.csproj">
+      <Project>{23318c9d-48ac-4c70-a71f-6ec37cc50e22}</Project>
+      <Name>Autodesk.ADN.Toolkit.Wpf.Viewer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\RestLogger.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\RestLoggerUpd.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Login.png" />
+    <Resource Include="Images\Logout.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Add.png" />
+    <Resource Include="Images\Cancel.png" />
+    <Resource Include="Images\Properties.png" />
+    <Resource Include="Images\Ok.png" />
+    <Resource Include="Images\Refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Download.png" />
+    <Resource Include="Images\Process.png" />
+    <Resource Include="Images\Upload.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\3dviewer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Connection.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

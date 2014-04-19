@@ -1,16 +1,21 @@
 ﻿// (C) Copyright 2014 by Autodesk, Inc.
 //
-// The information contained herein is confidential, proprietary
-// to Autodesk, Inc., and considered a trade secret as defined
-// in section 499C of the penal code of the State of California.
-// Use of this information by anyone other than authorized
-// employees of Autodesk, Inc. is granted only under a written
-// non-disclosure agreement, expressly prescribing the scope
-// and manner of such use.
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted, 
+// provided that the above copyright notice appears in all copies and 
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting 
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
 
 //- Written by Cyrille Fauvel, Autodesk Developer Network (ADN)
 //- http://www.autodesk.com/joinadn
-//- February 20th, 2014
+//- January 20th, 2014
 //
 
 // http://helixtoolkit.codeplex.com/license
@@ -42,7 +47,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Controls;
 
-namespace AutodeskWpfReCap {
+namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 
 	public class WireframeMeshAdapter {
 		protected ModelVisual3D _model ;

@@ -1,12 +1,17 @@
 ﻿// (C) Copyright 2014 by Autodesk, Inc.
 //
-// The information contained herein is confidential, proprietary
-// to Autodesk, Inc., and considered a trade secret as defined
-// in section 499C of the penal code of the State of California.
-// Use of this information by anyone other than authorized
-// employees of Autodesk, Inc. is granted only under a written
-// non-disclosure agreement, expressly prescribing the scope
-// and manner of such use.
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted, 
+// provided that the above copyright notice appears in all copies and 
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting 
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
 
 //- Written by Cyrille Fauvel, Autodesk Developer Network (ADN)
 //- http://www.autodesk.com/joinadn
@@ -29,67 +34,26 @@ using System.Windows.Shapes;
 using Xceed.Wpf.Toolkit.PropertyGrid;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
+using Autodesk.ADN.Toolkit.ReCap;
+
 // http://wpftoolkit.codeplex.com/wikipage?title=PropertyGrid
 
-namespace AutodeskWpfReCap {
-
-	public class AdskReCapSceneProperties {
-
-		public string PhotoSceneID { get; set; }
-		public string Name { get; set; }
-		public DateTime CreationDate { get; set; }
-		public string MeshQuality { get; set; }
-		public string Status { get; set; }
-		public string ConvertFormat { get; set; }
-		public string ConvertStatus { get; set; }
-		public string NbFaces { get; set; }
-		public string NbVertices { get; set; }
-		public string Nb3dPoints { get; set; }
-		public string NbShots { get; set; }
-		public string NbStitchedShots { get; set; }
-
-		public AdskReCapSceneProperties (XmlDocument doc) {
-			try {
-				XmlNode node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/photosceneid") ;
-				PhotoSceneID =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/name") ;
-				Name =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/creationDate") ;
-				CreationDate =DateTime.Parse (Uri.UnescapeDataString (node.InnerText)) ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/meshQuality") ;
-				MeshQuality =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/status") ;
-				Status =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertFormat") ;
-				ConvertFormat =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertStatus") ;
-				ConvertStatus =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbfaces") ;
-				NbFaces =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbvertices") ;
-				NbVertices =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nb3Dpoints") ;
-				Nb3dPoints =node.InnerText ;
-				node = doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbStitchedShots");
-				NbStitchedShots =node.InnerText ;
-				node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbShots") ;
-				NbShots =node.InnerText ;
-			} catch {
-			}
-		}
-
-	}
+namespace Autodesk.ADN.WpfReCap {
 
 	public partial class PropertiesWnd : Window {
+		protected AdskReCapPhotoscene _obj ;
 
-		public XmlDocument xml { get; set; }
+		protected PropertiesWnd () {
+			InitializeComponent () ;
+		}
 
-		public PropertiesWnd () {
+		public PropertiesWnd (AdskReCapPhotoscene obj) {
+			_obj =obj ;
 			InitializeComponent () ;
 		}
 
 		private void Window_Loaded (object sender, RoutedEventArgs e) {
-			propertyGrid.SelectedObject =new AdskReCapSceneProperties (xml) ;
+			propertyGrid.SelectedObject =_obj ;
 		}
 
 	}

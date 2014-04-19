@@ -1,12 +1,17 @@
 ﻿// (C) Copyright 2014 by Autodesk, Inc.
 //
-// The information contained herein is confidential, proprietary
-// to Autodesk, Inc., and considered a trade secret as defined
-// in section 499C of the penal code of the State of California.
-// Use of this information by anyone other than authorized
-// employees of Autodesk, Inc. is granted only under a written
-// non-disclosure agreement, expressly prescribing the scope
-// and manner of such use.
+// Permission to use, copy, modify, and distribute this software in
+// object code form for any purpose and without fee is hereby granted, 
+// provided that the above copyright notice appears in all copies and 
+// that both that copyright notice and the limited warranty and
+// restricted rights notice below appear in all supporting 
+// documentation.
+//
+// AUTODESK PROVIDES THIS PROGRAM "AS IS" AND WITH ALL FAULTS. 
+// AUTODESK SPECIFICALLY DISCLAIMS ANY IMPLIED WARRANTY OF
+// MERCHANTABILITY OR FITNESS FOR A PARTICULAR USE.  AUTODESK, INC. 
+// DOES NOT WARRANT THAT THE OPERATION OF THE PROGRAM WILL BE
+// UNINTERRUPTED OR ERROR FREE.
 
 //- Written by Cyrille Fauvel, Autodesk Developer Network (ADN)
 //- http://www.autodesk.com/joinadn
@@ -27,20 +32,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Threading;
 using System.Xml;
+using System.Diagnostics;
 
-namespace AutodeskWpfReCap {
+using Autodesk.ADN.Toolkit.ReCap;
+
+namespace Autodesk.ADN.WpfReCap {
 
 	public delegate void ProcessPhotosceneCompletedDelegate (string photoscene, string status) ;
 
-	// http://codereview.stackexchange.com/questions/20820/use-and-understanding-of-async-await-in-net-4-5
-
 	public partial class JobProgress : Window {
+		public ProcessPhotosceneCompletedDelegate _callback =null ;
 		protected CancellationTokenSource _cts =null ;
 		protected AdskReCap _recap =null ;
-		public ProcessPhotosceneCompletedDelegate _callback =null ;
-		public string _photosceneid ;
+		protected string _photosceneid ;
 
-		public JobProgress () {
+		protected JobProgress () {
+			InitializeComponent () ;
+		}
+
+		public JobProgress (string photosceneid) {
+			_photosceneid =photosceneid ;
 			InitializeComponent () ;
 		}
 
@@ -50,19 +61,45 @@ namespace AutodeskWpfReCap {
 			progressMsg.Content =value.msg ;
 		}
 
-		async Task ReCapJobProgress (string photosceneid, IProgress<ProgressInfo> progress, CancellationToken ct, TaskScheduler uiScheduler) {
+		private async Task ReCapJobProgress (string photosceneid, IProgress<ProgressInfo> progress, CancellationToken ct, TaskScheduler uiScheduler) {
 			progress.Report (new ProgressInfo (0, "Initializing...")) ;
 			while ( !ct.IsCancellationRequested ) {
-				Task<ProgressInfo> task =Task<ProgressInfo>.Factory.StartNew (() => PhotosceneProgress (photosceneid)) ;
-				await task ;
+				//Task<ProgressInfo> task =Task<ProgressInfo>.Factory.StartNew (() => PhotosceneProgress (photosceneid)) ;
+				//await task ;
+				
+				//if ( task.Result == null ) {
+				//	progress.Report (new ProgressInfo (0, "Error")) ;
+				//	break ;
+				//}
+				//progress.Report (task.Result) ;
+				//if ( task.Result.pct >= 100 ) {
+				//	this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid, task.Result.msg }) ;
+				//	break ;
+				//}
 
-				if ( task.Result == null ) {
+				ProgressInfo info =await PhotosceneProgress (photosceneid) ;
+				//var task =Task.Factory.StartNew (
+				//	async delegate {
+				//		ProgressInfo info =await PhotosceneProgress (photosceneid) ;
+				//		progress.Report (info) ;
+				//		if ( info.pct >= 100 ) {
+				//			this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid, info.msg }) ;
+
+				//		}
+				//		return (info) ;
+				//	},
+				//	CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default
+				//) ;
+				//await task ;
+
+				if ( info == null ) {
 					progress.Report (new ProgressInfo (0, "Error")) ;
 					break ;
 				}
-				progress.Report (task.Result) ;
-				if ( task.Result.pct >= 100 ) {
-					this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid, task.Result.msg }) ;
+				progress.Report (info) ;
+				if ( info.pct >= 100 ) {
+					if ( _callback != null )
+						this.Dispatcher.Invoke (_callback, new Object [] { _photosceneid, info.msg }) ;
 					break ;
 				}
 			}
@@ -82,6 +119,7 @@ namespace AutodeskWpfReCap {
 			try {
 				await ReCapJobProgress (_photosceneid, progressIndicator, _cts.Token, uiScheduler) ;
 			} catch ( OperationCanceledException ex ) {
+				Trace.WriteLine (ex.Message, "Exception") ;
 			}
 		}
 
@@ -103,24 +141,21 @@ namespace AutodeskWpfReCap {
 			return (_recap != null) ;
 		}
 
-		protected ProgressInfo PhotosceneProgress (string photosceneid) {
+		protected async Task<ProgressInfo> PhotosceneProgress (string photosceneid) {
 			if ( !ConnectWithReCap () )
 				return (null) ;
 
-			bool ret =_recap.SceneProgress (photosceneid) ;
-			if ( !ret ) {
+			if ( !await _recap.SceneProgress (photosceneid) )
 				return (null) ;
-			}
-			XmlDocument doc =_recap.xml ();
-			XmlNode node =doc.SelectSingleNode ("/Response/Photoscene/progress") ;
-			XmlNode nodemsg =doc.SelectSingleNode ("/Response/Photoscene/progressmsg") ;
 			int pct =0 ;
+			string msg ="" ;
+			dynamic response =_recap.response () ;
 			try {
-				if ( node.InnerText != "" )
-					pct =(int)Convert.ToDouble (node.InnerText) ;
+				pct =(int)Convert.ToDouble (response.Photoscene.progress) ;
+				msg =response.Photoscene.progressmsg ;
 			} catch {
 			}
-			return (new ProgressInfo (pct, nodemsg.InnerText)) ;
+			return (new ProgressInfo (pct, msg)) ;
 		}
 
 		#endregion
