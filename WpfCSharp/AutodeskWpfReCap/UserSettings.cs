@@ -1,4 +1,4 @@
-﻿// (C) Copyright 2014 by Autodesk, Inc.
+// (C) Copyright 2014 by Autodesk, Inc.
 //
 // The information contained herein is confidential, proprietary
 // to Autodesk, Inc., and considered a trade secret as defined
