@@ -148,7 +148,7 @@ namespace Autodesk.ADN.WpfReCap {
 
 		private async void CreatePhotoscene_Click (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			AdskReCap.Format format =AdskReCap.Format._3DP ;
+			AdskReCap.Format format =AdskReCap.Format.OBJ ;
 			try {
 				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), (string)outputFormat.SelectedItem, true) ;
 			} catch {
@@ -260,7 +260,13 @@ namespace Autodesk.ADN.WpfReCap {
 			if ( PhotoScenes.SelectedItems.Count != 1 )
 				return ;
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
-			string link =await GetPhotosceneResult (item.Name) ;
+			AdskReCap.Format format =AdskReCap.Format.OBJ ;
+			try {
+				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), (string)outputFormat.SelectedItem, true) ;
+			} catch {
+				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + (string)outputFormat.SelectedItem, true) ;
+			}
+			string link =await GetPhotosceneResult (item.Name, format) ;
 			if ( link != "" ) {
 				DownloadFileWnd wnd =new DownloadFileWnd (
 					link,
@@ -276,6 +282,9 @@ namespace Autodesk.ADN.WpfReCap {
 		}
 
 		public void DownloadResultCompleted (string photosceneid) {
+			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + photosceneid + ".zip" ;
+			if ( !File.Exists (location) )
+				return ;
 			foreach ( ReCapPhotosceneProject item in PhotoScenes.Items ) {
 				if ( item.Name == photosceneid ) {
 					item.Image =photosceneid + ".zip:icon.png" ;
@@ -299,8 +308,10 @@ namespace Autodesk.ADN.WpfReCap {
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
 			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + item.Name + ".zip" ;
 			if ( !File.Exists (location) ) {
-				if ( e != null ) // Do not enter into an infinite loop
+				if ( e != null ) { // Do not enter into an infinite loop
+					outputFormat.SelectedItem =AdskReCap.Format.OBJ.ToString () ; // Our viewer support OBJ only
 					PhotoScenes_DownloadResult (null, null) ;
+				}
 				return ;
 			}
 
@@ -473,19 +484,32 @@ namespace Autodesk.ADN.WpfReCap {
 			return (bRet) ;
 		}
 
-		protected async Task<string> GetPhotosceneResult (string photosceneid) {
+		protected async Task<string> GetPhotosceneResult (string photosceneid, AdskReCap.Format format =AdskReCap.Format.OBJ) {
 			if ( photosceneid == "" || !await ConnectWithReCapServer () )
 				return ("") ;
 
 			// Get Photoscene result (mesh)
 			LogInfo ("Getting the Photoscene result (mesh)", LogIndent.PostIndent) ;
-			if ( !await _recap.GetPointCloudArchive (photosceneid, AdskReCap.Format.OBJ) ) {
+			if ( !await _recap.GetPointCloudArchive (photosceneid, format) ) {
 				LogError ("GetPointCloudArchive failed", LogIndent.PostUnindent) ;
 				return ("") ;
 			}
 			dynamic response =_recap.response () ;
-			LogInfo (string.Format ("CreatePhotoscene succeeded - PhotoSceneID = {0}", response.Photoscene.scenelink), LogIndent.PostUnindent) ;
+			LogInfo (string.Format ("GetPhotosceneResult succeeded - {0}", response.Photoscene.scenelink), LogIndent.PostUnindent) ;
+			if ( response.Photoscene.scenelink == "" ) {
+				// That means there is a conversion happening and we need to wait
+				JobProgress jobWnd =new JobProgress (photosceneid) ;
+				jobWnd._callback =new ProcessPhotosceneCompletedDelegate (this.ConvertPhotosceneCompleted) ;
+				jobWnd.Show () ;
+				return ("") ;
+			}
 			return (response.Photoscene.scenelink) ;
+		}
+
+		public void ConvertPhotosceneCompleted (string photosceneid, string status) {
+			if ( status == "DONE" ) {
+				// Not sure if that was a d/l or Preview, so leave the user to laucnh the command again
+			}
 		}
 
 		protected async Task<bool> DeletePhotoscene (string photosceneid) {

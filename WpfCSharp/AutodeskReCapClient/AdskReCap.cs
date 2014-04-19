@@ -300,7 +300,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		public async Task<bool> CreatePhotoscene (Format format, MeshQuality meshQuality, Dictionary<string, string> options, bool json =false) {
 			var request =new RestRequest ("photoscene", Method.POST) ;
 			request.AddParameter ("clientID", _clientID);
-			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' }));
+			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' })) ;
 			request.AddParameter ("meshquality", ((int)meshQuality).ToString ()) ;
 			request.AddParameter ("scenename", string.Format ("MyPhotoScene{0}", AdskRESTful.timestamp ())) ;
 			foreach ( KeyValuePair<string, string> entry in options )
@@ -524,7 +524,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			var request =new RestRequest (string.Format ("photoscene/{0}", photosceneid), Method.GET) ;
 			request.AddParameter ("clientID", _clientID) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
-			request.AddParameter ("format", format.ToString ().ToLower ()) ;
+			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' })) ;
 			request.AddParameter (json ? "json" : "xml", 1) ;
 			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
 			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;
