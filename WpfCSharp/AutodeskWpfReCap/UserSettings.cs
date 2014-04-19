@@ -17,32 +17,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AutodeskWpfReCap {
+// Why 'static readonly' vs 'public const string'
+// http://www.stum.de/2009/01/14/const-strings-a-very-convenient-way-to-shoot-yourself-in-the-foot/
+
+namespace Autodesk.ADN.WpfReCap {
 
 	public class UserSettings {
 
 		// Hard coded consumer and secret keys and base URL.
 		// In real world Apps, these values need to secured.
 		// One approach is to encrypt and/or obfuscate these values
-		public const string CONSUMER_KEY ="your consumer key" ;
-		public const string CONSUMER_SECRET ="your consumer secret key" ;
-		public const string O2_HOST ="https://accounts.autodesk.com/" ; // Autodesk production accounts server
-		//public const string O2_HOST ="https://accounts-staging.autodesk.com/" ; // Autodesk staging accounts server
+		public static readonly string CONSUMER_KEY ="your consumer key" ;
+		public static readonly string CONSUMER_SECRET ="your consumer secret key" ;
+		public static readonly string O2_HOST ="https://accounts.autodesk.com/" ; // Autodesk production accounts server
+		//public static readonly string O2_HOST ="https://accounts-staging.autodesk.com/" ; // Autodesk staging accounts server
 
 		// ReCap: Fill in these macros with the correct information (only the 2 first are important)
-		public const string ReCapAPIURL ="http://rc-api-adn.autodesk.com/3.1/API/" ;
-		public const string ReCapClientID ="your ReCap client ID" ;
-		public const string ReCapKey ="your ReCap client key" ; // not used anymore
-		public const string ReCapUserID ="your ReCap user ID" ; // Needed only for using the ReCapSceneList, otherwise bail
+		public static readonly string ReCapAPIURL ="http://rc-api-adn.autodesk.com/3.1/API/" ;
+		public static readonly string ReCapClientID ="your ReCap client ID" ;
+		public static readonly string ReCapKey ="your ReCap client key" ; // not used anymore
+		public static readonly string ReCapUserID ="your ReCap user ID" ; // Needed only for using the ReCapSceneList, otherwise bail
 
-		public const string Email ="your email address" ; // used for notification
+		public static readonly string Email ="your email address" ; // used for notification
 
 		// Do not edit
-		public const string O2_REQUESTTOKEN ="OAuth/RequestToken" ;
-		public const string O2_ACCESSTOKEN ="OAuth/AccessToken" ;
-		public const string O2_AUTHORIZE ="OAuth/Authorize" ;
-		public const string O2_INVALIDATETOKEN ="OAuth/InvalidateToken" ;
-		public const string O2_ALLOW =O2_HOST + "OAuth/Allow" ;
+		public static readonly string O2_REQUESTTOKEN ="OAuth/RequestToken" ;
+		public static readonly string O2_ACCESSTOKEN ="OAuth/AccessToken" ;
+		public static readonly string O2_AUTHORIZE ="OAuth/Authorize" ;
+		public static readonly string O2_INVALIDATETOKEN ="OAuth/InvalidateToken" ;
+		public static readonly string O2_ALLOW =O2_HOST + "OAuth/Allow" ;
 
 	}
 
