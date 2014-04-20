@@ -72,12 +72,14 @@ namespace Autodesk.ADN.Toolkit.Wpf.RestLogger {
 					// Add the new message					
 					TreeViewItem child =new TreeViewItem () ;
 					child.Header =part.ToString () ;
-					if ( part.Category.ToLowerInvariant () == "error" ) {
-						child.Background =_redBrush ;
-						child.Foreground =Brushes.White ;
+					if ( part.Category.ToLowerInvariant () == "error" || part.Category.ToLowerInvariant () == "exception" ) {
+						//child.Background =_redBrush ;
+						//child.Foreground =Brushes.White ;
+						child.Foreground =_redBrush ;
 					} else if ( part.Category.ToLowerInvariant () == "warning" ) {
-						child.Background =_yellowBrush ;
-						child.Foreground =_brownBrush ;
+						//child.Background =_yellowBrush ;
+						//child.Foreground =_brownBrush ;
+						child.Foreground =_yellowBrush ;
 					}
 					coll.Add (child) ;
 

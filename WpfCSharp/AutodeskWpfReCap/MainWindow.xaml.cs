@@ -37,6 +37,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Media.Media3D;
 using System.Windows.Resources;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Resources;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,6 +69,8 @@ namespace Autodesk.ADN.WpfReCap {
 	public partial class MainWindow : Window {
 		protected AdskReCap _recap =null ;
 		protected RestLoggerWnd _logger =null ;
+		protected List<string> _forPreview =new List<string> () ;
+		protected Dictionary<string, AdskReCap.Format> _requestedFormat =new Dictionary<string, AdskReCap.Format> () ;
 		
 		public MainWindow () {
 			InitializeComponent () ;
@@ -82,8 +86,8 @@ namespace Autodesk.ADN.WpfReCap {
 			outputQuality.SelectedItem =AdskReCap.MeshQuality.DRAFT.ToString () ;
 			values =Enum.GetValues (typeof (AdskReCap.Format)) ;
 			foreach ( var value in values )
-				outputFormat.Items.Add (value.ToString ().TrimStart (new char [] { '_' })) ;
-			outputFormat.SelectedItem =AdskReCap.Format.OBJ.ToString () ;
+				outputFormat.Items.Add (((AdskReCap.Format)value).ToFriendlyString ()) ;
+			outputFormat.SelectedItem =AdskReCap.Format.OBJ.ToFriendlyString () ;
 		}
 
 		private void Window_Loaded (object sender, RoutedEventArgs e) {
@@ -95,6 +99,7 @@ namespace Autodesk.ADN.WpfReCap {
 			bool isNetworkAvailable =System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable () ;
 			if ( !isNetworkAvailable ) {
 				LogError ("Network Error: Check your network connection and try again...") ;
+				MessageBox.Show ("GetPointCloudArchive failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return ;
 			}
 
@@ -148,14 +153,8 @@ namespace Autodesk.ADN.WpfReCap {
 
 		private async void CreatePhotoscene_Click (object sender, RoutedEventArgs e) {
 			e.Handled =true ;
-			AdskReCap.Format format =AdskReCap.Format.OBJ ;
-			try {
-				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), (string)outputFormat.SelectedItem, true) ;
-			} catch {
-				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + (string)outputFormat.SelectedItem, true) ;
-			}
 			string photosceneid =await CreateReCapPhotoscene (
-				format,
+				(AdskReCap.Format)((string)outputFormat.SelectedItem).ToReCapFormatEnum (),
 				(AdskReCap.MeshQuality)Enum.Parse (typeof (AdskReCap.MeshQuality), (string)outputQuality.SelectedItem, true)
 			) ;
 			if ( photosceneid == "" )
@@ -224,12 +223,13 @@ namespace Autodesk.ADN.WpfReCap {
 		}
 
 		private void PhotoScenes_UploadPhotos (object sender, RoutedEventArgs e) {
-			e.Handled = true;
+			e.Handled =true ;
 			if ( PhotoScenes.SelectedItems.Count != 1 )
-				return;
-			ReCapPhotosceneProject item = PhotoScenes.SelectedItem as ReCapPhotosceneProject;
-			ShotsWindow wnd = new ShotsWindow (item.Name);
-			wnd.ShowDialog ();
+				return ;
+			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
+			ShotsWindow wnd =new ShotsWindow (item.Name) ;
+			wnd.Owner =this ;
+			wnd.ShowDialog () ;
 		}
 
 		private async void PhotoScenes_ProcessPhotoscene (object sender, RoutedEventArgs e) {
@@ -240,6 +240,7 @@ namespace Autodesk.ADN.WpfReCap {
 			if ( await ProcessPhotoscene (item.Name) ) {
 				JobProgress jobWnd =new JobProgress (item.Name) ;
 				jobWnd._callback =new ProcessPhotosceneCompletedDelegate (this.ProcessPhotosceneCompleted) ;
+				jobWnd.Owner =this ;
 				jobWnd.Show () ;
 			}
 		}
@@ -260,28 +261,27 @@ namespace Autodesk.ADN.WpfReCap {
 			if ( PhotoScenes.SelectedItems.Count != 1 )
 				return ;
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
-			AdskReCap.Format format =AdskReCap.Format.OBJ ;
-			try {
-				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), (string)outputFormat.SelectedItem, true) ;
-			} catch {
-				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + (string)outputFormat.SelectedItem, true) ;
-			}
-			string link =await GetPhotosceneResult (item.Name, format) ;
-			if ( link != "" ) {
-				DownloadFileWnd wnd =new DownloadFileWnd (
-					link,
-					System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory)
-						+ item.Name + System.IO.Path.GetExtension (link)
-				) ;
-				if ( e == null ) // Preview
-					wnd._callback =new DownloadFileCompletedDelegate (this.DownloadResultForPreviewCompleted) ;
-				else
-					wnd._callback =new DownloadFileCompletedDelegate (this.DownloadResultCompleted) ;
-				wnd.Show () ;
-			}
+			AdskReCap.Format format =(AdskReCap.Format)((string)outputFormat.SelectedItem).ToReCapFormatEnum () ;
+			string link =await GetPhotosceneResult (item.Name, format, e == null) ;
+			if ( link != "" )
+				DownloadReCapResult (item.Name, link, e == null) ;
 		}
 
-		public void DownloadResultCompleted (string photosceneid) {
+		private void DownloadReCapResult (string photosceneid, string link, bool forPreview =false) {
+			DownloadFileWnd wnd =new DownloadFileWnd (
+				link,
+				System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory)
+					+ photosceneid + System.IO.Path.GetExtension (link)
+			) ;
+			if ( forPreview ) // Preview
+				wnd._callback =new DownloadFileCompletedDelegate (this.DownloadResultForPreviewCompleted) ;
+			else
+				wnd._callback =new DownloadFileCompletedDelegate (this.DownloadResultCompleted) ;
+			wnd.Owner =this ;
+			wnd.Show () ;
+		}
+
+		public void DownloadResultCompleted (string photosceneid, string filename) {
 			string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + photosceneid + ".zip" ;
 			if ( !File.Exists (location) )
 				return ;
@@ -294,8 +294,8 @@ namespace Autodesk.ADN.WpfReCap {
 			}
 		}
 
-		public void DownloadResultForPreviewCompleted (string photosceneid) {
-			DownloadResultCompleted (photosceneid) ;
+		public void DownloadResultForPreviewCompleted (string photosceneid, string filename) {
+			DownloadResultCompleted (photosceneid, filename) ;
 			PhotoScenes_Preview (null, null) ;
 		}
 
@@ -357,6 +357,7 @@ namespace Autodesk.ADN.WpfReCap {
 				connectedLabel.Content ="Connection to ReCap Server failed!" ;
 				connectedTimeLabel.Content ="" ;
 				LogError ("ReCap Error: Connection to ReCap Server failed!", LogIndent.PostUnindent) ;
+				MessageBox.Show ("ReCap Error: Connection to ReCap Server failed!", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return (false) ;
 			}
 				
@@ -395,6 +396,7 @@ namespace Autodesk.ADN.WpfReCap {
 			PhotoScenes.Items.Refresh () ;
 			if ( !await _recap.SceneList ("userID", UserSettings.ReCapUserID) ) {
 				LogError ("ListPhotoScenes failed", LogIndent.PostUnindent) ;
+				MessageBox.Show ("ListPhotoScenes failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return ;
 			}
 
@@ -449,12 +451,13 @@ namespace Autodesk.ADN.WpfReCap {
 				return ("") ;
 
 			//- Create Photoscene
-			LogInfo (string.Format ("Create Photoscene {0} / {1}", format.ToString ().TrimStart (new char [] { '_' }), quality.ToString ()), LogIndent.PostIndent) ;
+			LogInfo (string.Format ("Create Photoscene {0} / {1}", format.ToFriendlyString (), quality.ToString ()), LogIndent.PostIndent) ;
 			Dictionary<string, string> options =new Dictionary<string, string> () {
 				{ "callback", "email://" + UserSettings.Email }
 			} ;
 			if ( !await _recap.CreatePhotoscene (/*AdskReCap.Format.OBJ*/format, /*AdskReCap.MeshQuality.DRAFT*/quality, options) ) {
 				LogError ("CreatePhotoscene failed - Failed to create a new Photoscene", LogIndent.PostUnindent) ;
+				MessageBox.Show ("CreatePhotoscene failed - Failed to create a new Photoscene", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return ("") ;
 			}
 			dynamic response =_recap.response () ;
@@ -484,7 +487,7 @@ namespace Autodesk.ADN.WpfReCap {
 			return (bRet) ;
 		}
 
-		protected async Task<string> GetPhotosceneResult (string photosceneid, AdskReCap.Format format =AdskReCap.Format.OBJ) {
+		protected async Task<string> GetPhotosceneResult (string photosceneid, AdskReCap.Format format =AdskReCap.Format.OBJ, bool bForPreview =false) {
 			if ( photosceneid == "" || !await ConnectWithReCapServer () )
 				return ("") ;
 
@@ -492,23 +495,39 @@ namespace Autodesk.ADN.WpfReCap {
 			LogInfo ("Getting the Photoscene result (mesh)", LogIndent.PostIndent) ;
 			if ( !await _recap.GetPointCloudArchive (photosceneid, format) ) {
 				LogError ("GetPointCloudArchive failed", LogIndent.PostUnindent) ;
+				MessageBox.Show ("GetPointCloudArchive failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return ("") ;
 			}
 			dynamic response =_recap.response () ;
 			LogInfo (string.Format ("GetPhotosceneResult succeeded - {0}", response.Photoscene.scenelink), LogIndent.PostUnindent) ;
 			if ( response.Photoscene.scenelink == "" ) {
 				// That means there is a conversion happening and we need to wait
+				if ( bForPreview )
+					_forPreview.Add (photosceneid) ;
+				_requestedFormat.Add (photosceneid, format) ;
 				JobProgress jobWnd =new JobProgress (photosceneid) ;
+				jobWnd.Owner =this ;
 				jobWnd._callback =new ProcessPhotosceneCompletedDelegate (this.ConvertPhotosceneCompleted) ;
 				jobWnd.Show () ;
-				return ("") ;
+				return ("") ; // Return "" to not continue processing the command
 			}
 			return (response.Photoscene.scenelink) ;
 		}
 
 		public void ConvertPhotosceneCompleted (string photosceneid, string status) {
 			if ( status == "DONE" ) {
-				// Not sure if that was a d/l or Preview, so leave the user to laucnh the command again
+				LogInfo (string.Format ("Photoscene {0} conversion completed successfully", photosceneid)) ;
+				// Was it for d/l or Preview?
+				bool bRet =_forPreview.Remove (photosceneid) ;
+				AdskReCap.Format format =_requestedFormat [photosceneid] ;
+				outputFormat.SelectedItem =AdskReCap.Format.OBJ.ToString () ;
+				MenuItemAutomationPeer menuPeer =new MenuItemAutomationPeer (bRet ? menuPreview : menuDownloadResult) ;
+				IInvokeProvider invokeProv =menuPeer.GetPattern (PatternInterface.Invoke) as IInvokeProvider ;
+				invokeProv.Invoke () ;
+				//}
+			} else {
+				LogError (string.Format ("Photoscene {0} conversion failed", photosceneid)) ;
+				MessageBox.Show (string.Format ("Photoscene {0} conversion failed", photosceneid), "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 			}
 		}
 
@@ -522,6 +541,7 @@ namespace Autodesk.ADN.WpfReCap {
 			bool ret =_recap.DeleteSceneTempFix (photosceneid) ;
 			if ( !ret ) {
 				LogError ("DeletePhotoscene failed", LogIndent.PostUnindent) ;
+				MessageBox.Show ("DeletePhotoscene failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return (false) ;
 			}
 			LogInfo ("DeletePhotoscene call succeeded") ;
@@ -530,7 +550,8 @@ namespace Autodesk.ADN.WpfReCap {
 				string nb =response.Photoscene.deleted ;
 				LogInfo (string.Format ("Photoscene {0} deleted - {1} resources deleted", photosceneid, nb), LogIndent.PostUnindent) ;
 			} catch {
-				LogInfo ("Failed deleting the Photoscene and resources", LogIndent.PostUnindent) ;
+				Log ("Failed deleting the Photoscene and resources", LogIndent.PostUnindent, "Exception") ;
+				MessageBox.Show ("Exception: Failed deleting the Photoscene and resources", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return (false) ;
 			}
 			return (true) ;

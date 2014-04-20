@@ -72,7 +72,12 @@
 			Drop="Thumbnails_Drop" AllowDrop="True">
 				<ListView.ContextMenu>
 					<ContextMenu>
-						<MenuItem Header="Upload Photos(s)" Click="Thumbnails_UploadPhotos">
+						<MenuItem Header="Download Photoscene' Photo(s)" Click="Thumbnails_DownloadPhotos">
+							<MenuItem.Icon>
+								<Image Source="/Images/Download.png" Width="16" Height="16" />
+							</MenuItem.Icon>
+						</MenuItem>
+						<MenuItem Header="Upload Photo(s)" Click="Thumbnails_UploadPhotos">
 							<MenuItem.Icon>
 								<Image Source="/Images/Upload.png" Width="16" Height="16" />
 							</MenuItem.Icon>

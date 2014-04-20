@@ -69,6 +69,7 @@ namespace Autodesk.ADN.WpfReCap {
 			_photosceneid =photosceneid ;
 			InitializeComponent () ;
 			Thumbnails.View =Thumbnails.FindResource ("tileView") as ViewBase ;
+			Thumbnails.ItemsSource =new ObservableCollection<ReCapPhotoItem> () ;
 		}
 
 		#region Window events
@@ -76,7 +77,7 @@ namespace Autodesk.ADN.WpfReCap {
 		private void Thumbnails_Drop (object sender, DragEventArgs e) {
 			e.Handled =true ;
 			if ( e.Data.GetDataPresent (DataFormats.FileDrop) ) {
-				ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> () ;
+				ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ((IEnumerable<ReCapPhotoItem>)Thumbnails.ItemsSource) ;
 				string [] files =(string [])e.Data.GetData (DataFormats.FileDrop) ;
 				foreach ( string filename in files ) {
 					items.Add (new ReCapPhotoItem () {
@@ -185,11 +186,12 @@ namespace Autodesk.ADN.WpfReCap {
 		private void ReCapExample_Download (string url, string location) {
 			DownloadFileWnd wnd =new DownloadFileWnd (url, location) ;
 			wnd._callback =new DownloadFileCompletedDelegate (this.DownloadExampleCompleted) ;
+			wnd.Owner =this ;
 			wnd.Show () ;
 		}
 
-		public void DownloadExampleCompleted (string zip) {
-			GetReCapExample (null, System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + zip + ".zip") ;
+		public void DownloadExampleCompleted (string zip, string filename) {
+			GetReCapExample (null, filename) ;
 		}
 
 		private void Warrior_Click (object sender, RoutedEventArgs e) {
@@ -271,10 +273,56 @@ namespace Autodesk.ADN.WpfReCap {
 			Thumbnails.SelectAll () ;
 		}
 
+		private async void Thumbnails_DownloadPhotos (object sender, RoutedEventArgs e) {
+			if ( !await PhotosceneProperties (_photosceneid) )
+				return ;
+
+			dynamic response =_recap.response () ;
+			dynamic files =response.Photoscenes.Photoscene.Files ;
+			foreach ( KeyValuePair<string, object> pair in files.Dictionary ) {
+				dynamic fnode =pair.Value ;
+				AdskReCap.FileType type =(AdskReCap.FileType)Enum.Parse (typeof (AdskReCap.FileType), fnode.type, true) ;
+				if ( fnode.fileid == "" || type != AdskReCap.FileType.Image )
+					continue ;
+				string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + fnode.filename ;
+				if ( File.Exists (location) ) {
+					ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ((IEnumerable<ReCapPhotoItem>)Thumbnails.ItemsSource) ;
+					items.Add (new ReCapPhotoItem () {
+						Name =System.IO.Path.GetFileNameWithoutExtension (fnode.filename),
+						Type =System.IO.Path.GetExtension (fnode.filename),
+						Image =location
+					}) ;
+					Thumbnails.ItemsSource =items ;
+					continue ;
+				}
+
+				if ( !await _recap.GetFile (fnode.fileid, type) )
+					continue ;
+				dynamic fileResponse =_recap.response () ;
+				dynamic file =fileResponse.Files.file ;
+				string link =file.filelink ;
+
+				DownloadFileWnd wnd =new DownloadFileWnd (link, location) ;
+				wnd._callback =new DownloadFileCompletedDelegate (this.DownloadFileCompleted) ;
+				wnd.Owner =this ;
+				wnd.Show () ;
+			}
+		}
+
+		public void DownloadFileCompleted (string img, string filename) {
+			ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ((IEnumerable<ReCapPhotoItem>)Thumbnails.ItemsSource) ;
+			items.Add (new ReCapPhotoItem () {
+				Name =img,
+				Type =System.IO.Path.GetExtension (filename),
+				Image =filename
+			}) ;
+			Thumbnails.ItemsSource =items ;
+		}
+
 		#endregion
 
 		#region ReCap Calls
-		protected bool ConnectWithReCap () {
+		protected bool ConnectWithReCapServer () {
 			if ( _recap != null )
 				return (true) ;
 			_recap =new AdskReCap (
@@ -286,7 +334,7 @@ namespace Autodesk.ADN.WpfReCap {
 		}
 
 		protected async Task<bool> UploadPhotos (string photosceneid) {
-			if ( photosceneid == "" || !ConnectWithReCap () )
+			if ( photosceneid == "" || !ConnectWithReCapServer () )
 				return (false) ;
 
 			//- Collect images
@@ -410,6 +458,17 @@ namespace Autodesk.ADN.WpfReCap {
 				dynamic fnode =pair.Value ;
 				LogInfo (string.Format ("\t{0} [{1}]", fnode.filename, fnode.fileid)) ;
 			}
+		}
+
+		protected async Task<bool> PhotosceneProperties (string photosceneid) {
+			if ( photosceneid == "" || !ConnectWithReCapServer () )
+				return (false) ;
+
+			// Photoscene Properties
+			LogInfo ("Photoscene Properties", LogIndent.PostIndent) ;
+			bool bRet =await _recap.SceneProperties (photosceneid) ;
+			Log (bRet ? "Photoscene Properties returned" : "PhotosceneProperties failed", LogIndent.PostUnindent, bRet ? "Info" : "Error") ;
+			return (bRet) ;
 		}
 
 		#endregion

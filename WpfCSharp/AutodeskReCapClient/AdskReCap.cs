@@ -45,6 +45,40 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 	// In older release of the API, you needed to have, but this is not required anymore
 	//   request.AddParameter ("timestamp", AdskRESTful.timestamp ()) ;
 
+	public static class EnumExtensions {
+
+		public static string ToFriendlyString (this Enum en) {
+			Type type =en.GetType() ;
+			if ( type == typeof (AdskReCap.Format) )
+				return (en.ToString ().TrimStart (new char [] { '_' })) ;
+			return (en.ToString ()) ;
+		}
+
+		public static Enum ToReCapFormatEnum (this string formatSt) {
+			AdskReCap.Format format =AdskReCap.Format.OBJ ;
+			try {
+				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), formatSt, true) ;
+			} catch {
+				format =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + formatSt, true) ;
+			}
+			return (format) ;
+		}
+
+		public static Enum ToEnum<T> (this string st) {
+			return ((Enum)Enum.Parse (typeof (T), st, true)) ;
+		}
+
+		public static bool IsEnum<T> (this string st) {
+			return (Enum.IsDefined (typeof (T), st)) ;
+		}
+
+		public static T? ToEnumSafe<T> (this string st) where T : struct {
+			return (IsEnum<T> (st) ? (T?)Enum.Parse (typeof (T), st, true) : null) ;
+		}
+
+	}
+
+
 	public class AdskReCap {
 		#region Enums
 		public enum NotificationType { ERROR, DONE } ;
@@ -161,6 +195,9 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			[Description ("for a high quality mesh")]
 			HIGH =9 
 		} ;
+		public enum FileType {
+			Image, Xref, Project, Thumbnail
+		}
 
 		#endregion
 
@@ -277,7 +314,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		public async Task<bool> CreateSimplePhotoscene (Format format =Format._3DP, MeshQuality meshQuality =MeshQuality.DRAFT, bool json =false) {
 			var request =new RestRequest ("photoscene", Method.POST) ;
 			request.AddParameter ("clientID", _clientID) ;
-			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' })) ;
+			request.AddParameter ("format", format.ToFriendlyString ().ToLower ()) ;
 			request.AddParameter ("meshquality", ((int)meshQuality).ToString ()) ;
 			request.AddParameter ("scenename", string.Format ("MyPhotoScene{0}", AdskRESTful.timestamp ())) ;
 			request.AddParameter (json ? "json" : "xml", 1) ;
@@ -300,7 +337,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		public async Task<bool> CreatePhotoscene (Format format, MeshQuality meshQuality, Dictionary<string, string> options, bool json =false) {
 			var request =new RestRequest ("photoscene", Method.POST) ;
 			request.AddParameter ("clientID", _clientID);
-			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' })) ;
+			request.AddParameter ("format", format.ToFriendlyString ().ToLower ()) ;
 			request.AddParameter ("meshquality", ((int)meshQuality).ToString ()) ;
 			request.AddParameter ("scenename", string.Format ("MyPhotoScene{0}", AdskRESTful.timestamp ())) ;
 			foreach ( KeyValuePair<string, string> entry in options )
@@ -512,6 +549,25 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		}
 
 		/// <summary>
+		/// Return the given file
+		/// </summary>
+		/// <param name="fileid">The ID of the file to get</param>
+		/// <param name="fileType">If provided only this specific type is search for. If not provided the API will
+		/// try to do a best guess on the file type. Can be 'image' or 'xref'.</param>
+		/// <param name="json">true to receive the response in JSON format. Otherwise default is XML.</param>
+		/// <returns></returns>
+		public async Task<bool> GetFile (string fileid, FileType fileType =FileType.Image, bool json =false) {
+			var request = new RestRequest (string.Format ("file/{0}/get", fileid), Method.GET) ;
+			request.AddParameter ("clientID", _clientID) ;
+			request.AddParameter ("type", fileType.ToString ().ToLower ()) ;
+			request.AddParameter (json ? "json" : "xml", 1) ;
+			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
+			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;
+			Log ("file/.../get response: {0}", _lastResponse) ;
+			return (isOk ()) ;
+		}
+
+		/// <summary>
 		/// Get the given Photoscene as a link.
 		/// </summary>
 		/// <param name="photosceneid">The photoscene ID to identify photoscene.</param>
@@ -524,7 +580,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			var request =new RestRequest (string.Format ("photoscene/{0}", photosceneid), Method.GET) ;
 			request.AddParameter ("clientID", _clientID) ;
 			request.AddParameter ("photosceneid", photosceneid) ;
-			request.AddParameter ("format", format.ToString ().ToLower ().TrimStart (new char [] { '_' })) ;
+			request.AddParameter ("format", format.ToFriendlyString ().ToLower ()) ;
 			request.AddParameter (json ? "json" : "xml", 1) ;
 			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
 			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;

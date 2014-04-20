@@ -130,7 +130,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/status") ;
 			//	Status =node.InnerText ;
 			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertFormat") ;
-			//	ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), node.InnerText, true) ;
+			//	ConvertFormat =(AdskReCap.Format)node.InnerText.ToReCapFormatEnum () ;
 			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertStatus") ;
 			//	ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), node.InnerText, true) ;
 			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbfaces") ;
@@ -176,11 +176,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				node =el.SelectSingleNode ("./status") ;
 				Status =node.InnerText ;
 				node =el.SelectSingleNode ("./convertFormat") ;
-				try {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), node.InnerText, true) ;
-				} catch {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + node.InnerText, true) ;
-				}
+				ConvertFormat =(AdskReCap.Format)node.InnerText.ToReCapFormatEnum () ;
 				node =el.SelectSingleNode ("./convertStatus") ;
 				ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), node.InnerText, true) ;
 				node =el.SelectSingleNode ("./nbfaces") ;
@@ -226,11 +222,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				CreationDate =DateTime.Parse (Uri.UnescapeDataString (el.Element ("creationDate").Value)) ;
 				MeshQuality =(AdskReCap.MeshQuality)Enum.Parse (typeof (AdskReCap.MeshQuality), el.Element ("meshQuality").Value, true) ;
 				Status =(string)el.Element ("status") ;
-				try {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), el.Element ("convertFormat").Value, true) ;
-				} catch {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + el.Element ("convertFormat").Value, true) ;
-				}
+				ConvertFormat =(AdskReCap.Format)(el.Element ("convertFormat").Value.ToReCapFormatEnum ()) ;
 				ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), el.Element ("convertStatus").Value, true) ;
 				NbFaces =(int)el.Element ("nbfaces") ;
 				NbVertices =(int)el.Element ("nbvertices") ;
@@ -260,11 +252,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				CreationDate =DateTime.Parse (Uri.UnescapeDataString ((string)el ["creationDate"])) ;
 				MeshQuality =(AdskReCap.MeshQuality)Enum.Parse (typeof (AdskReCap.MeshQuality), (string)el ["meshQuality"], true) ;
 				Status =(string)el ["status"] ;
-				try {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), (string)el ["convertFormat"], true) ;
-				} catch {
-					ConvertFormat =(AdskReCap.Format)Enum.Parse (typeof (AdskReCap.Format), "_" + (string)el ["convertFormat"], true) ;
-				}
+				ConvertFormat =(AdskReCap.Format)((string)el ["convertFormat"]).ToReCapFormatEnum () ;
 				ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), (string)el ["convertStatus"], true) ;
 				NbFaces =(int)el ["nbfaces"] ;
 				NbVertices =(int)el ["nbvertices"] ;

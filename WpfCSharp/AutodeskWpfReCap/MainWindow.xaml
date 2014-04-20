@@ -151,12 +151,12 @@
 								<Image Source="/Images/Properties.png" Width="16" Height="16" />
 							</MenuItem.Icon>
 						</MenuItem>
-						<MenuItem Header="Download result" Click="PhotoScenes_DownloadResult">
+						<MenuItem x:Name="menuDownloadResult" Header="Download result" Click="PhotoScenes_DownloadResult">
 							<MenuItem.Icon>
 								<Image Source="/Images/Download.png" Width="16" Height="16" />
 							</MenuItem.Icon>
 						</MenuItem>
-						<MenuItem Header="Preview" Click="PhotoScenes_Preview">
+						<MenuItem x:Name="menuPreview" Header="Preview" Click="PhotoScenes_Preview">
 							<MenuItem.Icon>
 								<Image Source="/Images/3dviewer.png" Width="16" Height="16" />
 							</MenuItem.Icon>

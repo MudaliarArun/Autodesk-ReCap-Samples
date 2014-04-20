@@ -37,7 +37,7 @@ using System.ComponentModel;
 
 namespace Autodesk.ADN.WpfReCap {
 
-	public delegate void DownloadFileCompletedDelegate (string photoscene) ;
+	public delegate void DownloadFileCompletedDelegate (string photoscene, string filename) ;
 
 	public partial class DownloadFileWnd : Window {
 		public DownloadFileCompletedDelegate _callback =null ;
@@ -100,7 +100,7 @@ namespace Autodesk.ADN.WpfReCap {
 			_webClient =null ;
 			string photosceneid =System.IO.Path.GetFileNameWithoutExtension (_location) ;
 			if ( e.Cancelled == false && _callback != null )
-				this.Dispatcher.Invoke (_callback, new Object [] { photosceneid });
+				this.Dispatcher.Invoke (_callback, new Object [] { photosceneid, _location }) ;
 			else if ( e.Cancelled == true )
 				File.Delete (_location) ;
 			this.Close () ;
