@@ -520,11 +520,10 @@ namespace Autodesk.ADN.WpfReCap {
 				// Was it for d/l or Preview?
 				bool bRet =_forPreview.Remove (photosceneid) ;
 				AdskReCap.Format format =_requestedFormat [photosceneid] ;
-				outputFormat.SelectedItem =AdskReCap.Format.OBJ.ToString () ;
+				outputFormat.SelectedItem =format.ToString () ;
 				MenuItemAutomationPeer menuPeer =new MenuItemAutomationPeer (bRet ? menuPreview : menuDownloadResult) ;
 				IInvokeProvider invokeProv =menuPeer.GetPattern (PatternInterface.Invoke) as IInvokeProvider ;
 				invokeProv.Invoke () ;
-				//}
 			} else {
 				LogError (string.Format ("Photoscene {0} conversion failed", photosceneid)) ;
 				MessageBox.Show (string.Format ("Photoscene {0} conversion failed", photosceneid), "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
