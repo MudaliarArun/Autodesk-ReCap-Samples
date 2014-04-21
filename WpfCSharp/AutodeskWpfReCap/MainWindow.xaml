@@ -124,6 +124,7 @@
 						<Image x:Name="ReCapPhotoscenesRefresh" Source="/Images/Refresh.png" />
 					</MenuItem.Icon>
 				</MenuItem>
+				<CheckBox x:Name="showDeleted" Content="Show deleted scenes" Width="150" Margin="-20,0,-35,0" ToolTip="Hide/Show deleted scenes (Hide is default)" Checked="showDeleted_Checked" Unchecked="showDeleted_Checked" />
 			</Menu>
 
 			<ListView x:Name="PhotoScenes" Grid.Column="1" Grid.Row="1"

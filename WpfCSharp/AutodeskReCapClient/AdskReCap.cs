@@ -366,7 +366,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			request.AddParameter (json ? "json" : "xml", 1) ;
 			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
 			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;
-			//Log ("photoscene/properties response: {0}", _lastResponse) ; // Can be very big
+			Log ("photoscene/properties response: {0}", _lastResponse) ; // Can be very big
 			Log ("photoscene/properties response: <returned with a response>", "Response") ;
 			return (isOk ()) ;
 		}

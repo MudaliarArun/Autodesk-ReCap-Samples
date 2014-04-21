@@ -197,6 +197,12 @@ namespace Autodesk.ADN.WpfReCap {
 				propertyGrid.SelectedObject =new AdskReCapPhotoscene (_recap.xml ()) ;
 		}
 
+		private async void showDeleted_Checked (object sender, RoutedEventArgs e) {
+			//showDeleted
+			e.Handled =true ;
+			await ListPhotoScenes () ;
+		}
+
 		#endregion
 
 		#region PhotoScenes Context Menu events
@@ -429,8 +435,8 @@ namespace Autodesk.ADN.WpfReCap {
 			foreach ( KeyValuePair<string, object> pair in nodes.Dictionary ) {
 				dynamic fnode =pair.Value ;
 				try {
-					if ( fnode.deleted == "true" ) // deleted might not be present in the response unless it is true
-						continue;
+					if ( showDeleted.IsChecked == false && fnode.deleted == "true" ) // deleted might not be present in the response unless it is true
+						continue ;
 				} catch { }
 				logText +=string.Format ("\n\t{0} [{1}]", fnode.photosceneid, fnode.status) ;
 				// If we have the result downloaded, displays the resulting icon instead of the generic image
