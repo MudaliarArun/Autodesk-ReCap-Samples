@@ -277,6 +277,7 @@ namespace Autodesk.ADN.WpfReCap {
 			if ( !await PhotosceneProperties (_photosceneid) )
 				return ;
 
+			Thumbnails.ItemsSource =new ObservableCollection<ReCapPhotoItem> () ;
 			dynamic response =_recap.response () ;
 			dynamic files =response.Photoscenes.Photoscene.Files ;
 			foreach ( KeyValuePair<string, object> pair in files.Dictionary ) {
