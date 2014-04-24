@@ -59,6 +59,9 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adsk3dNavigate.cs" />
+    <Compile Include="AdskMayaOrbit.cs" />
+    <Compile Include="AdskTrackball.cs" />
     <Compile Include="CursorSwitcher.cs" />
     <Compile Include="ViewerWindow.xaml.cs">
       <DependentUpon>ViewerWindow.xaml</DependentUpon>
@@ -90,6 +93,12 @@
     <Resource Include="Images\wireframe.png" />
     <Resource Include="Images\wireframeonshaded.png" />
     <Resource Include="Images\yellow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\trackballOn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\trackballOff.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

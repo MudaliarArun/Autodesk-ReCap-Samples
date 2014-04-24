@@ -86,6 +86,24 @@
 					<Image Source="Images/textured.png" />
 				</Button>
 
+				<ToggleButton x:Name="trackballToggle" IsChecked="False" ToolTip="Maya / Trackball" Canvas.Right="10" Canvas.Bottom="75" Width="20" Height="20" Background="Transparent" BorderThickness="0" Checked="trackballToggle_Checked" Unchecked="trackballToggle_Unchecked">
+					<Image>
+						<Image.Style>
+							<Style TargetType="{x:Type Image}">
+								<Setter Property="Source" Value="Images/trackballOff.png" />
+								<Style.Triggers>
+									<MultiDataTrigger>
+										<MultiDataTrigger.Conditions>
+											<Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}, Path=IsChecked}" Value="True" />
+										</MultiDataTrigger.Conditions>
+										<Setter Property="Source" Value="Images/trackballOn.png" />
+									</MultiDataTrigger>
+								</Style.Triggers>
+							</Style>
+						</Image.Style>
+					</Image>
+				</ToggleButton>
+				
 				<ToggleButton x:Name="ambiantlightToggle" IsChecked="True" ToolTip="Ambiant Light" Canvas.Right="10" Canvas.Bottom="35" Width="20" Height="20" Background="Transparent" BorderThickness="0" Checked="ambiantlightToggle_Checked" Unchecked="ambiantlightToggle_Unchecked">
 					<Image>
 						<Image.Style>
