@@ -55,7 +55,9 @@
     <Reference Include="MayaTheme">
       <HintPath>..\MayaTheme.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\RestSharp.104.3\RestSharp.dll</HintPath>
@@ -117,6 +119,7 @@
       <DependentUpon>DownloadFileWnd.xaml</DependentUpon>
     </Compile>
     <Resource Include="Examples\AUquads.zip" />
+    <None Include="packages.config" />
     <None Include="UserSettings_.cs" />
     <Page Include="JobProgress.xaml">
       <SubType>Designer</SubType>

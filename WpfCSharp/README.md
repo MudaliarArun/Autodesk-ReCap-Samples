@@ -26,7 +26,7 @@ The WPF C# sample
 
 Dependencies
 --------------------
-This sample is dependent of four 3rd party assemblies:
+This sample is dependent of five 3rd party assemblies:
 
 1. The RestSharp assembly
 
@@ -47,6 +47,11 @@ This sample is dependent of four 3rd party assemblies:
      you can either remove or use that assembly as you wish since it only change the WPF window colors.
 	 You can get the source code [here](https://github.com/ADN-DevTech/Maya-Net-Wpf-DarkScheme)
 
+5. The Json.NET library
+
+	 You can get this library from http://james.newtonking.com/json and/or use NuGet to install it for the project. See instructions here: http://www.nuget.org/packages/newtonsoft.json/
+
+	 
 Building the sample
 ---------------------------
 
