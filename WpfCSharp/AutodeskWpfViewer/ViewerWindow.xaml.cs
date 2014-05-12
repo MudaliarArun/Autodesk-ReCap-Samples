@@ -132,7 +132,7 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 			Point pos =Mouse.GetPosition (viewport) ;
 			if ( e.LeftButton == MouseButtonState.Pressed )
 				Viewport_Rotate (pos) ;
-			else if ( e.MiddleButton == MouseButtonState.Pressed )
+            else if (e.MiddleButton == MouseButtonState.Pressed || (e.RightButton == MouseButtonState.Pressed && (Keyboard.Modifiers & ModifierKeys.Alt) > 0) )
 				Viewport_Pan (pos) ;
 		}
 

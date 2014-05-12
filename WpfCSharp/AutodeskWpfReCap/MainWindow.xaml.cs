@@ -235,7 +235,7 @@ namespace Autodesk.ADN.WpfReCap {
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
 			ShotsWindow wnd =new ShotsWindow (item.Name) ;
 			wnd.Owner =this ;
-			wnd.ShowDialog () ;
+			wnd.Show () ;
 		}
 
 		private async void PhotoScenes_ProcessPhotoscene (object sender, RoutedEventArgs e) {
@@ -427,10 +427,14 @@ namespace Autodesk.ADN.WpfReCap {
 			//	}) ;
 			//}
 
-			// ReCap Reponse dynamic object sample (the beauty here is that this is the same code if you're using json vs xml)
+			// ReCap Response dynamic object sample (the beauty here is that this is the same code if you're using json vs xml)
 			ObservableCollection<ReCapPhotosceneProject> items =new ObservableCollection<ReCapPhotosceneProject> () ;
 			dynamic response =_recap.response () ;
 			dynamic nodes =response.Photoscenes ; // if json, do doc.Photoscenes.Photoscene
+			if (nodes == "") { // no scenes for this user
+				LogInfo ("No scene for that user on the server.", LogIndent.PostUnindent) ;
+				return ;
+			}
 			string logText ="Photoscenes List:" ;
 			foreach ( KeyValuePair<string, object> pair in nodes.Dictionary ) {
 				dynamic fnode =pair.Value ;
