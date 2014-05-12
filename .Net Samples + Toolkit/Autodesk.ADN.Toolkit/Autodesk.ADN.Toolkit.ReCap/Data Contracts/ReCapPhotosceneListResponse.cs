@@ -41,7 +41,9 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public ReCapPhotosceneListResponse(
             List<ReCapPhotoscene> photoscenes)
         {
-            Photoscenes = photoscenes;
+            Photoscenes = (photoscenes != null ? 
+                photoscenes : 
+                new List<ReCapPhotoscene>());
         }
 
         public ReCapPhotosceneListResponse()
