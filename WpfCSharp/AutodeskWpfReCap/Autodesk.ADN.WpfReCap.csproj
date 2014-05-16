@@ -114,10 +114,10 @@
     <Compile Include="UploadProgress.xaml.cs">
       <DependentUpon>UploadProgress.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserSettings.cs" />
     <Compile Include="DownloadFileWnd.xaml.cs">
       <DependentUpon>DownloadFileWnd.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserSettings.cs" />
     <Resource Include="Examples\AUquads.zip" />
     <None Include="packages.config" />
     <None Include="UserSettings_.cs" />
