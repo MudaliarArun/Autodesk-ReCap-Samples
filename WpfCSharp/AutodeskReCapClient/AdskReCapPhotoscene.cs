@@ -118,49 +118,6 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		// XML Serializer - http://msdn.microsoft.com/en-us/library/system.xml.serialization.xmlserializer.aspx
 		public AdskReCapPhotoscene (XmlDocument doc)
 			: this (doc.SelectSingleNode ("/Response/Photoscenes/Photoscene")) {
-			//try {
-			//	XmlNode node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/photosceneid") ;
-			//	PhotoSceneID =node.InnerText ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/name") ;
-			//	Name =node.InnerText ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/creationDate") ;
-			//	CreationDate =DateTime.Parse (Uri.UnescapeDataString (node.InnerText)) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/meshQuality") ;
-			//	MeshQuality =(AdskReCap.MeshQuality)Enum.Parse (typeof (AdskReCap.MeshQuality), node.InnerText, true) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/status") ;
-			//	Status =node.InnerText ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertFormat") ;
-			//	ConvertFormat =(AdskReCap.Format)node.InnerText.ToReCapFormatEnum () ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/convertStatus") ;
-			//	ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), node.InnerText, true) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbfaces") ;
-			//	NbFaces =int.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbvertices") ;
-			//	NbVertices =int.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nb3Dpoints") ;
-			//	Nb3dPoints =int.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbStitchedShots") ;
-			//	NbStitchedShots =int.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbShots") ;
-			//	NbShots =int.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/deleted") ;
-			//	Deleted =(node != null ? bool.Parse (node.InnerText) : false) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/fileSize") ;
-			//	FileSize =(node != null ? int.Parse (node.InnerText) : -1) ;
-			//	//node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/nbShots") ;
-			//	//public List<string> Files { get; private set; }
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/processingTime") ;
-			//	ProcessingTime =double.Parse (node.InnerText) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/progress") ;
-			//	Progress =(node != null ? double.Parse (node.InnerText) : 0) ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/progressMessage") ;
-			//	ProgressMessage =(node != null ? node.InnerText : "") ;
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/scenelink") ;
-			//	SceneLink =(node != null ? new Uri ((string)node.InnerText) : null);
-			//	node =doc.SelectSingleNode ("/Response/Photoscenes/Photoscene/userID") ;
-			//	UserID =node.InnerText ;
-			//} catch {
-			//}
 		}
 
 		public AdskReCapPhotoscene (XmlNode el) {
@@ -179,32 +136,54 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				ConvertFormat =(AdskReCap.Format)node.InnerText.ToReCapFormatEnum () ;
 				node =el.SelectSingleNode ("./convertStatus") ;
 				ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), node.InnerText, true) ;
-				node =el.SelectSingleNode ("./nbfaces") ;
-				NbFaces =int.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./nbvertices") ;
-				NbVertices =int.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./nb3Dpoints") ;
-				Nb3dPoints =int.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./nbStitchedShots") ;
-				NbStitchedShots =int.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./nbShots") ;
-				NbShots =int.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./deleted") ;
-				Deleted =(node != null ? bool.Parse (node.InnerText) : false) ;
-				node =el.SelectSingleNode ("./fileSize") ;
-				FileSize =(node != null ? int.Parse (node.InnerText) : -1) ;
+				try {
+					node =el.SelectSingleNode ("./nbfaces") ;
+					NbFaces =int.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./nbvertices") ;
+					NbVertices =int.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./nb3Dpoints") ;
+					Nb3dPoints =int.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./nbStitchedShots") ;
+					NbStitchedShots =int.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./nbShots") ;
+					NbShots =int.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./fileSize") ;
+					FileSize =(node != null ? int.Parse (node.InnerText) : -1) ;
+				} catch { }
 				//node =el.SelectSingleNode ("./nbShots") ;
 				//public List<string> Files { get; private set; }
-				node =el.SelectSingleNode ("./processingTime") ;
-				ProcessingTime =double.Parse (node.InnerText) ;
-				node =el.SelectSingleNode ("./progress") ;
-				Progress =(node != null ? double.Parse (node.InnerText) : 0) ;
-				node =el.SelectSingleNode ("./progressMessage") ;
-				ProgressMessage =(node != null ? node.InnerText : "") ;
-				node =el.SelectSingleNode ("./scenelink") ;
-				SceneLink =(node != null ? new Uri ((string)node.InnerText) : null) ;
+				try {
+					node =el.SelectSingleNode ("./processingTime") ;
+					ProcessingTime =double.Parse (node.InnerText) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./progress") ;
+					Progress =(node != null ? double.Parse (node.InnerText) : 0) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./progressMessage") ;
+					ProgressMessage =(node != null ? node.InnerText : "") ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./scenelink") ;
+					SceneLink =(node != null ? new Uri ((string)node.InnerText) : null) ;
+				} catch { }
+				try {
+					node =el.SelectSingleNode ("./deleted") ;
+					Deleted =(node != null ? bool.Parse (node.InnerText) : false) ;
+				} catch { }
 				node =el.SelectSingleNode ("./userID") ;
-				UserID =node.InnerText ;
+				UserID =Uri.UnescapeDataString (node.InnerText) ;
 			} catch {
 			}
 		}
@@ -236,7 +215,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				Progress =(el.Element ("progress") != null ? (double)el.Element ("progress") : 0) ;
 				ProgressMessage =(el.Element ("progressMessage") != null ? (string)el.Element ("progressMessage") : "") ;
 				SceneLink =(el.Element ("scenelink") != null ? new Uri ((string)el.Element ("scenelink")) : null) ;
-				UserID =(string)el.Element ("userID") ;
+				UserID =Uri.UnescapeDataString ((string)el.Element ("userID")) ;
 			} catch {
 			}
 		}
@@ -266,7 +245,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				Progress =(el ["progress"] != null ? (double)el ["progress"] : 0) ;
 				ProgressMessage =(el ["progressMessage"] != null ? (string)el ["progressMessage"] : "") ;
 				SceneLink =(el ["scenelink"] != null ? new Uri ((string)el ["scenelink"]) : null) ;
-				UserID =(string)el ["userID"] ;
+				UserID =Uri.UnescapeDataString ((string)el ["userID"]) ;
 			} catch {
 			}
 		}
