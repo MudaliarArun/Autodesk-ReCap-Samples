@@ -40,10 +40,7 @@ namespace Autodesk.ADN.WpfReCap {
 		// ReCap: Fill in these macros with the correct information (only the 2 first are important)
 		public static readonly string ReCapAPIURL ="http://rc-api-adn.autodesk.com/3.1/API/" ;
 		public static readonly string ReCapClientID ="your ReCap client ID" ;
-		public static readonly string ReCapKey ="your ReCap client key" ; // not used anymore
-		public static readonly string ReCapUserID ="your ReCap user ID" ; // Needed only for using the ReCapSceneList, otherwise bail
-
-		public static readonly string Email ="your email address" ; // used for notification
+		//public static readonly string ReCapKey ="your ReCap client key" ; // not used anymore
 
 		// Do not edit
 		public static readonly string OAUTH_REQUESTTOKEN ="OAuth/RequestToken" ;

@@ -50,6 +50,8 @@ namespace Autodesk.ADN.WpfReCap {
 		public async void startLogin () {
 			if ( await RequestToken () ) // Leg 1
                 Authorize () ; // Leg 2
+            else
+                Close () ;
 		}
 
 		public static bool isOOB {
@@ -66,6 +68,8 @@ namespace Autodesk.ADN.WpfReCap {
 				Properties.Settings.Default.oauth_token ="" ;
 				Properties.Settings.Default.oauth_token_secret ="" ;
 				Properties.Settings.Default.oauth_session_handle ="" ;
+				Properties.Settings.Default.x_oauth_user_name ="" ;
+				Properties.Settings.Default.x_oauth_user_guid ="" ;
 				Properties.Settings.Default.Save () ;
 
 				if ( isOOB )
@@ -189,6 +193,8 @@ namespace Autodesk.ADN.WpfReCap {
 				Properties.Settings.Default.oauth_token ="" ;
 				Properties.Settings.Default.oauth_token_secret ="" ;
 				Properties.Settings.Default.oauth_session_handle ="" ;
+				Properties.Settings.Default.x_oauth_user_name ="" ;
+				Properties.Settings.Default.x_oauth_user_guid ="" ;
 				Properties.Settings.Default.Save () ;
 
 				Log (UserSettings.OAUTH_ACCESSTOKEN + " request sent", "Request") ;
@@ -223,13 +229,13 @@ namespace Autodesk.ADN.WpfReCap {
 				Properties.Settings.Default.oauth_token =accessToken ["oauth_token"] ;
 				Properties.Settings.Default.oauth_token_secret =accessToken ["oauth_token_secret"] ;
 				Properties.Settings.Default.oauth_session_handle =accessToken ["oauth_session_handle"] ;
+				Properties.Settings.Default.x_oauth_user_name =accessToken ["x_oauth_user_name"] ;
+				Properties.Settings.Default.x_oauth_user_guid =accessToken ["x_oauth_user_guid"] ;
 
 				// The request returns other parameters that we do not use in this example.
 				// They are listed here in comment in case you wanted to use them in your application.
 				//double TokenExpire =double.Parse (accessToken ["oauth_expires_in"]) ;
 				//double SessionExpire =double.Parse (accessToken ["oauth_authorization_expires_in"]) ;
-				//string UserName =accessToken ["x_oauth_user_name"] ;
-				//string UserGUID =accessToken ["x_oauth_user_guid"] ;
 
 				Properties.Settings.Default.Save () ;
 
@@ -267,6 +273,8 @@ namespace Autodesk.ADN.WpfReCap {
 					Properties.Settings.Default.oauth_token ="" ;
 					Properties.Settings.Default.oauth_token_secret ="" ;
 					Properties.Settings.Default.oauth_session_handle ="" ;
+					Properties.Settings.Default.x_oauth_user_name ="" ;
+					Properties.Settings.Default.x_oauth_user_guid ="" ;
 					Properties.Settings.Default.Save () ;
 					Log ("Success! Access Tokens released", "Response") ;
 				} else {

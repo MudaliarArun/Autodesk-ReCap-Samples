@@ -122,6 +122,7 @@ namespace Autodesk.ADN.WpfReCap {
 			LogInfo ("", LogIndent.PostUnindent) ;
 	
 			await ConnectWithReCapServer () ;
+			Properties.Settings.Default.recap_UserID =await GetUserID () ;
 			await ListPhotoScenes () ;
 		}
 
@@ -392,6 +393,23 @@ namespace Autodesk.ADN.WpfReCap {
 			return (true) ;
 		}
 
+		protected async Task<string> GetUserID () {
+			if ( !await ConnectWithReCapServer () )
+				return ("") ;
+
+			// Deleting the given Photoscene
+			LogInfo ("Request current UserID", LogIndent.PostIndent) ;
+			//bool ret =await _recap.DeleteScene (photosceneid) ;
+			if ( !await _recap.User (Properties.Settings.Default.x_oauth_user_name, Properties.Settings.Default.x_oauth_user_guid) ) {
+				LogError ("Getting UserID failed", LogIndent.PostUnindent) ;
+				MessageBox.Show ("Getting UserID failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
+				return ("") ;
+			}
+			dynamic response =_recap.response () ;
+			LogInfo (string.Format ("UserID - {0}", response.User.userID), LogIndent.PostUnindent) ;
+			return (response.User.userID) ;
+		}
+
 		private async Task ListPhotoScenes () {
 			if ( !await ConnectWithReCapServer () )
 				return ;
@@ -400,7 +418,7 @@ namespace Autodesk.ADN.WpfReCap {
 			LogInfo ("List Photoscenes", LogIndent.PostIndent) ;
 			PhotoScenes.ItemsSource =null ;
 			PhotoScenes.Items.Refresh () ;
-			if ( !await _recap.SceneList ("userID", UserSettings.ReCapUserID) ) {
+			if ( !await _recap.SceneList ("userID", Properties.Settings.Default.recap_UserID) ) {
 				LogError ("ListPhotoScenes failed", LogIndent.PostUnindent) ;
 				MessageBox.Show ("ListPhotoScenes failed", "WpfReCap", MessageBoxButton.OK, MessageBoxImage.Error) ;
 				return ;
@@ -422,7 +440,7 @@ namespace Autodesk.ADN.WpfReCap {
 			//	// If we have the result downloaded, displays the resulting icon instead of the generic image
 			//	items.Add (new ReCapPhotosceneProject () {
 			//		Name =photosceneid,
-			//		Type =p2.InnerText,
+			//		Type =(p0 != null && p0.InnerText == "true" ? "Deleted (" + p2.InnerText + ")" : p2.InnerText),
 			//		Image =(File.Exists (photosceneid + ".zip") ? photosceneid + ".zip:icon.png" : @"Images\ReCap.jpg")
 			//	}) ;
 			//}
@@ -431,22 +449,24 @@ namespace Autodesk.ADN.WpfReCap {
 			ObservableCollection<ReCapPhotosceneProject> items =new ObservableCollection<ReCapPhotosceneProject> () ;
 			dynamic response =_recap.response () ;
 			dynamic nodes =response.Photoscenes ; // if json, do doc.Photoscenes.Photoscene
-			if (nodes == "") { // no scenes for this user
+			if ( nodes.GetType () != typeof (AdskDynamicDictionary) ) { // no scenes for this user
 				LogInfo ("No scene for that user on the server.", LogIndent.PostUnindent) ;
 				return ;
 			}
 			string logText ="Photoscenes List:" ;
 			foreach ( KeyValuePair<string, object> pair in nodes.Dictionary ) {
 				dynamic fnode =pair.Value ;
+				bool bDeleted =false ;
 				try {
-					if ( showDeleted.IsChecked == false && fnode.deleted == "true" ) // deleted might not be present in the response unless it is true
+					bDeleted =(fnode.deleted == "true") ;
+					if ( showDeleted.IsChecked == false && bDeleted ) // deleted might not be present in the response unless it is true
 						continue ;
 				} catch { }
 				logText +=string.Format ("\n\t{0} [{1}]", fnode.photosceneid, fnode.status) ;
 				// If we have the result downloaded, displays the resulting icon instead of the generic image
 				items.Add (new ReCapPhotosceneProject () {
 					Name =fnode.photosceneid,
-					Type =fnode.status,
+					Type =(bDeleted  ? "Deleted (" + fnode.status + ")" : fnode.status),
 					Image =(File.Exists (fnode.photosceneid + ".zip") ? fnode.photosceneid + ".zip:icon.png" : @"Images\ReCap.jpg")
 				}) ;
 			}
@@ -463,7 +483,7 @@ namespace Autodesk.ADN.WpfReCap {
 			//- Create Photoscene
 			LogInfo (string.Format ("Create Photoscene {0} / {1}", format.ToFriendlyString (), quality.ToString ()), LogIndent.PostIndent) ;
 			Dictionary<string, string> options =new Dictionary<string, string> () {
-				{ "callback", "email://" + UserSettings.Email }
+				{ "callback", "email://" + Properties.Settings.Default.x_oauth_user_name }
 			} ;
 			if ( !await _recap.CreatePhotoscene (/*AdskReCap.Format.OBJ*/format, /*AdskReCap.MeshQuality.DRAFT*/quality, options) ) {
 				LogError ("CreatePhotoscene failed - Failed to create a new Photoscene", LogIndent.PostUnindent) ;

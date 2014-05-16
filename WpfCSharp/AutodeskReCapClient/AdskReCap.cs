@@ -270,13 +270,32 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		/// <returns><para>http://rc-api-adn.autodesk.com/3.1/api-docs/</para>
 		/// <para>On Error: </para>
 		/// </returns>
-		public async Task<bool> Version (bool json = false) {
+		public async Task<bool> Version (bool json =false) {
 			var request =new RestRequest ("version", Method.GET) ;
 			request.AddParameter ("clientID", _clientID) ;
 			request.AddParameter (json ? "json" : "xml", 1) ;
 			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
 			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;
 			Log ("version response: {0}", _lastResponse) ;
+			return (isOk ()) ;
+		}
+
+		/// <summary>
+		/// Return the ReCap userID
+		/// </summary>
+		/// <param name="json">true to receive the response in JSON format. Otherwise default is XML.</param>
+		/// <returns><para>http://rc-api-adn.autodesk.com/3.1/api-docs/</para>
+		/// <para>On Error: </para>
+		/// </returns>
+		public async Task<bool> User (string email, string o2id, bool json =false) {
+			var request =new RestRequest ("user", Method.GET) ;
+			request.AddParameter ("clientID", _clientID) ;
+			request.AddParameter ("email", email) ;
+			request.AddParameter ("O2ID", o2id) ;
+			request.AddParameter (json ? "json" : "xml", 1) ;
+			Log (String.Format ("{0} {1} request sent", request.Method, request.Resource)) ;
+			_lastResponse =await _restClient.ExecuteTaskAsync (request) ;
+			Log ("user response: {0}", _lastResponse) ;
 			return (isOk ()) ;
 		}
 
@@ -374,7 +393,7 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 		/// <summary>
 		/// All the data associated to the given photoscene(s) and a list of files used for given photoscene(s).
 		/// </summary>
-		/// <param name="photosceneid">The ID of the photoscene to get properties</param>
+		/// <param name="photosceneid">The ID of the photoscene to get properties.</param>
 		/// <param name="json">true to receive the response in JSON format. Otherwise default is XML.</param>
 		/// <returns><para>http://rc-api-adn.autodesk.com/3.1/api-docs/#!/photoscene/get_photoscene_properties_get_9</para>
 		/// <para>On Error: BAD_SCENE_ID</para>
@@ -389,7 +408,16 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 			return (isOk ()) ;
 		}
 
-		public async Task<bool> UploadFiles (string photosceneid, Dictionary<string, string> files, bool json =false) {
+		/// <summary>
+		/// All the data associated to the given photoscene(s) and a list of files used for given photoscene(s).
+		/// </summary>
+		/// <param name="photosceneid">The ID of the photoscene to get properties.</param>
+		/// <param name="files">The list of image files to upload.</param>
+		/// <param name="json">true to receive the response in JSON format. Otherwise default is XML.</param>
+		/// <returns><para>http://rc-api-adn.autodesk.com/3.1/api-docs/#!/photoscene/get_photoscene_properties_get_9</para>
+		/// <para>On Error: BAD_SCENE_ID, SCENE_ALREADY_PROCESSED, CANT_COPY_FILE, DB_ERROR, BAD_VALUES, PHOTOSCENE_CORRUPTED, BAD_IMAGE_PROTOCOL, DB_BAD_ID</para>
+		/// </returns>
+		public async Task<bool> UploadFiles(string photosceneid, Dictionary<string, string> files, bool json =false) {
 			// ReCap returns the following if no file uploaded (or referenced), setup an error instead
 			//<Response>
 			//        <Usage>0.81617307662964</Usage>
