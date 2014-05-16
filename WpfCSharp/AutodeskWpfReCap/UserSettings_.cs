@@ -34,8 +34,8 @@ namespace Autodesk.ADN.WpfReCap {
 		// One approach is to encrypt and/or obfuscate these values
 		public static readonly string CONSUMER_KEY ="your consumer key" ;
 		public static readonly string CONSUMER_SECRET ="your consumer secret key" ;
-		public static readonly string O2_HOST ="https://accounts.autodesk.com/" ; // Autodesk production accounts server
-		//public static readonly string O2_HOST ="https://accounts-staging.autodesk.com/" ; // Autodesk staging accounts server
+		public static readonly string OAUTH_HOST ="https://accounts.autodesk.com/" ; // Autodesk production accounts server
+		//public static readonly string OAUTH_HOST ="https://accounts-staging.autodesk.com/" ; // Autodesk staging accounts server
 
 		// ReCap: Fill in these macros with the correct information (only the 2 first are important)
 		public static readonly string ReCapAPIURL ="http://rc-api-adn.autodesk.com/3.1/API/" ;
@@ -46,11 +46,11 @@ namespace Autodesk.ADN.WpfReCap {
 		public static readonly string Email ="your email address" ; // used for notification
 
 		// Do not edit
-		public static readonly string O2_REQUESTTOKEN ="OAuth/RequestToken" ;
-		public static readonly string O2_ACCESSTOKEN ="OAuth/AccessToken" ;
-		public static readonly string O2_AUTHORIZE ="OAuth/Authorize" ;
-		public static readonly string O2_INVALIDATETOKEN ="OAuth/InvalidateToken" ;
-		public static readonly string O2_ALLOW =O2_HOST + "OAuth/Allow" ;
+		public static readonly string OAUTH_REQUESTTOKEN ="OAuth/RequestToken" ;
+		public static readonly string OAUTH_ACCESSTOKEN ="OAuth/AccessToken" ;
+		public static readonly string OAUTH_AUTHORIZE ="OAuth/Authorize" ;
+		public static readonly string OAUTH_INVALIDATETOKEN ="OAuth/InvalidateToken" ;
+		public static readonly string OAUTH_ALLOW =OAUTH_HOST + "OAuth/Allow" ;
 
 	}
 

@@ -60,7 +60,7 @@ namespace Autodesk.ADN.WpfReCap {
 		protected async Task<bool> RequestToken () {
 			try {
 				if ( _restClient == null )
-					_restClient =new RestClient (UserSettings.O2_HOST) ;
+					_restClient =new RestClient (UserSettings.OAUTH_HOST) ;
 
 				LogInfo ("Initializing and resetting tokens") ;
 				Properties.Settings.Default.oauth_token ="" ;
@@ -73,8 +73,8 @@ namespace Autodesk.ADN.WpfReCap {
 				else
 					_restClient.Authenticator =OAuth1Authenticator.ForRequestToken (UserSettings.CONSUMER_KEY, UserSettings.CONSUMER_SECRET) ;
 				// Build the HTTP request for a Request token and execute it against the OAuth provider
-				var request =new RestRequest (UserSettings.O2_REQUESTTOKEN, Method.POST) ;
-				Log (UserSettings.O2_REQUESTTOKEN + " request sent", "Request") ;
+				var request =new RestRequest (UserSettings.OAUTH_REQUESTTOKEN, Method.POST) ;
+				Log (UserSettings.OAUTH_REQUESTTOKEN + " request sent", "Request") ;
 				//var response =_restClient.Execute (request) ;
 				var response =await _restClient.ExecuteTaskAsync (request) ;
 				if ( response.StatusCode != HttpStatusCode.OK ) {
@@ -95,7 +95,7 @@ namespace Autodesk.ADN.WpfReCap {
 				Properties.Settings.Default.oauth_token =requestToken ["oauth_token"] ;
 				Properties.Settings.Default.oauth_token_secret =requestToken ["oauth_token_secret"] ;
 				Properties.Settings.Default.Save () ;
-				Log (UserSettings.O2_REQUESTTOKEN + " successful", "Response") ;
+				Log (UserSettings.OAUTH_REQUESTTOKEN + " successful", "Response") ;
 				return (true) ;
 			} catch ( Exception ex ) {
 				LogError ("Exception: " + ex.Message) ;
@@ -105,8 +105,8 @@ namespace Autodesk.ADN.WpfReCap {
 
 		//- Second Leg: The second step is to authorize the user using the Autodesk login server
 		protected void Authorize () {
-			LogInfo ("Prepating " + UserSettings.O2_AUTHORIZE + " request") ;
-			var request =new RestRequest (UserSettings.O2_AUTHORIZE) ;
+			LogInfo ("Prepating " + UserSettings.OAUTH_AUTHORIZE + " request") ;
+			var request =new RestRequest (UserSettings.OAUTH_AUTHORIZE) ;
 			request.AddParameter ("oauth_token", Properties.Settings.Default.oauth_token) ;
 			if ( isOOB ) {
 				// In case of out-of-band authorization, let's show the authorization page which will provide the user with a PIN
@@ -123,7 +123,7 @@ namespace Autodesk.ADN.WpfReCap {
 
 		//- When a new URL is being shown in the browser, we can check the URL
 		//- This is needed in case of in-band authorization which will redirect us to a given
-		//- URL (O2_ALLOW) in case of success
+		//- URL (OAUTH_ALLOW) in case of success
 		private async void webView_LoadCompleted (object sender, System.Windows.Navigation.NavigationEventArgs e) {
 			// In case of out-of-band login we do not need to check the callback URL
 			// Instead we'll need the PIN that the webpage will provide for the user
@@ -147,8 +147,8 @@ namespace Autodesk.ADN.WpfReCap {
 		public static async Task<bool> AccessToken (bool refresh, string PIN) {
 			try {
 				if ( _restClient == null )
-					_restClient =new RestClient (UserSettings.O2_HOST) ;
-				var request =new RestRequest (UserSettings.O2_ACCESSTOKEN, Method.POST) ;
+					_restClient =new RestClient (UserSettings.OAUTH_HOST) ;
+				var request =new RestRequest (UserSettings.OAUTH_ACCESSTOKEN, Method.POST) ;
 
 				// If we already got access tokens and now just try to refresh
 				// them then we need to provide the session handle
@@ -191,7 +191,7 @@ namespace Autodesk.ADN.WpfReCap {
 				Properties.Settings.Default.oauth_session_handle ="" ;
 				Properties.Settings.Default.Save () ;
 
-				Log (UserSettings.O2_ACCESSTOKEN + " request sent", "Request") ;
+				Log (UserSettings.OAUTH_ACCESSTOKEN + " request sent", "Request") ;
 				//var response =_restClient.Execute (request) ;
 				var response =await _restClient.ExecuteTaskAsync (request) ;
 				if ( response.StatusCode != HttpStatusCode.OK ) {
@@ -245,16 +245,16 @@ namespace Autodesk.ADN.WpfReCap {
 		public static async Task<bool> InvalidateToken () {
 			try {
 				if ( _restClient == null )
-					_restClient =new RestClient (UserSettings.O2_HOST) ;
+					_restClient =new RestClient (UserSettings.OAUTH_HOST) ;
 
 				LogInfo ("Initializing to release Access Tokens") ;
-				var request =new RestRequest (UserSettings.O2_INVALIDATETOKEN, Method.POST) ;
+				var request =new RestRequest (UserSettings.OAUTH_INVALIDATETOKEN, Method.POST) ;
 				_restClient.Authenticator =OAuth1Authenticator.ForAccessTokenRefresh (
 					UserSettings.CONSUMER_KEY, UserSettings.CONSUMER_SECRET,
 					Properties.Settings.Default.oauth_token, Properties.Settings.Default.oauth_token_secret,
 					Properties.Settings.Default.oauth_session_handle
 				) ;
-				Log (UserSettings.O2_INVALIDATETOKEN + " request sent", "Request") ;
+				Log (UserSettings.OAUTH_INVALIDATETOKEN + " request sent", "Request") ;
 				//var response =_restClient.Execute (request) ;
 				var response =await _restClient.ExecuteTaskAsync (request) ;
 				if ( response.StatusCode != HttpStatusCode.OK ) {
@@ -284,7 +284,7 @@ namespace Autodesk.ADN.WpfReCap {
 			}
 		}
 
-		//- Check if the URL is O2_ALLOW, which means that the user could log in successfully
+		//- Check if the URL is OAUTH_ALLOW, which means that the user could log in successfully
 		private bool isAuthorizeCallBack () {
 			string fullUrlString =webView.Source.AbsoluteUri ;
 			if ( fullUrlString.Length == 0 )
@@ -292,11 +292,11 @@ namespace Autodesk.ADN.WpfReCap {
 			string [] arr =fullUrlString.Split ('?') ;
 			if ( arr == null || arr.Length != 2 )
 				return (false) ;
-			// If we were redirected to the O2_ALLOW URL then the user could log in successfully
-			if ( arr [0] == UserSettings.O2_ALLOW )
+			// If we were redirected to the OAUTH_ALLOW URL then the user could log in successfully
+			if ( arr [0] == UserSettings.OAUTH_ALLOW )
 				return (true) ;
 			// If we got to this page then probably there is an issue
-			if ( arr [0] == UserSettings.O2_AUTHORIZE ) {
+			if ( arr [0] == UserSettings.OAUTH_AUTHORIZE ) {
 				// If the page contains the word "oauth_problem" then there is clearly a problem
 				//string content =webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML"] ;
 				//if ( content.IndexOf ("oauth_problem") > -1 )
