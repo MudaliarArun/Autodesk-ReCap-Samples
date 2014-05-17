@@ -203,18 +203,18 @@ namespace Autodesk.ADN.Toolkit.ReCap {
 				Status =(string)el.Element ("status") ;
 				ConvertFormat =(AdskReCap.Format)(el.Element ("convertFormat").Value.ToReCapFormatEnum ()) ;
 				ConvertStatus =(AdskReCap.WorkerStatus)Enum.Parse (typeof (AdskReCap.WorkerStatus), el.Element ("convertStatus").Value, true) ;
-				NbFaces =(int)el.Element ("nbfaces") ;
-				NbVertices =(int)el.Element ("nbvertices") ;
-				Nb3dPoints =(int)el.Element ("nb3Dpoints") ;
-				NbStitchedShots =(int)el.Element ("nbStitchedShots") ;
-				NbShots =(int)el.Element ("nbShots") ;
-				Deleted =(el.Element ("deleted") != null ? (bool)el.Element ("deleted") : false) ;
-				FileSize =(el.Element ("fileSize") != null ? (int)el.Element ("fileSize") : -1) ;
+				try { NbFaces =(int)el.Element("nbfaces") ; } catch { }
+				try { NbVertices =(int)el.Element ("nbvertices") ; } catch { }
+				try { Nb3dPoints =(int)el.Element ("nb3Dpoints") ; } catch { }
+				try { NbStitchedShots =(int)el.Element ("nbStitchedShots") ; } catch { }
+				try { NbShots =(int)el.Element ("nbShots") ; } catch { }
+				try { Deleted =(el.Element ("deleted") != null ? (bool)el.Element ("deleted") : false) ; } catch { }
+				try { FileSize =(el.Element ("fileSize") != null ? (int)el.Element ("fileSize") : -1) ; } catch { }
 				//public List<string> Files { get; private set; }
-				ProcessingTime =(double)el.Element ("processingTime") ;
-				Progress =(el.Element ("progress") != null ? (double)el.Element ("progress") : 0) ;
-				ProgressMessage =(el.Element ("progressMessage") != null ? (string)el.Element ("progressMessage") : "") ;
-				SceneLink =(el.Element ("scenelink") != null ? new Uri ((string)el.Element ("scenelink")) : null) ;
+				try { ProcessingTime =(double)el.Element ("processingTime") ; } catch { }
+				try { Progress =(el.Element ("progress") != null ? (double)el.Element ("progress") : 0) ; } catch { }
+				try { ProgressMessage =(el.Element ("progressMessage") != null ? (string)el.Element ("progressMessage") : "") ; } catch { }
+				try { SceneLink =(el.Element ("scenelink") != null ? new Uri ((string)el.Element ("scenelink")) : null) ; } catch { }
 				UserID =Uri.UnescapeDataString ((string)el.Element ("userID")) ;
 			} catch {
 			}

@@ -195,7 +195,7 @@ namespace Autodesk.ADN.WpfReCap {
 				return ;
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
 			if ( await PhotosceneProperties (item.Name) )
-				propertyGrid.SelectedObject =new AdskReCapPhotoscene (_recap.xml ()) ;
+				propertyGrid.SelectedObject =new AdskReCapPhotoscene (_recap.xmlLinq ()) ;
 		}
 
 		private async void showDeleted_Checked (object sender, RoutedEventArgs e) {
@@ -223,7 +223,7 @@ namespace Autodesk.ADN.WpfReCap {
 				return ;
 			ReCapPhotosceneProject item =PhotoScenes.SelectedItem as ReCapPhotosceneProject ;
 			if ( await PhotosceneProperties (item.Name) ) {
-				PropertiesWnd wnd =new PropertiesWnd (new AdskReCapPhotoscene (_recap.xml ())) ;
+				PropertiesWnd wnd =new PropertiesWnd (new AdskReCapPhotoscene (_recap.xmlLinq ())) ;
 				wnd.Owner =this ;
 				wnd.Show () ;
 			}
