@@ -26,6 +26,7 @@
         Title="Properties"
 		Height="600" Width="350"
 		Style="{DynamicResource MayaStyle}"
+		Icon="Images/Adsk.ico"
 		Loaded="Window_Loaded"
 		>
 	<Grid>

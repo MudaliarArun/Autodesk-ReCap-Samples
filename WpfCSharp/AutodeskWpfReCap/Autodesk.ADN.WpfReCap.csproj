@@ -98,6 +98,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CursorSwitcher.cs" />
+    <Compile Include="ImagePreview.xaml.cs">
+      <DependentUpon>ImagePreview.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImageSourceConverter.cs" />
     <Compile Include="JobProgress.xaml.cs">
       <DependentUpon>JobProgress.xaml</DependentUpon>
@@ -121,6 +124,10 @@
     <Resource Include="Examples\AUquads.zip" />
     <None Include="packages.config" />
     <None Include="UserSettings_.cs" />
+    <Page Include="ImagePreview.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="JobProgress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -263,6 +270,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Scale.png" />
+    <Resource Include="Images\Skew.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

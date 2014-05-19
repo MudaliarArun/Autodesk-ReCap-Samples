@@ -25,6 +25,7 @@
         Title="ReCap download"
 		Height="215" Width="450"
 		Style="{DynamicResource MayaStyle}"
+		Icon="Images/Adsk.ico"
 		Loaded="Window_Loaded"
 		>
 	<Grid>

@@ -280,12 +280,15 @@ namespace Autodesk.ADN.WpfReCap {
 			Thumbnails.ItemsSource =new ObservableCollection<ReCapPhotoItem> () ;
 			dynamic response =_recap.response () ;
 			dynamic files =response.Photoscenes.Photoscene.Files ;
+			string dlFolder =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + response.Photoscenes.Photoscene.photosceneid ;
+			if ( !Directory.Exists (dlFolder) )
+				Directory.CreateDirectory (dlFolder) ;
 			foreach ( KeyValuePair<string, object> pair in files.Dictionary ) {
 				dynamic fnode =pair.Value ;
 				AdskReCap.FileType type =(AdskReCap.FileType)Enum.Parse (typeof (AdskReCap.FileType), fnode.type, true) ;
 				if ( fnode.fileid == "" || type != AdskReCap.FileType.Image )
 					continue ;
-				string location =System.IO.Path.GetFullPath (AppDomain.CurrentDomain.BaseDirectory) + fnode.filename ;
+				string location =dlFolder + @"\" + fnode.filename ;
 				if ( File.Exists (location) ) {
 					ObservableCollection<ReCapPhotoItem> items =new ObservableCollection<ReCapPhotoItem> ((IEnumerable<ReCapPhotoItem>)Thumbnails.ItemsSource) ;
 					items.Add (new ReCapPhotoItem () {
@@ -318,6 +321,18 @@ namespace Autodesk.ADN.WpfReCap {
 				Image =filename
 			}) ;
 			Thumbnails.ItemsSource =items ;
+		}
+
+		public void Thumbnails_Preview (object sender, RoutedEventArgs e) {
+			e.Handled =true ;
+			foreach ( ReCapPhotoItem item in Thumbnails.SelectedItems ) {
+				BitmapImage image =new BitmapImage (new Uri (item.Image)) ;
+
+				ImagePreview preview =new ImagePreview () ;
+				preview._imageURL =image ;
+				preview.Owner =this.Owner ;
+				preview.Show () ;
+			}
 		}
 
 		#endregion

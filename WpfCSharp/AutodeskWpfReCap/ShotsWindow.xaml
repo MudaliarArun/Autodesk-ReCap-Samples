@@ -90,6 +90,13 @@
 						</MenuItem>
 
 						<Separator />
+						<MenuItem Header="Preview" Click="Thumbnails_Preview">
+							<MenuItem.Icon>
+								<Image Source="/Images/3dviewer.png" Width="16" Height="16" />
+							</MenuItem.Icon>
+						</MenuItem>
+
+						<Separator />
 						<MenuItem Header="Remove" Click="Thumbnails_Remove">
 							<MenuItem.Icon>
 								<Image Source="/Images/Cancel.png" Width="16" Height="16" />

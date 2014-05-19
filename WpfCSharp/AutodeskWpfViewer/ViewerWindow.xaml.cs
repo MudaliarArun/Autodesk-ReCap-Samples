@@ -41,6 +41,7 @@ using System.Linq;
 
 using ObjLoader.Loader.Data.Elements;
 using ObjLoader.Loader.Loaders;
+using System.Globalization;
 
 namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 
@@ -48,8 +49,8 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 
 	public partial class ViewerWindow : Window {
 		private DisplayMode _currentDisplayMode =DisplayMode.Textured ;
-		private ModelVisual3D _currentMesh =null ;
-		private Material _currentMeshMatGroup =null ;
+		private ModelVisual3D _currentMesh =null, _3dCubeMesh =null ;
+		private Material _currentMeshMatGroup =null, _3dCubeMeshMatGroup =null ;
 		private ModelVisual3D _currentWireframe =null ;
 		private bool _wireframeDirty =true ;
 
@@ -65,6 +66,7 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 		}
 
 		public void LoadModel (string location) {
+			Load3dCube () ;
 			FileStream zipStream =File.OpenRead (location) ;
 			LoadModel (zipStream) ;
 		}
@@ -86,6 +88,38 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 			LoadModel (stri.Stream) ;
 		}
 
+		protected void Load3dCube () {
+			// This is coming from our resources
+			//StreamResourceInfo stri =Application.GetResourceStream (new Uri (
+			//	@"Autodesk.ADN.Toolkit.Wpf.Viewer;3dCube\3dCube.zip",
+			//	UriKind.Relative
+			//)) ;
+			//LoadModel (stri.Stream) ;
+			Assembly assembly =Assembly.GetCallingAssembly () ;
+			string resourceName =assembly.GetName ().Name + ".g" ;
+			ResourceManager rm =new ResourceManager (resourceName, assembly) ;
+			using ( ResourceSet set =rm.GetResourceSet (CultureInfo.CurrentCulture, true, true) ) {
+				UnmanagedMemoryStream s =(UnmanagedMemoryStream)set.GetObject (@"3dCube/3dCube.zip", true) ;
+				StreamResourceInfo stri =new StreamResourceInfo (s, "") ;
+				using ( ZipArchive zip =new ZipArchive (stri.Stream) ) {
+					ZipArchiveEntry mesh =zip.GetEntry ("mesh.obj") ;
+					ZipArchiveEntry mtl =zip.GetEntry ("mesh.mtl") ;
+					ZipArchiveEntry texture =zip.GetEntry ("tex_0.jpg") ;
+
+					using ( new CursorSwitcher (null) ) {
+						var objLoaderFactory =new ObjLoaderFactory () ;
+						var objLoader =objLoaderFactory.Create (new ObjMaterialStreamProvider (mtl)) ;
+						var result =objLoader.Load (mesh.Open ()) ;
+						_3dCubeMesh =ObjTriangleMeshAdapater.BuildVisualModel (result, texture) ;
+						_3dCubeMeshMatGroup =(_3dCubeMesh.Content as GeometryModel3D).Material ;
+						// Reset the model & transform(s)
+						this.cubeModel.Children.Clear () ;
+						this.cubeModel.Children.Add (_3dCubeMesh) ;
+					}
+				}
+			}
+		}
+
 		protected void LoadModel (Stream str) {
 			using ( ZipArchive zip =new ZipArchive (str) ) {
 				ZipArchiveEntry mesh =zip.GetEntry ("mesh.obj") ;
@@ -96,13 +130,13 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 					var objLoaderFactory =new ObjLoaderFactory () ;
 					var objLoader =objLoaderFactory.Create (new ObjMaterialStreamProvider (mtl)) ;
 					var result =objLoader.Load (mesh.Open ()) ;
-					// Reset the model & transform(s)
-					_currentDisplayMode =DisplayMode.Textured ;
-					this.model.Children.Clear () ;
 					_currentWireframe =null ;
 					_currentMesh =ObjTriangleMeshAdapater.BuildVisualModel (result, texture) ;
 					_currentMeshMatGroup =(_currentMesh.Content as GeometryModel3D).Material ;
-					model.Children.Add (_currentMesh) ;
+					// Reset the model & transform(s)
+					this.model.Children.Clear () ;
+					_currentDisplayMode =DisplayMode.Textured ;
+					this.model.Children.Add (_currentMesh) ;
 				}
 			}
 			Home_Click (null, null) ;
@@ -155,6 +189,10 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 			Quaternion quat =_currentNavigation.Viewport_Rotate (actualPos) ;
 			QuaternionRotation3D r =new QuaternionRotation3D (quat) ;
 			foreach ( Visual3D child in model.Children ) {
+				Transform3DGroup transformGroup =child.Transform as Transform3DGroup ;
+				transformGroup.Children.Add (new RotateTransform3D (r)) ;
+			}
+			foreach ( Visual3D child in cubeModel.Children ) {
 				Transform3DGroup transformGroup =child.Transform as Transform3DGroup ;
 				transformGroup.Children.Add (new RotateTransform3D (r)) ;
 			}
@@ -211,6 +249,8 @@ namespace Autodesk.ADN.Toolkit.Wpf.Viewer {
 
 			// 0 and 1 are origin scale and translate
 			foreach ( Visual3D child in model.Children )
+				CleanChildTransforms (child) ;
+			foreach ( Visual3D child in cubeModel.Children )
 				CleanChildTransforms (child) ;
 	
 			Transform3DGroup transformGroup =camera.Transform as Transform3DGroup ;
