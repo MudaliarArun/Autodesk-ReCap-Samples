@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SchemeUserState</key>
+	<dict>
+		<key>Autodesk-ReCap-Resources.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>Autodesk-ReCap.framework.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>Autodesk-ReCap.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>E69CDA0D1939B78E0042374B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E69CDA1D1939B78E0042374B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E69CDA371939B8080042374B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E69CDA3E1939B82C0042374B</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+	</dict>
+</dict>
+</plist>

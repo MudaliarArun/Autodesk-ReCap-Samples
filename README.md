@@ -31,10 +31,12 @@ The samples
 1. The [WPF C# sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/WpfCSharp)
 2. The [PHP Console sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Console%20PHP)
 3. The [.Net Samples + Toolkit](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/.Net%20Samples%20%2B%20Toolkit)
+4. The [Android sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Android)
+5. The [iOS sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/iOS)
 
-Use of the sample:
+Use of the samples:
 
-See the sample README.md file in the sample folders.
+See the sample' README.md file in the sample folders.
 
 
 

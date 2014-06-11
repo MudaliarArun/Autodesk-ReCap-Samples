@@ -26,7 +26,7 @@ The WPF C# sample
 
 Dependencies
 --------------------
-This sample is dependent of five 3rd party assemblies:
+This sample is dependent of five 3rd party assemblies which would update/install automatically via NuGet:
 
 1. The RestSharp assembly
 
