@@ -21,7 +21,7 @@
 #import <AFOAuth1Client/AFOAuth1Client.h>
 
 // An example of that file is _UserSettings.h (rename it and complete it before compiling and comment out the next line)
-#error An example of that file is _UserSettings.h rename it and complete it before compiling and comment out this line
+//#error An example of that file is _UserSettings.h rename it and complete it before compiling and comment out this line
 #include "UserSettings.h"
 
 //-----------------------------------------------------------------------------
@@ -57,7 +57,7 @@
 - (IBAction)createPhotoScene:(id)sender ;
 - (void)ListPhotoScenes:(void (^)(NSArray *photoscenes))success ;
 
-- (id)AddPhotoSceneItem:(NSString *)name thumbnail:(NSString *)thumbnail data:(NSDictionary *)dict ;
+- (id)AddPhotoSceneItem:(NSString *)name thumbnail:(UIImage *)thumbnail data:(NSDictionary *)dict ;
 
 //- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView ;
 //- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section ;

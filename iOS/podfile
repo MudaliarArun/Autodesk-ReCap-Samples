@@ -37,6 +37,7 @@ target :iOSReCap do
     xcodeproj 'iOSReCap/iOSReCap'
     pod 'RestKit', '~> 0.23'
     pod 'ELCImagePickerController', '~> 0.2'
+    pod 'ZipKit', '~> 1.0'
 end
 
 post_install do |installer_representation|

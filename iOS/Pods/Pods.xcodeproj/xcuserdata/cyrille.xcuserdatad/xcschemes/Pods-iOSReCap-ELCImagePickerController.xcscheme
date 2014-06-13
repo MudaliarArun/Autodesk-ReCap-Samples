@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4C9A89B162AC42BD85342660"
+               BlueprintIdentifier = "6DA356AAB3C248F6B1805AF4"
                BuildableName = "libPods-iOSReCap-ELCImagePickerController.a"
                BlueprintName = "Pods-iOSReCap-ELCImagePickerController"
                ReferencedContainer = "container:Pods.xcodeproj">

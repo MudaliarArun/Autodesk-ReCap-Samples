@@ -17,6 +17,14 @@
 #import "PhotoScenesItem.h"
 #import "CameraViewController.h"
 
+#import <ZipKit/ZKArchive.h>
+#import <ZipKit/ZKFileArchive.h>
+#import <ZipKit/ZKDataArchive.h>
+#import <ZipKit/ZKCDHeader.h>
+#import <CoreImage/CoreImage.h>
+#import <ImageIO/ImageIO.h>
+#import <AssetsLibrary/AssetsLibrary.h>
+
 @interface PhotoScenesController () {
 	AdskOAuthController *_oauthController ;
 	NSIndexPath *_selectedRowIndex ;
@@ -303,10 +311,58 @@
 		__photoscenes =[[NSMutableDictionary alloc] init] ;
 }
 
-- (id)AddPhotoSceneItem:(NSString *)name thumbnail:(NSString *)thumbnail data:(NSDictionary *)dict {
+- (id)AddPhotoSceneItem:(NSString *)name thumbnail:(UIImage *)thumbnail data:(NSDictionary *)dict {
 	AdskPhotoSceneData *data =[[AdskPhotoSceneData alloc] init] ;
 	data._name =name ;
-	data._thumbnail =thumbnail ;
+	if ( thumbnail != nil ) {
+		data._thumbnail =thumbnail ;
+	} else {
+		NSString *zipFilePath =[PhotoScenesItem dlFullFilePathName:name] ;
+		if ( [[NSFileManager defaultManager] fileExistsAtPath:zipFilePath] ) {
+			ZKDataArchive *za =[ZKDataArchive archiveWithArchivePath:zipFilePath] ;
+			for ( ZKCDHeader *header in za.centralDirectory ) {
+				NSString *name =[header.filename lastPathComponent] ;
+				if ( [[name pathExtension] isEqualToString:@"png"] || [[name pathExtension] isEqualToString:@"jpg"] ) {
+					NSDictionary *dict =[[NSDictionary alloc] init] ;
+					NSData *filedata =[za inflateFile:header attributes:&dict] ;
+					data._thumbnail =[UIImage imageWithData:filedata] ;
+					break ;
+				}
+			}
+		} else {
+			ALAssetsLibrary *library =[[ALAssetsLibrary alloc] init] ;
+			// Enumerate just the photos and videos group by using ALAssetsGroupSavedPhotos.
+			[library enumerateGroupsWithTypes:ALAssetsGroupAlbum
+				usingBlock:^ (ALAssetsGroup *group, BOOL *stop) {
+					if ( [[group valueForProperty:ALAssetsGroupPropertyName] isEqualToString:data._name] ) {
+						data._thumbnail =[UIImage imageWithCGImage:[group posterImage]] ;
+						*stop =YES ;
+						
+						// At this time the table is already loaded, so we need to update the corresponding cell
+						NSInteger index =[[__photoscenes allKeys] indexOfObject:data._name] ;
+						NSIndexPath *indexPath =[NSIndexPath indexPathForRow:index inSection:0] ;
+						[self.tableView beginUpdates] ;
+						[self.tableView reloadRowsAtIndexPaths:@[ indexPath ] withRowAnimation:UITableViewRowAnimationNone] ;
+						[self.tableView endUpdates] ;
+					}
+					// Within the group enumeration block, filter to enumerate just photos.
+					//[group setAssetsFilter:[ALAssetsFilter allPhotos]] ;
+					// Chooses the first photo
+					/*[group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^ (ALAsset *alAsset, NSUInteger index, BOOL *innerStop) {
+						// The end of the enumeration is signaled by asset == nil.
+						ALAssetRepresentation *representation =[alAsset defaultRepresentation] ;
+						data._thumbnail =[UIImage imageWithCGImage:[representation fullScreenImage]] ;
+						// Stop the enumerations
+						*innerStop =YES ;
+						*stop =YES ;
+					}];*/
+				}
+				failureBlock:^ (NSError *error) {
+					NSLog (@"No groups") ;
+				}
+			];
+		}
+	}
 	data._data =dict ;
 	[__photoscenes setObject:data forKey:name] ;
 	return (data) ;
@@ -330,7 +386,7 @@
 	cell._nameLabel.text =scene._name ;
 	cell._statusLabel.text =scene._data [@"status"] ;
 	cell._thumbnailImage.contentMode =UIViewContentModeScaleAspectFit ;
-	UIImage *recapImage =[UIImage imageNamed:@"ReCap.jpg"] ; // scene._thumbnail
+	UIImage *recapImage =(scene._thumbnail == nil ? [UIImage imageNamed:@"ReCap.jpg"] : scene._thumbnail) ;
 	cell._thumbnailImage.image =recapImage ;
 	
 	//if ( [((UIView *)cell.subviews [0]).subviews count] < DefaultCellSubviewsNb + 1 ) // There is an intermediate scrollview

@@ -279,7 +279,7 @@
 - (IBAction)preview:(id)sender {
 	NSLog(@"Getting the Photoscene result (mesh)") ;
 	NSString *photosceneid =self._nameLabel.text ;
-	NSString *filePath =[self dlFullFilePathName:photosceneid] ;
+	NSString *filePath =[PhotoScenesItem dlFullFilePathName:photosceneid] ;
 	if ( [[NSFileManager defaultManager] fileExistsAtPath:filePath] ) {
 		UIAlertView *alert =[[UIAlertView alloc]
 							 initWithTitle:@"iOS ReCap Sample"
@@ -301,7 +301,7 @@
 			break ;
         case 1: { // Yes
 			NSError *error ;
-			NSString *filePath =[self dlFullFilePathName:photosceneid] ;
+			NSString *filePath =[PhotoScenesItem dlFullFilePathName:photosceneid] ;
 			[[NSFileManager defaultManager] removeItemAtPath:filePath error:&error] ;
 			[self getResultFile:photosceneid] ;
 			break ;
@@ -336,7 +336,7 @@
 	] ;
 }
 
-- (NSString *)dlFullFilePathName:(NSString *)photosceneid {
++ (NSString *)dlFullFilePathName:(NSString *)photosceneid {
     NSArray *paths =NSSearchPathForDirectoriesInDomains (NSDocumentDirectory, NSUserDomainMask, YES) ;
     NSString *filePath =[[paths objectAtIndex:0] stringByAppendingPathComponent:[photosceneid stringByAppendingString:@".zip"]] ;
 	return (filePath) ;
@@ -350,7 +350,7 @@
 	NSURLRequest *request =[NSURLRequest requestWithURL:[NSURL URLWithString:scenelink]] ;
     AFURLConnectionOperation *operation =[[AFHTTPRequestOperation alloc] initWithRequest:request] ;
 	
-    NSString *filePath =[self dlFullFilePathName:photosceneid] ;
+    NSString *filePath =[PhotoScenesItem dlFullFilePathName:photosceneid] ;
     operation.outputStream =[NSOutputStream outputStreamToFileAtPath:filePath append:NO] ;
 	
     [operation setDownloadProgressBlock:^ (NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
@@ -368,7 +368,7 @@
 }
 
 - (void)doPreview:(NSString *)photosceneid {
-	NSString *filePath =[self dlFullFilePathName:photosceneid] ;
+	NSString *filePath =[PhotoScenesItem dlFullFilePathName:photosceneid] ;
 	AdskObjViewerController *preview =[[AdskObjViewerController alloc] initWithObj:filePath photosceneid:photosceneid] ;
 	[__photoscenesController presentViewController:preview animated:YES completion:nil] ;
 }

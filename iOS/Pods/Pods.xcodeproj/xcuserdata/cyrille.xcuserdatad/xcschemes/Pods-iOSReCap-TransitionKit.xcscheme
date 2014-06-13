@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0CA73DF2ED52455884DE2D8F"
+               BlueprintIdentifier = "440618BB34684804A68A9601"
                BuildableName = "libPods-iOSReCap-TransitionKit.a"
                BlueprintName = "Pods-iOSReCap-TransitionKit"
                ReferencedContainer = "container:Pods.xcodeproj">

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6727CCFB49B64E57BBE5F14A"
-               BuildableName = "libPods-Autodesk-ReCap-RestKit.a"
-               BlueprintName = "Pods-Autodesk-ReCap-RestKit"
+               BlueprintIdentifier = "7966F4FF2A1C4E8BBC7C6078"
+               BuildableName = "libPods-iOSReCap-ZipKit.a"
+               BlueprintName = "Pods-iOSReCap-ZipKit"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

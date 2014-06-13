@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "18F2E68E12ED4D8C83AC69D6"
+               BlueprintIdentifier = "DEDDACD9245D4882B09DD91D"
                BuildableName = "libPods-Autodesk-ReCap-ISO8601DateFormatterValueTransformer.a"
                BlueprintName = "Pods-Autodesk-ReCap-ISO8601DateFormatterValueTransformer"
                ReferencedContainer = "container:Pods.xcodeproj">

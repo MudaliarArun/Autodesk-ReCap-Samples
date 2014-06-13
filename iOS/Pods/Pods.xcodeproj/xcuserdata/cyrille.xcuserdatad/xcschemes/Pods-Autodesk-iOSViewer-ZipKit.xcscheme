@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F90044F00C074268808BC699"
+               BlueprintIdentifier = "1B2EB32A814F4CF7BE96FB64"
                BuildableName = "libPods-Autodesk-iOSViewer-ZipKit.a"
                BlueprintName = "Pods-Autodesk-iOSViewer-ZipKit"
                ReferencedContainer = "container:Pods.xcodeproj">

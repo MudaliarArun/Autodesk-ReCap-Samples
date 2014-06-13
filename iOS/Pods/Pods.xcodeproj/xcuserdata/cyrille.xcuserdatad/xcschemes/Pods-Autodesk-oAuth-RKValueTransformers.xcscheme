@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "216576A12C03470186F7B3D8"
+               BlueprintIdentifier = "4C47FE5715DF473E8FCECFF5"
                BuildableName = "libPods-Autodesk-oAuth-RKValueTransformers.a"
                BlueprintName = "Pods-Autodesk-oAuth-RKValueTransformers"
                ReferencedContainer = "container:Pods.xcodeproj">

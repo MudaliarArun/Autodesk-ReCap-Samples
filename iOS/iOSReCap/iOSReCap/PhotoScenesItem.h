@@ -25,7 +25,7 @@
 @interface AdskPhotoSceneData : NSObject
 
 @property (strong, nonatomic) NSString *_name ;
-@property (strong, nonatomic) NSString *_thumbnail ;
+@property (strong, nonatomic) UIImage *_thumbnail ;
 @property (strong, nonatomic) NSDictionary *_data ;
 
 @end
@@ -60,7 +60,7 @@
 - (IBAction)preview:(id)sender ;
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex ;
 - (void)getResultFile:(NSString *)photosceneid ;
-- (NSString *)dlFullFilePathName:(NSString *)filename ;
++ (NSString *)dlFullFilePathName:(NSString *)filename ;
 - (void)downloadResultFile:(NSString *)scenelink photosceneid:(NSString *)photosceneid ;
 - (void)doPreview:(NSString *)photosceneid ;
 
