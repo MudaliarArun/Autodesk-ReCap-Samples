@@ -478,6 +478,7 @@
 						   ] ;
 	// Refresh the status now
 	cell._statusLabel.text =photoscene._data [@"status"] ;
+	cell._previewButton.hidden =![photoscene._data [@"status"] isEqualToString:@"DONE"] ;
 	// Refresh generic properties
 	CGFloat y =DefaultCellHeight + 2 * DefaultPadding ;
 	int i =0, n =DefaultCellSubviewsNb ;

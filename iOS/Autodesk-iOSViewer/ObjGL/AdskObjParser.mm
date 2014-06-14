@@ -190,6 +190,12 @@
 		[self parseProgress:(0.05 + 0.28 * ((double)i++ / nb)) progress:progress] ;
 	}
 	
+	NSLog(@"Vertices %ld", _geometry->_fileVertices.size ()) ;
+	for ( NSString *grpName in [_groups allKeys] ) {
+		AdskObjGroup *group =[_groups objectForKey:grpName] ;
+		NSLog(@"%@ - Faces %ld", grpName, group->_faces.size ()) ;
+	}
+	
 	// Now we parsed the file, we need to process some data like the face' vertices index and textures
 	[self loadTextures] ;
 	[self parseProgress:0.33 progress:progress] ;
@@ -236,13 +242,15 @@
 	}
 	[self parseProgress:0.51 progress:progress] ;
 
-	// Build OpenGL vertex / tex arrrays
+	// Build OpenGL vertex / tex arrays
 	GLuint nbPairs =(GLuint)[uniqPairs count] ;
 	_geometry->_vertices.resize (nbPairs) ;
 	_geometry->_texCoords.resize (nbPairs) ;
 	NSArray *pairs =[uniqPairs allObjects] ;
+	NSMutableDictionary *pairsIndex =[[NSMutableDictionary alloc] init] ;
 	for ( GLuint index =0 ; index < nbPairs ; index++ ) {
 		NSString *pairName =[pairs objectAtIndex:index] ;
+		[pairsIndex setObject:[NSNumber numberWithUnsignedLong:index] forKey:pairName] ;
 		NSArray *def =[pairName componentsSeparatedByString:@"/"] ;
 		_geometry->_vertices [index] =_geometry->_fileVertices [[[def objectAtIndex:0] unsignedIntValue]] ;
 		_geometry->_texCoords [index] =_geometry->_fileTexCoords [[[def objectAtIndex:1] unsignedIntValue]] ;
@@ -254,6 +262,8 @@
 	for ( NSString *grpName in groups ) {
 		AdskObjGroup *group =[_groups objectForKey:grpName] ;
 		group->_faceVertexIndex.clear () ;
+		// To avoid memory re-allocation at push_back(), alloc the total size now
+		group->_faceVertexIndex.resize (group->_faces.size () * 3) ; // We only have triangles
 		std::vector<GLFace>::iterator it =group->_faces.begin () ;
 		for ( ; it != group->_faces.end () ; it++ ) {
 			std::vector<GLFaceEltDef>::iterator itdef =(*it)._def.begin () ;
@@ -261,7 +271,8 @@
 				NSString *pairName =[NSString stringWithFormat:@"%u/%u",
 									 (*itdef)._vertex,
 									 ((*itdef)._tex == (GLuint)-1 ? 0 : (*itdef)._tex)] ;
-				GLuint index =(GLuint)[pairs indexOfObject:pairName] ;
+				//GLuint index =(GLuint)[pairs indexOfObject:pairName] ; // Way too slow
+				GLuint index =(GLuint)[[pairsIndex objectForKey:pairName] unsignedLongValue] ;
 				group->_faceVertexIndex.push_back (index) ;
 			}
 

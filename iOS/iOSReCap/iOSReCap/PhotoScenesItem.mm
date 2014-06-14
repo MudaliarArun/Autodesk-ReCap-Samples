@@ -250,6 +250,7 @@
 						[__processButton.layer removeAnimationForKey:@"SpinAnimation"] ;
 						self._progressBar.progress =0. ;
 						self._progressBar.hidden =YES ;
+						__previewButton.hidden =NO ;
 						
 						[self refresh:nil] ;
 					}
