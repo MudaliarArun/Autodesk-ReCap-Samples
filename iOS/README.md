@@ -74,8 +74,10 @@ The sample was created using Xcode 5.1.1, but should build/work fine with any 5.
 
      a. Select the ‘Pods-Autodesk-ReCap’ target, ‘Build Phases’, and remove all the ‘Link Binary With Libraries’
         excepted ‘Foundation.framework’
+
      b. Select the ‘Pods-Autodesk-iOSViewer’ target, ‘Build Phases’, and remove all the ‘Link Binary With Libraries’
         excepted ‘Foundation.framework’
+
      c. Select the ‘Pods-Autodesk-oAuth’ target, ‘Build Phases’, and remove all the ‘Link Binary With Libraries’
         excepted ‘Foundation.framework’, ‘libPods-Autodesk-oAuth-AFOAuth1Client.a’, and ‘libPods-Autodesk-oAuth-AFOAuth2Client.a’
 
