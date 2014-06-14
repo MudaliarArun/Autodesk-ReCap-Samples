@@ -33,7 +33,7 @@
 @class PhotoScenesItem ;
 
 //-----------------------------------------------------------------------------
-@interface PhotoScenesController : UITableViewController <UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource> {
+@interface PhotoScenesController : UITableViewController <UINavigationControllerDelegate, UIAlertViewDelegate, UITableViewDelegate, UITableViewDataSource> {
 	@public
 	AdskReCap *_recap ;
 }
@@ -48,6 +48,7 @@
 - (void)OxygenSetup ;
 - (void)autoLogin ;
 - (void)login ;
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex ;
 - (void)initialize ;
 - (IBAction)logout:(id)sender ;
 

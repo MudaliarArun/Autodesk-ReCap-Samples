@@ -23,6 +23,9 @@
 #import <ZipKit/ZKDataArchive.h>
 #import <ZipKit/ZKCDHeader.h>
 
+#define MAX_LINE_LENGTH 256
+#import <sstream>
+
 @implementation AdskObjGeometry
 
 - (id)init {
@@ -146,7 +149,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:kRenderingUpdateNotification object:[NSNumber numberWithDouble:pct]] ;
 		return ;
 	}*/
-	dispatch_sync (dispatch_get_main_queue (), ^{
+	dispatch_sync (dispatch_get_main_queue (), ^ {
 		[[NSNotificationCenter defaultCenter] postNotificationName:kRenderingUpdateNotification object:[NSNumber numberWithDouble:pct]] ;
 	}) ;
 }
@@ -169,14 +172,32 @@
 	return (data) ;
 }
 
-- (BOOL)parseObj:(NSString *)progress {
+- (BOOL)parseObjInObjc:(NSString *)progress {
 	if ( _projectFiles == nil )
 		_projectFiles =[AdskObjParser unzipProject:_objFilepath] ;
 	
+	NSDate *methodStart =[NSDate date] ;
 	NSString *objData =[[[NSString alloc] initWithData:[_projectFiles objectForKey:@"mesh.obj"] encoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"\r" withString:@""] ;
 	NSArray *lines =[objData componentsSeparatedByString:@"\n"] ;
-	unsigned long i =0, nb =[lines count] + 1 ;
+	unsigned long v =0, vt =0, f =0, nb =[lines count] + 1 ;
 	[self parseProgress:0.05 progress:progress] ;
+	// Counting vertex, texture vertex, and faces prior allocating from file does not seems to help on the performance
+	for ( NSString *itLine in lines ) {
+		NSString *line =[itLine stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] ;
+		if ( [line isEqualToString:@""] || [line hasPrefix:@"#"] )
+			continue ;
+		NSArray *items =[line componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] ;
+		v +=([[items objectAtIndex:0] isEqualToString:@"v"] ? 1 : 0) ;
+		vt +=([[items objectAtIndex:0] isEqualToString:@"vt"] ? 1 : 0) ;
+		f +=([[items objectAtIndex:0] isEqualToString:@"f"] ? 1 : 0) ;
+	}
+	_geometry->_fileVertices.reserve (v) ;
+	_geometry->_fileNormals.reserve (vt) ;
+	_geometry->_fileTexCoords.reserve (f) ;
+	NSLog(@"exec time = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+
+	[self parseProgress:0.5 progress:progress] ;
+	unsigned long i =0 ;
 	for ( NSString *itLine in lines ) {
 		NSString *line =[itLine stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] ;
 		if ( [line isEqualToString:@""] || [line hasPrefix:@"#"] )
@@ -186,15 +207,10 @@
 		SEL cmd =NSSelectorFromString (command) ;
 		if ( cmd != nil && [self respondsToSelector:cmd] )
 			[self performSelector:cmd withObject:items withObject:line] ;
-		
 		[self parseProgress:(0.05 + 0.28 * ((double)i++ / nb)) progress:progress] ;
 	}
-	
-	NSLog(@"Vertices %ld", _geometry->_fileVertices.size ()) ;
-	for ( NSString *grpName in [_groups allKeys] ) {
-		AdskObjGroup *group =[_groups objectForKey:grpName] ;
-		NSLog(@"%@ - Faces %ld", grpName, group->_faces.size ()) ;
-	}
+	NSLog(@"exec time = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	NSLog(@"%lu %ld", v, _geometry->_fileVertices.size ()) ;
 	
 	// Now we parsed the file, we need to process some data like the face' vertices index and textures
 	[self loadTextures] ;
@@ -244,8 +260,8 @@
 
 	// Build OpenGL vertex / tex arrays
 	GLuint nbPairs =(GLuint)[uniqPairs count] ;
-	_geometry->_vertices.resize (nbPairs) ;
-	_geometry->_texCoords.resize (nbPairs) ;
+	_geometry->_vertices.reserve (nbPairs) ;
+	_geometry->_texCoords.reserve (nbPairs) ;
 	NSArray *pairs =[uniqPairs allObjects] ;
 	NSMutableDictionary *pairsIndex =[[NSMutableDictionary alloc] init] ;
 	for ( GLuint index =0 ; index < nbPairs ; index++ ) {
@@ -263,7 +279,7 @@
 		AdskObjGroup *group =[_groups objectForKey:grpName] ;
 		group->_faceVertexIndex.clear () ;
 		// To avoid memory re-allocation at push_back(), alloc the total size now
-		group->_faceVertexIndex.resize (group->_faces.size () * 3) ; // We only have triangles
+		group->_faceVertexIndex.reserve (group->_faces.size () * 3) ; // We only have triangles
 		std::vector<GLFace>::iterator it =group->_faces.begin () ;
 		for ( ; it != group->_faces.end () ; it++ ) {
 			std::vector<GLFaceEltDef>::iterator itdef =(*it)._def.begin () ;
@@ -288,10 +304,189 @@
 	return (YES) ;
 }
 
+- (BOOL)parseObj:(NSString *)progress {
+	if ( _projectFiles == nil )
+		_projectFiles =[AdskObjParser unzipProject:_objFilepath] ;
+	
+	NSDate *methodStart =[NSDate date] ;
+	[self parseProgress:0.05 progress:progress] ;
+	// Counting vertex, texture vertex, and faces prior allocating from file does not seems to help on the performance
+	std::stringstream objIn ((char *)((NSData *)[_projectFiles objectForKey:@"mesh.obj"]).bytes) ;
+	unsigned long v =0, vt =0, f =0, nb =0 ;
+	while ( objIn ) {
+        char c =objIn.get () ;
+        if ( c == 'v' ) {
+            if ( (c =objIn.get ()) == ' ' )
+                v++ ;
+            else if ( c == 't' )
+                vt++ ;
+        } else if ( c == 'f' ) {
+            if ( (c = objIn.get ()) == ' ' )
+                f++ ;
+        }
+        objIn.ignore (MAX_LINE_LENGTH, '\n') ;
+		nb++ ;
+    }
+	_geometry->_fileVertices.reserve (v) ;
+	_geometry->_fileNormals.reserve (vt) ;
+	_geometry->_fileTexCoords.reserve (f) ;
+	NSLog(@"exec time #1 = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	
+	[self parseProgress:0.5 progress:progress] ;
+	unsigned long i =0 ;
+	std::string st ;
+	objIn.clear () ;
+	objIn.seekg (0, std::ios::beg) ;
+	while ( objIn ) {
+		//std::string token ;
+		//objIn >> token ;
+		//objIn.ignore (MAX_LINE_LENGTH, '\n') ;
+		//NSLog(@"%s", token.c_str ()) ;
+		
+		//NSString *command =[NSString stringWithFormat:@"parseObj_%s:line:", token.c_str ()] ;
+		//SEL cmd =NSSelectorFromString (command) ;
+		//if ( cmd != nil && [self respondsToSelector:cmd] )
+		//	[self performSelector:cmd withObject:nil] ;
+		
+		getline (objIn, st) ;
+		if ( st.length () == 0 || st [0] == '#' )
+			continue ;
+		std::istringstream split (st) ;
+		std::vector<std::string> tokens ;
+		for ( std::string each ; std::getline (split, each, ' ') ; tokens.push_back (each) ) ;
+		
+		if ( tokens [0] == "f" ) {
+			[self parseObj_f:tokens] ;
+		} else if ( tokens [0] == "v" ) {
+			[self parseObj_v:tokens] ;
+		} else if ( tokens [0] == "vt" ) {
+			[self parseObj_vt:tokens] ;
+		} else if ( tokens [0] == "vn" ) {
+			[self parseObj_vn:tokens] ;
+		} else if ( tokens [0] == "vp" ) {
+			[self parseObj_vp:tokens] ;
+		} else if ( tokens [0] == "g" ) {
+			[self parseObj_g:tokens] ;
+		} else if ( tokens [0] == "mtllib" ) {
+			[self parseObj_mtllib:tokens] ;
+		}
+		
+		[self parseProgress:(0.05 + 0.28 * ((double)i++ / nb)) progress:progress] ;
+    }
+	NSLog(@"exec time #2 = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	NSLog(@"%lu %ld", v, _geometry->_fileVertices.size ()) ; // exec time #2 reference = 0.902266
+	
+	// Now we parsed the file, we need to process some data like the face' vertices index and textures
+	//[self loadTextures] ;
+	[self parseProgress:0.33 progress:progress] ;
+	
+	// Missing normal? todo
+	
+	// Split Quads into triangles and create v/vt uniq pair list
+	std::vector<GLFace> newFaces ;
+	NSMutableSet *uniqPairs =[NSMutableSet set] ;
+	NSArray *groups =[_groups allKeys] ;
+	nb =1 ;
+	for ( NSString *grpName in groups ) {
+		AdskObjGroup *group =[_groups objectForKey:grpName] ;
+		nb +=group->_faces.size () ;
+	}
+	i =0 ;
+	for ( NSString *grpName in groups ) {
+		AdskObjGroup *group =[_groups objectForKey:grpName] ;
+		std::vector<GLFace>::iterator it =group->_faces.begin () ;
+		for ( ; it != group->_faces.end () ; it++ ) {
+			// Create vertex/tex pairs list
+			std::vector<GLFaceEltDef>::iterator itdef =(*it)._def.begin () ;
+			for ( ; itdef != (*it)._def.end () ; itdef++ ) {
+				NSString *pairName =[NSString stringWithFormat:@"%u/%u",
+									 (*itdef)._vertex,
+									 ((*itdef)._tex == (GLuint)-1 ? 0 : (*itdef)._tex)] ;
+				//NSLog(@"%@", pairName) ;
+				[uniqPairs addObject:pairName] ;
+			}
+			// Split quads into triangles
+			if ( (*it)._def.size () == 4 ) { // a quad
+				GLFace glface ;
+				glface._def.push_back ((*it)._def [0]) ;
+				glface._def.push_back ((*it)._def [2]) ;
+				glface._def.push_back ((*it)._def [3]) ;
+				(*it)._def.pop_back () ;
+				//[group AddFace:glface] ; // push_back() invalidates iterators
+				newFaces.push_back (glface) ;
+			} else if ( (*it)._def.size () > 4 ) {
+				NSLog(@"%@", @"Face needs to be triangulated!") ;
+			}
+		}
+		group->_faces.insert (group->_faces.end (), newFaces.begin (), newFaces.end ()) ;
+		
+		[self parseProgress:(0.33 + 0.18 * ((double)i++ / nb)) progress:progress] ;
+	}
+	[self parseProgress:0.51 progress:progress] ;
+	NSLog(@"exec time #3 = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	
+	// Build OpenGL vertex / tex arrays
+	GLuint nbPairs =(GLuint)[uniqPairs count] ;
+	_geometry->_vertices.reserve (nbPairs) ;
+	_geometry->_texCoords.reserve (nbPairs) ;
+	NSArray *pairs =[uniqPairs allObjects] ;
+	NSMutableDictionary *pairsIndex =[[NSMutableDictionary alloc] init] ;
+	for ( GLuint index =0 ; index < nbPairs ; index++ ) {
+		NSString *pairName =[pairs objectAtIndex:index] ;
+		[pairsIndex setObject:[NSNumber numberWithUnsignedLong:index] forKey:pairName] ;
+		NSArray *def =[pairName componentsSeparatedByString:@"/"] ;
+		_geometry->_vertices [index] =_geometry->_fileVertices [[[def objectAtIndex:0] unsignedIntValue]] ;
+		_geometry->_texCoords [index] =_geometry->_fileTexCoords [[[def objectAtIndex:1] unsignedIntValue]] ;
+		
+		[self parseProgress:(0.51 + 0.03 * ((double)index / nbPairs)) progress:progress] ;
+	}
+	NSLog(@"exec time #4 = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	// Build OpenGL face array
+	i =0 ;
+	for ( NSString *grpName in groups ) {
+		AdskObjGroup *group =[_groups objectForKey:grpName] ;
+		group->_faceVertexIndex.clear () ;
+		// To avoid memory re-allocation at push_back(), alloc the total size now
+		group->_faceVertexIndex.reserve (group->_faces.size () * 3) ; // We only have triangles
+		std::vector<GLFace>::iterator it =group->_faces.begin () ;
+		for ( ; it != group->_faces.end () ; it++ ) {
+			std::vector<GLFaceEltDef>::iterator itdef =(*it)._def.begin () ;
+			for ( ; itdef != (*it)._def.end () ; itdef++ ) {
+				NSString *pairName =[NSString stringWithFormat:@"%u/%u",
+									 (*itdef)._vertex,
+									 ((*itdef)._tex == (GLuint)-1 ? 0 : (*itdef)._tex)] ;
+				//GLuint index =(GLuint)[pairs indexOfObject:pairName] ; // Way too slow
+				GLuint index =(GLuint)[[pairsIndex objectForKey:pairName] unsignedLongValue] ;
+				group->_faceVertexIndex.push_back (index) ;
+			}
+			
+			[self parseProgress:(0.54 + 0.31 * ((double)i++ / nb)) progress:progress] ;
+		}
+		group->_faces.clear () ;
+	}
+	NSLog(@"exec time #5 = %f", [[NSDate date] timeIntervalSinceDate:methodStart]) ; methodStart =[NSDate date] ;
+	[self parseProgress:0.85 progress:progress] ;
+	
+	_geometry->_fileVertices.clear () ;
+	_geometry->_fileNormals.clear () ;
+	_geometry->_fileTexCoords.clear () ;
+	return (YES) ;
+}
+
 // http://en.wikipedia.org/wiki/Wavefront_.obj_file
 
 - (BOOL)parseObj_g:(NSArray *)items line:(NSString *)line {
 	_currentGroup =[NSString stringWithString:[items objectAtIndex:1]] ;
+	if ( ![_groups objectForKey:_currentGroup] ) {
+		AdskObjGroup *grp =[[AdskObjGroup alloc] init] ;
+		[_groups setObject:grp forKey:_currentGroup] ;
+		grp =nil ;
+	}
+	return (YES) ;
+}
+
+- (BOOL)parseObj_g:(std::vector<std::string> &)items {
+	_currentGroup =[[NSString alloc] initWithUTF8String:items [1].c_str ()] ;
 	if ( ![_groups objectForKey:_currentGroup] ) {
 		AdskObjGroup *grp =[[AdskObjGroup alloc] init] ;
 		[_groups setObject:grp forKey:_currentGroup] ;
@@ -315,9 +510,30 @@
 	return (YES) ;
 }
 
+- (BOOL)parseObj_usemtl:(std::vector<std::string> &)items {
+	if ( _currentGroup == nil || [_currentGroup isEqualToString:@""] )
+		[self parseObj_g:[NSArray arrayWithObjects:@"g", @"xx_default_xx", nil] line:@"g xx_default_xx"] ;
+	AdskObjGroup *grp =[_groups objectForKey:_currentGroup] ;
+	if ( grp->_material != nil ) {
+		NSString *grpName =[NSString stringWithFormat:@"xx_default_xx_%lu", (unsigned long)[_materials count]] ;
+		NSString *cmd =[NSString stringWithFormat:@"g %@", grpName] ;
+		[self parseObj_g:[NSArray arrayWithObjects:@"g", grpName, nil] line:cmd] ;
+		grp =[_groups objectForKey:_currentGroup] ;
+	}
+	_currentMaterial =[[NSString alloc] initWithUTF8String:items [1].c_str ()] ;
+	[grp SetMaterial:[_materials objectForKey:_currentMaterial]] ;
+	return (YES) ;
+}
+
 - (BOOL)parseObj_v:(NSArray *)items line:(NSString *)line {
 	// List of Vertices, with (x, y, z[, w]) coordinates, w is optional and defaults to 1.0.
 	GLVector3D pt =GLVector3DMake ([[items objectAtIndex:1] floatValue], [[items objectAtIndex:2] floatValue], [[items objectAtIndex:3] floatValue]) ;
+	[_geometry AddObjVertex:pt] ;
+	return (YES) ;
+}
+
+- (BOOL)parseObj_v:(std::vector<std::string> &)items {
+	GLVector3D pt =GLVector3DMake (std::stof (items [1]), std::stof (items [2]), std::stof (items [3])) ;
 	[_geometry AddObjVertex:pt] ;
 	return (YES) ;
 }
@@ -330,14 +546,37 @@
 	return (YES) ;
 }
 
+- (BOOL)parseObj_vn:(std::vector<std::string> &)items {
+	// Normals in (x,y,z) form; normals might not be unit.
+	GLVector3D vect =GLVector3DMake (std::stof (items [1]), std::stof (items [2]), std::stof (items [3])) ;
+	// todo normalizeNormals
+	[_geometry AddObjNormal:vect] ;
+	return (YES) ;
+}
+
 - (BOOL)parseObj_vt:(NSArray *)items line:(NSString *)line {
 	// Texture coordinates, in (u ,v [,w]) coordinates, these will vary between 0 and 1, w is optional and default to 0.
-	GLTexCoords coords =GLTexCoordsMake ([[items objectAtIndex:1] floatValue], [[items objectAtIndex:2] floatValue]) ;
+	// In theory, we would need to flip image texture, but instead we flip the Texture V coordinates
+	GLTexCoords coords =GLTexCoordsMake ([[items objectAtIndex:1] floatValue], 1.0f - [[items objectAtIndex:2] floatValue]) ;
+	[_geometry AddObjTexCoords:coords] ;
+	return (YES) ;
+}
+
+- (BOOL)parseObj_vt:(std::vector<std::string> &)items {
+	// Texture coordinates, in (u ,v [,w]) coordinates, these will vary between 0 and 1, w is optional and default to 0.
+	// In theory, we would need to flip image texture, but instead we flip the Texture V coordinates
+	GLTexCoords coords =GLTexCoordsMake (std::stof (items [1]), 1.0f - std::stof (items [2])) ;
 	[_geometry AddObjTexCoords:coords] ;
 	return (YES) ;
 }
 
 - (BOOL)parseObj_vp:(NSArray *)items line:(NSString *)line {
+	// Parameter space vertices in ( u [,v] [,w] ) form; free form geometry statement
+	// todo
+	return (YES) ;
+}
+
+- (BOOL)parseObj_vp:(std::vector<std::string> &)items {
 	// Parameter space vertices in ( u [,v] [,w] ) form; free form geometry statement
 	// todo
 	return (YES) ;
@@ -376,10 +615,49 @@
 	return (YES) ;
 }
 
+- (BOOL)parseObj_f:(std::vector<std::string> &)items {
+	if ( _currentGroup == nil || [_currentGroup isEqualToString:@""] )
+		[self parseObj_g:[NSArray arrayWithObjects:@"g", @"xx_default_xx", nil] line:@"g xx_default_xx"] ;
+	// A valid vertex index starts from 1 and matches the corresponding vertex elements of a previously defined vertex list.
+	// Each face can contain three or more vertices.
+	// Optionally, texture coordinate indices can be used to specify texture coordinates when defining a face.
+	// As texture coordinates are optional, one can define geometry without them, but one must put two slashes after the
+	// vertex index before putting the normal index.
+	// I.e.  f  Vertex/[Texture-Coordinate]/Vertext_Normal
+	GLFace glface ;
+	unsigned long nb =items.size () ;
+	for ( unsigned long i =1 ; i < nb ; i++ ) {
+		std::istringstream split (items [i]) ;
+		std::vector<std::string> def ;
+		for ( std::string each ; std::getline (split, each, '/') ; def.push_back (each) ) ;
+		GLFaceEltDef glfaceElt ;
+		switch ( def.size () ) { // 0 means not defined since indices start at index 1
+			case 1:
+				glfaceElt =GLFaceEltDefMake (std::stoul (def [0]) - 1, -1, -1) ;
+				break ;
+			case 2:
+				glfaceElt =GLFaceEltDefMake (std::stoul (def [0]) - 1, std::stoul (def [1]) - 1, -1) ;
+				break ;
+			case 3:
+				glfaceElt =GLFaceEltDefMake (std::stoul (def [0]) - 1, std::stoul (def [1]) - 1, std::stoul (def [2]) - 1) ;
+				break ;
+		}
+		glface._def.push_back (glfaceElt) ;
+		//NSLog(@"%@ -> %u %u -> ", face, glfaceElt._vertex, glfaceElt._tex) ;
+	}
+	[[_groups objectForKey:_currentGroup] AddFace:glface] ;
+	return (YES) ;
+}
+
 // http://paulbourke.net/dataformats/mtl/
 
 - (BOOL)parseObj_mtllib:(NSArray *)items line:(NSString *)line {
 	[self parseMtl:[items objectAtIndex:1]] ;
+	return (YES) ;
+}
+
+- (BOOL)parseObj_mtllib:(std::vector<std::string> &)items {
+	[self parseMtl:[[NSString alloc] initWithUTF8String:items [1].c_str ()]] ;
 	return (YES) ;
 }
 
@@ -475,7 +753,7 @@
 }
 
 + (UIImage *)flipImageVertically:(UIImage *)originalImage {
-	UIImageView *tempImageView =[[UIImageView alloc] initWithImage:originalImage] ;
+/*	UIImageView *tempImageView =[[UIImageView alloc] initWithImage:originalImage] ;
 	UIGraphicsBeginImageContext (tempImageView.frame.size) ;
 	CGContextRef context =UIGraphicsGetCurrentContext () ;
 	CGAffineTransform flipVertical =CGAffineTransformMake (1, 0, 0, -1, 0, tempImageView.frame.size.height) ;
@@ -484,6 +762,14 @@
 	UIImage *flippedImage =UIGraphicsGetImageFromCurrentImageContext () ; // is autoreleased
 	UIGraphicsEndImageContext () ;
 	return (flippedImage) ;
+*/
+    CGSize size = originalImage.size;
+    UIGraphicsBeginImageContext(CGSizeMake(size.height, size.width));
+    [[UIImage imageWithCGImage:[originalImage CGImage] scale:1.0 orientation:YES ? UIImageOrientationRight : UIImageOrientationLeft] drawInRect:CGRectMake(0,0,size.height ,size.width)];
+    UIImage* flippedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+	
+    return flippedImage;
 }
 
 - (BOOL)loadTexture:(GLuint)texture texFileName:(NSString *)texFileName width:(int)width height:(int)height {
@@ -499,18 +785,19 @@
 		glCompressedTexImage2D (GL_TEXTURE_2D, 0, GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG, width, height, 0, (width * height) / 2, [texData bytes]) ;
 		return (YES) ;
 	}
-	if ( ![extension isEqualToString:@"png"] ) {
-		UIImage *image =[[UIImage alloc] initWithData:texData] ;
-		if ( image == nil )
-			return (NO) ;
-		texData =UIImagePNGRepresentation (image) ;
-	}
+	//if ( ![extension isEqualToString:@"png"] ) {
+	//	UIImage *image =[[UIImage alloc] initWithData:texData] ;
+	//	if ( image == nil )
+	//		return (NO) ;
+	//	//texData =UIImagePNGRepresentation (image) ;
+	//}
 
-	// .png
+	// .png or other like jpg
 	UIImage *image =[[UIImage alloc] initWithData:texData] ;
 	if ( image == nil )
 		return (NO) ;
-	image =[AdskObjParser flipImageVertically:image] ;
+	// In theory, we should flip the image for OpenGL, but instead we flipped the texture V coordinates
+	//image =[AdskObjParser flipImageVertically:image] ;
 	
 	width =(int)CGImageGetWidth (image.CGImage) ;
 	height =(int)CGImageGetHeight (image.CGImage) ;

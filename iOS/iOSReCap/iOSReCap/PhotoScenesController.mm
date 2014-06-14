@@ -33,6 +33,8 @@
 
 @end
 
+#include <Autodesk-iOSViewer/AdskObjParser.h>
+
 @implementation PhotoScenesController
 
 @synthesize _photoscenes =__photoscenes ;
@@ -47,6 +49,7 @@
 	self.navigationController.toolbarHidden =NO ;
 	self.tableView.allowsMultipleSelectionDuringEditing =NO ;
 	
+	//AdskObjParser *test =[[AdskObjParser alloc] initWithPath:@"/Users/cyrille/Library/Application Support/iPhone Simulator/7.1/Applications/2BFEFEBB-7282-4E88-838F-4FBBFB6C78C5/Documents/WSqUlt1GaRNx9KvXI13I9mHwqeI.zip" progress:nil] ;
 	[self autoLogin] ;
 		
 	self.navigationItem.leftBarButtonItem =self._logoutButton ; // todo
@@ -106,7 +109,7 @@
 					[_oauthController dismissViewControllerAnimated:YES completion:nil] ;
 					UIAlertView *message =[[UIAlertView alloc] initWithTitle:@"iOS ReCap Sample"
 																	message:@"Failed to authenticate!"
-																	delegate:nil
+																	delegate:self
 														   cancelButtonTitle:@"OK"
 														   otherButtonTitles:nil] ;
 					[message show] ;
@@ -114,6 +117,12 @@
 			] ;
 		}
 	] ;
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    //if ( buttonIndex == 0 ) {
+		[self login] ;
+	//}
 }
 
 - (void)initialize {
@@ -126,7 +135,13 @@
 }
 
 - (IBAction)logout:(id)sender {
-	// Todo: logout from oAuth
+	[AdskOAuthController InvalidateToken:^ () {
+			[self login] ;
+		}
+		failure: ^ (NSError *error) {
+			[self login] ;
+		}
+	] ;
 }
 
 #pragma mark - ReCap Calls

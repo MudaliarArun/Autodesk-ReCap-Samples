@@ -386,7 +386,6 @@ self.nibCustomView = nibCustomView;
 		[renderingActivityLabel removeFromSuperview] ;
 		renderingActivityLabel =nil ;
 	}
-	
 	renderingActivityLabel =[[UILabel alloc] initWithFrame:CGRectMake (
 																	   round (self.view.frame.size.width / 2.0f - 219.0f / 2.0f),
 																	   round(self.view.frame.size.height / 2.0f - 15.0f - 21.0f),
@@ -395,7 +394,7 @@ self.nibCustomView = nibCustomView;
 	renderingActivityLabel.text =@"Loading/Rendering mesh..." ;
 	renderingActivityLabel.textAlignment =NSTextAlignmentCenter ;
 	renderingActivityLabel.backgroundColor =[UIColor clearColor] ;
-	renderingActivityLabel.textColor =[UIColor blackColor] ;
+	renderingActivityLabel.textColor =[UIColor whiteColor] ;
 	
 	[renderingProgressIndicator setProgress:0.0] ;
 	[self.view addSubview:renderingProgressIndicator] ;

@@ -47,7 +47,7 @@ typedef void (^AdskOAuthControllerError) (NSError *error) ;
 - (void)RequestToken:(void (^)())success failure:(void (^)(NSError *error))failure ;
 - (void)Authorize ;
 + (void)AccessToken:(BOOL)refresh PIN:(NSString *)PIN success:(void (^)())success failure:(void (^)(NSError *error))failure ;
-+ (void)InvalidateToken ;
++ (void)InvalidateToken:(void (^)())success failure:(void (^)(NSError *error))failure ;
 //- (void)webViewDidFinishLoad:(UIWebView *)aWebView ;
 //- (BOOL)isAuthorizeCallBack ;
 //- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex ;

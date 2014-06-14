@@ -21,7 +21,6 @@
 #import <OpenGLES/ES2/glext.h>
 
 #include <vector>
-#include <map>
 
 #define kRenderingStartedNotification @"ReCapRenderingStarted"
 #define kRenderingUpdateNotification @"ReCapRenderingUpdate"

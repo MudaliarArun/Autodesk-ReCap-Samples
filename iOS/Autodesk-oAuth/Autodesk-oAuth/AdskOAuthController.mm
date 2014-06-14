@@ -187,7 +187,7 @@
 
 //- If we do not want to use the service anymore then
 //- the best thing is to log out, i.e. invalidate the tokens we got
-+ (void)InvalidateToken {
++ (void)InvalidateToken:(void (^)())success failure:(void (^)(NSError *error))failure {
 	NSUserDefaults *defaults =[NSUserDefaults standardUserDefaults] ;
 	AFOAuth1Token *_accessToken =[[AFOAuth1Token alloc] initWithKey:[defaults objectForKey:@"oauth_token"]
 															 secret:[defaults objectForKey:@"oauth_token_secret"]
@@ -207,10 +207,14 @@
 			 [defaults removeObjectForKey:@"x_oauth_user_guid"] ;
 			 [defaults synchronize] ;
 			 NSLog(@"Success! Managed to log out!") ;
+			 if ( success )
+				 success () ;
 		 }
 		 failure:^ (NSError *error) {
 			 NSLog(@"Failure! Could not log out!") ;
 			 NSLog(@"Error: %@", error) ;
+			 if ( failure )
+				 failure (error) ;
 		 }
 	 ] ;
 }
