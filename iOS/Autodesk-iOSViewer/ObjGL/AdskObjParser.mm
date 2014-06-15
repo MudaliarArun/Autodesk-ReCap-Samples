@@ -213,7 +213,7 @@
 	NSLog(@"%lu %ld", v, _geometry->_fileVertices.size ()) ;
 	
 	// Now we parsed the file, we need to process some data like the face' vertices index and textures
-	[self loadTextures] ;
+	//[self loadTextures] ;
 	[self parseProgress:0.33 progress:progress] ;
 	
 	// Split Quads into triangles and create v/vt uniq pair list
@@ -349,6 +349,7 @@
 		//	[self performSelector:cmd withObject:nil] ;
 		
 		getline (objIn, st) ;
+		st.erase (std::remove (st.begin (), st.end (), '\r'), st.end ()) ;
 		if ( st.length () == 0 || st [0] == '#' )
 			continue ;
 		std::istringstream split (st) ;
@@ -369,6 +370,16 @@
 			[self parseObj_g:tokens] ;
 		} else if ( tokens [0] == "mtllib" ) {
 			[self parseObj_mtllib:tokens] ;
+		} else if ( tokens [0] == "usemtl" ) {
+			[self parseObj_usemtl:tokens] ;
+		} else {
+			NSMutableArray *tokens =[[NSMutableArray alloc] init] ;
+			for ( std::string each ; std::getline (split, each, ' ') ; [tokens addObject:[[NSString alloc] initWithUTF8String:each.c_str ()]]) ;
+			
+			NSString *command =[NSString stringWithFormat:@"parseObj_%@:line:", [tokens objectAtIndex:0]] ;
+			SEL cmd =NSSelectorFromString (command) ;
+			if ( cmd != nil && [self respondsToSelector:cmd] )
+				[self performSelector:cmd withObject:tokens withObject:nil] ;
 		}
 		
 		[self parseProgress:(0.05 + 0.28 * ((double)i++ / nb)) progress:progress] ;
@@ -818,15 +829,20 @@
 }
 
 - (void)loadTextures {
-	int count =0 ;
+	int count =0, count2 =0 ;
 	NSArray *materials =[_materials allKeys] ;
 	for ( NSString *matName in materials ) {
 		AdskObjMaterial *material =[_materials objectForKey:matName] ;
-		if ( material->_textureFilepath != nil && ![material->_textureFilepath isEqualToString:@""] )
-			count++ ;
+		if ( material->_textureFilepath != nil && ![material->_textureFilepath isEqualToString:@""] ) {
+			count +=(material->_textureId == 0 ? 1 : 0) ;
+			count2++ ;
+		}
 	}
 	if ( count == 0 )
 		return ;
+	count =count2 ;
+	
+	[self destroyTextures] ;
 	
 	glEnable (GL_TEXTURE_2D) ;
 	glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST) ;
@@ -862,6 +878,7 @@
 		AdskObjMaterial *material =[_materials objectForKey:matName] ;
 		if ( material->_textureId )
 			textures.push_back (material->_textureId) ;
+		material->_textureId =0 ;
 	}
 	if ( textures.size () == 0 )
 		return ;

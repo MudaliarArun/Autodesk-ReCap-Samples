@@ -145,19 +145,10 @@ self.nibCustomView = nibCustomView;
 - (void)setupView:(AdskEAGLView *)view {
 	if ( dispatch_semaphore_wait (_objViewerSemaphore, DISPATCH_TIME_NOW) != 0 )
 		return ;
-	
-	if ( __path ) {
-		if ( dispatch_semaphore_wait (_objLoaderSemaphore, DISPATCH_TIME_NOW) == 0 ) {
-			//__myMesh =[[AdskObjParser alloc] initWithPath:__path progress:kRenderingUpdateNotification] ;
-			//[__myMesh loadTextures] ;
-			dispatch_semaphore_signal (_objLoaderSemaphore) ;
-		} else {
-			if ( __myMesh != nil )
-				[__myMesh loadTextures] ;
-		}
-	}
+
 	view->_model =CATransform3DIdentity ;
 	if ( __myMesh != nil ) {
+		[__myMesh loadTextures] ;
 		GLfloat scale =fabs (1 / (__myMesh->_geometry->_maxPoint.x - __myMesh->_geometry->_minPoint.x)) ;
 		scale =MIN(scale, fabs (1 / (__myMesh->_geometry->_maxPoint.y - __myMesh->_geometry->_minPoint.y))) ;
 		scale =MIN(scale, fabs (1 / (__myMesh->_geometry->_maxPoint.z - __myMesh->_geometry->_minPoint.z))) ;
