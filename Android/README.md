@@ -21,7 +21,7 @@ UNINTERRUPTED OR ERROR FREE.
 Android ReCap Sample
 =======================
 
-<b>Note:</b> For using those samples you need a valid oAuth credential and a ReCap client ID. Contact Stephen Preston @ stephen.preston@autodesk.com to get them.
+<b>Note:</b> For using those samples you need a valid oAuth credential and a ReCap client ID. Contact ReCap API <recap.api@autodesk.com> to get them.
 
 
 Dependencies

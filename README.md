@@ -22,7 +22,7 @@ Autodesk-ReCap-Samples
 =======================
 A set of samples demonstrating how to use the Autodesk ReCap APIs
 
-<b>Note:</b> For using the sample you need a valid oAuth credential and a ReCap client ID. Contact Stephen Preston @ stephen.preston@autodesk.com to get them.
+<b>Note:</b> For using those samples you need a valid oAuth credential and a ReCap client ID. Contact ReCap API <recap.api@autodesk.com> to get them.
 
 
 The samples
