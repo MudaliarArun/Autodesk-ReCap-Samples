@@ -22,6 +22,7 @@ recap.txt
 
 # PHP libraries
 vendor/
+*.lock
 
 # Build results
 [Dd]ebug/

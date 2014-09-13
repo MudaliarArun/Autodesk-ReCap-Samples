@@ -37,20 +37,36 @@ $oauth->disableSSLChecks () ;
 
 try {
 	//- 1st leg: Get the 'request token'
-	$token =$oauth->getRequestToken (O2_REQUESTTOKEN) ;
+	$token =$oauth->getRequestToken (OAUTH_REQUESTTOKEN) ;
 	//- Set the token and secret for subsequent requests.
 	$oauth->setToken ($token ['oauth_token'], $token ['oauth_token_secret']) ;
+} catch (OAuthException $e) {
+	echo "OAuth 1st leg\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	exit ;
+} catch (Exception $e) {
+	echo "OAuth 1st leg - OAuth/RequestToken\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	exit ;
+}
 
+try {
 	//- 2nd leg: Authorize the token
 	//- Currently, Autodesk Oxygen service requires you to manually log into the system, so we are using your default browser
-	$url =O2_AUTHORIZE . "?oauth_token=" . urlencode (stripslashes ($token ['oauth_token'])) ;
+	$url =OAUTH_AUTHORIZE . "?oauth_token=" . urlencode (stripslashes ($token ['oauth_token'])) ;
 	exec (DEFAULT_BROWSER . $url) ;
 	//- We need to wait for the user to have logged in
 	echo "Press [Enter] when logged" ;
 	$psLine =fgets (STDIN, 1024) ;
-	
+} catch (OAuthException $e) {
+	echo "OAuth 2nd leg\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	exit ;
+} catch (Exception $e) {
+	echo "OAuth 2nd leg - OAuth/Authorize\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	exit ;
+}
+
+try {	
 	//- 3rd leg: Get the 'access token' and session
-	$access =$oauth->getAccessToken (O2_ACCESSTOKEN) ;
+	$access =$oauth->getAccessToken (OAUTH_ACCESSTOKEN) ;
 	//- Set the token and secret for subsequent requests.
 	$oauth->setToken ($access ['oauth_token'], $access ['oauth_token_secret']) ;
 	
@@ -65,10 +81,10 @@ try {
 	file_put_contents ($fname, serialize ($access)) ;
 	
 } catch (OAuthException $e) {
-	echo "OAuth\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	echo "OAuth 3rd leg\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
 	exit ;
 } catch (Exception $e) {
-	echo "OAuth/Authorize\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	echo "OAuth 3rd leg - OAuth/AccessToken\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
 	exit ;
 }
 

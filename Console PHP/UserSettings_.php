@@ -28,13 +28,13 @@ define ('DEFAULT_BROWSER' ,'"C:\Program Files (x86)\Google\Chrome\Application\ch
 // One approach is to encrypt and/or obfuscate these values
 define ('CONSUMER_KEY', 'your consumer key') ;
 define ('CONSUMER_SECRET', 'your consumer secret key') ;
-define ('O2_HOST' ,'https://accounts.autodesk.com/') ; // Autodesk production accounts server
+define ('O2_HOST', 'https://accounts.autodesk.com/') ; // Autodesk production accounts server
 //define ('O2_HOST', 'https://accounts-staging.autodesk.com/') ; // Autodesk staging accounts server
 
 // ReCap: Fill in these macros with the correct information (only the 2 first are important)
 define ('ReCapAPIURL', 'http://rc-api-adn.autodesk.com/3.1/API/') ;
 define ('ReCapClientID', 'your ReCap client ID') ;
-define ('ReCapKey', 'your ReCap client key') ; // not used anymore
+//define ('ReCapKey', 'your ReCap client key') ; // not used anymore
 define ('ReCapUserID', 'your ReCap user ID') ; // Needed only for using the ReCapSceneList, otherwise bail
 
 define ('Email', 'your email address')  ; // used for notification

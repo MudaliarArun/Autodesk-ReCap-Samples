@@ -21,8 +21,8 @@
  
  */
 require 'vendor/autoload.php' ;
-use Guzzle\Http\Client ;
-use Guzzle\Plugin\Oauth\OauthPlugin ;
+use GuzzleHttp\Client ;
+use GuzzleHttp\Subscriber\Oauth\Oauth1 ;
 require_once ('UserSettings.php') ;
 require_once ('AdskReCap.php') ;
 
@@ -44,7 +44,7 @@ if ( array_key_exists ('h', $options) !== false ) {
 	echo "\t   properties - Displays current Photoscene properties\n" ;
 	echo "\t   upload - Upload photo(s) on your current Photoscene - requires -p option (could be a single file, a folder, or a search string)\n" ;
 	echo "\t   start - Launch your Photoscene\n" ;
-	echo "\t   progress - Launch your Photoscene\n" ;
+	echo "\t   progress - Report progress on processing the Photoscene\n" ;
 	echo "\t   result - Get the result\n" ;
 	echo "\t   delete - Delete the Photoscene and resources from server\n" ;
 	
@@ -323,25 +323,28 @@ function GetSceneResult ($photosceneid) {
 		exit ;
 	}
 	$xml =$recap->xml () ; //- Photoscene->progressmsg = [Created / Processing / ERROR] / Photoscene->progress = [0..100]
-	echo "photoscene/... response: {$xml->Photoscene->scenelink}  -  {$xml->Photoscene->filesize}b\n" ;
+	echo "photoscene/... response: {$xml->Photoscene->scenelink} - {$xml->Photoscene->filesize}b\n" ;
 	$report =file_get_contents ($xml->Photoscene->scenelink) ;
-	//file_put_contents (basename ($xml->Photoscene->scenelink), $report) ;
 	file_put_contents ($photosceneid . ".zip", $report) ;
+	echo "PhotoScene saved into: ${photosceneid}.zip\n" ;
 }
 
 function DeleteScene ($photosceneid) {
 	global $recap ;
-	if ( $recap->DeleteScene ($photosceneid, "obj") == false ) {
+	if ( $recap->DeleteScene ($photosceneid) == false ) {
 		echo "photoscene/... - Failed to get a valid response from the ReCap server!\n" ;
 		exit ;
 	}
-	$xml =$response->xml () ;
-	if ( isset ($xml->Photoscene->deleted) ) {
-		echo "My ReCap PhotoScene is now deleted\n" ;
-		return (true) ;
-	} else {
-		echo "Failed deleting the PhotoScene and resources!\n" ;
-		return (false) ;
+	try {
+		$xml =$recap->xml () ;
+		if ( isset ($xml->Photoscene->deleted) ) {
+			echo "My ReCap PhotoScene is now deleted\n" ;
+			return (true) ;
+		} else {
+			echo "Failed deleting the PhotoScene and resources!\n" ;
+			return (false) ;
+		}
+	} catch (Exception $e) {
 	}
 	return (false) ;
 }

@@ -39,7 +39,7 @@ try {
 	$oauth->disableSSLChecks () ;
 	
 	$oauth->setToken ($access ['oauth_token'], $access ['oauth_token_secret']) ;
-	$access =$oauth->getAccessToken (O2_ACCESSTOKEN, $access ['oauth_session_handle']) ;
+	$access =$oauth->getAccessToken (OAUTH_ACCESSTOKEN, $access ['oauth_session_handle']) ;
 
 	echo "'oauth_token' => '{$access ['oauth_token']}',\n'oauth_token_secret' => '{$access ['oauth_token_secret']}', \n" ;
 
@@ -48,7 +48,7 @@ try {
 	echo "OAuth\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
 	exit ;
 } catch (Exception $e) {
-	echo "OAuth/Authorize\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
+	echo "OAuth/AccessToken\n", 'Caught exception: ',  $e->getMessage (), "\n" ;
 	exit ;
 }
 

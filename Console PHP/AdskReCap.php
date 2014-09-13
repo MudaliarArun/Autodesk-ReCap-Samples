@@ -21,8 +21,10 @@
  
  */
 require 'vendor/autoload.php' ;
-use Guzzle\Http\Client ;
-use Guzzle\Plugin\Oauth\OauthPlugin ;
+use GuzzleHttp\Client ;
+use GuzzleHttp\Post\PostFile;
+//use GuzzleHttp\Subscriber\Oauth\Oauth1 ;
+require_once ('oAuth4ReCap.php') ;
 
 class AdskReCap {
 	private $_clientID ;
@@ -35,131 +37,126 @@ class AdskReCap {
 		$this->_outputlog =$outputlog ;
 		// @"oauth_consumer_key" @"oauth_consumer_secret" @"oauth_token" @"oauth_token_secret"
 		$this->_tokens =$tokens ;
-		$this->_Client =new Client (ReCapAPIURL) ;
+		$this->_Client =new Client ([
+			'base_url' => ReCapAPIURL,
+			'defaults' => [ 'auth' => 'oauth' ]
+		]) ;
 
-		//- http://guzzlephp.org/guide/plugins.html
 		//- The Guzzle oAuth plug-in will put the oAuth signature in the HTML header automatically
-		$oauthClient =new OauthPlugin (array (
+		$oauthClient =new Oauth1a (array (
 			'consumer_key' => CONSUMER_KEY,
 			'consumer_secret' => CONSUMER_SECRET,
 			'token' => $tokens ['oauth_token'], //- access_token
 			'token_secret' => $tokens ['oauth_token_secret'], //- access_token_secret
 		)) ;
-		$this->_Client->addSubscriber ($oauthClient) ;
+		$this->_Client->getEmitter ()->attach ($oauthClient) ;
 	}
 
-	/*public function AdskReCap ($clientID, $consumerKey, $consumerSecret, $oauth, $oauthSecret) {
-		$this->_clientID =$clientID ;
-		// @"oauth_consumer_key" @"oauth_consumer_secret" @"oauth_token" @"oauth_token_secret"
-		$this->_Client =new Client (ReCapAPIURL) ;
-		//- http://guzzlephp.org/guide/plugins.html
-		//- The Guzzle oAuth plug-in will put the oAuth signature in the HTML header automatically
-		$oauthClient =new OauthPlugin (array (
-			'consumer_key' => $consumerKey,
-			'consumer_secret' => $consumerSecret,
-			'token' => $oauth, //- access_token
-			'token_secret' => $oauthSecret, //- access_token_secret
-		)) ;
-		$this->_Client->addSubscriber ($oauthClient) ;
-	}*/
-
-	public function ServerTime () {
+	public function ServerTime ($json =false) {
 		//- Requesting the ReCap service/date to start and check our connection/authentication
-		$request =$this->_Client->get ('service/date') ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array ( 'clientID' => $this->_clientID, 'timestamp' => time (), )) ;
-		$this->_lastResponse =$request->send () ;
+		$this->_lastResponse =$this->_Client->get (
+			'service/date',
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("service/date raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function Version () {
+	public function Version ($json =false) {
 		//- Requesting the ReCap version
-		$request =$this->_Client->get ('version') ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array ( 'clientID' => $this->_clientID, 'timestamp' => time (), )) ;
-		$this->_lastResponse =$request->send () ;
+		$this->_lastResponse =$this->_Client->get (
+			'version',
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("version raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function SetNotificationMessage ($emailType, $emailTxt) {
-		$request =$this->_Client->post ("notification/template") ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array (
-			'emailType' => $emailType,
-			'emailTxt' => $emailTxt,
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		)) ;
-		$this->_lastResponse =$request->send () ;
+	public function SetNotificationMessage ($emailType, $emailTxt, $json =false) {
+		$this->_lastResponse =$this->_Client->post (
+			'notification/template',
+			[ 'body' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+				'emailType' => $emailType,
+				'emailTxt' => $emailTxt,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("notification/template raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function CreateSimplePhotoscene ($format, $meshQuality) {
-		$request =$this->_Client->post ("photoscene") ;
-		$request->addPostFields (array (
-			'scenename' => 'MyPhotoScene' . time (),
-			'meshquality' => $meshQuality,
-			'format' => $format,
-			'callback' => Email,
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		)) ;
-		$this->_lastResponse =$request->send () ;
-		if ( $this->_outputlog == true )
-			$this->NSLog ("photoscene raw response: ", $this->_lastResponse) ;
-		return ($this->isOk ()) ;
-	}
-
-	public function CreatePhotoscene ($format, $meshQuality, $options) {
-		$request =$this->_Client->post ("photoscene") ;
-		$params =array (
-			'scenename' => 'MyPhotoScene' . time (),
-			'meshquality' => $meshQuality,
-			'format' => $format,
-			'callback' => Email,
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
+	public function CreateSimplePhotoscene ($format, $meshQuality, $json =false) {
+		$this->_lastResponse =$this->_Client->post (
+			'photoscene',
+			[ 'body' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+				'scenename' => 'MyPhotoScene' . time (),
+				'meshquality' => $meshQuality,
+				'format' => $format,
+				'callback' => Email,
+			] ]
 		) ;
-		//foreach ( $options as $key => $value ) {}
-		$params =array_merge ($params, $options) ;
-		$request->addPostFields ($params) ;
-		$this->_lastResponse =$request->send () ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function SceneList ($attributeName, $attributeValue) {
-		$request =$this->_Client->get ("photoscene/properties") ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array (
-			'clientID' => $this->_clientID, 'timestamp' => time (),
-			'attributeName' => $attributeName,
-			'attributeValue' => $attributeValue,
-		)) ;
-		$this->_lastResponse =$request->send () ;
+	public function CreatePhotoscene ($format, $meshQuality, $options, $json =false) {
+		$params =array (
+			'clientID' => $this->_clientID,
+			($json == true ? 'json' : 'xml') => 1,
+			'scenename' => 'MyPhotoScene' . time (),
+			'meshquality' => $meshQuality,
+			'format' => $format,
+			'callback' => Email,
+		) ;
+		$params =array_merge ($params, $options) ;
+		$this->_lastResponse =$this->_Client->post ('photoscene', [ 'body' => $params ]) ;
+		if ( $this->_outputlog == true )
+			$this->NSLog ("photoscene raw response: ", $this->_lastResponse) ;
+		return ($this->isOk ()) ;
+	}
+
+	public function SceneList ($attributeName, $attributeValue, $json =false) {
+		$this->_lastResponse =$this->_Client->get (
+			'photoscene/properties',
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				'attributeName' => $attributeName,
+				'attributeValue' => $attributeValue,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/properties raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function SceneProperties ($photosceneid) {
-		$request =$this->_Client->get ("photoscene/{$photosceneid}/properties") ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array ( 'clientID' => $this->_clientID, 'timestamp' => time (), )) ;
-		$this->_lastResponse =$request->send () ;
+	public function SceneProperties ($photosceneid, $json =false) {
+		$this->_lastResponse =$this->_Client->get (
+			"photoscene/{$photosceneid}/properties",
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/.../properties raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function UploadFiles ($photosceneid, $files) {
+	public function UploadFiles ($photosceneid, $files, $json =false) {
 		// ReCap returns the following if no file uploaded (or referenced), setup an error instead
 		//<Response>
 		//        <Usage>0.81617307662964</Usage>
@@ -173,73 +170,80 @@ class AdskReCap {
 			$this->_lastResponse =null ;
 			return (false) ;
 		}
-		$request =$this->_Client->post ("file") ;
-		$params =array (
+		$request =$this->_Client->createRequest (
+			'POST',
+			'file'
+			//, [ 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ] ]
+		) ;
+		$body =$request->getBody () ;
+		$body->replaceFields (array (
+			'clientID' => $this->_clientID,
+			//($json == true ? 'json' : 'xml') => 1,
 			'photosceneid' => $photosceneid,
 			'type' => 'image',
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		) ;
-		$request->getQuery ()->clear () ;
-		//$request->getQuery ()->merge ($params) ; // was needed before because of a bug
-		$request->addPostFields ($params) ;
-		$request->addPostFiles ($files) ; //- Local Files
-		$this->_lastResponse =$request->send () ;
+		)) ;
+		foreach ( $files as $name => $file )
+			$body->addFile (new PostFile ($name, fopen ($file, 'r'))) ;
+		$this->_lastResponse =$this->_Client->send ($request) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("file raw response: ", $this->_lastResponse) ;
-		
 		return ($this->isOk ()) ;
 	}
 
-	public function ProcessScene ($photosceneid) {
-		$request =$this->_Client->post ("photoscene/{$photosceneid}") ;
-		$request->addPostFields (array (
-			'photosceneid' => $photosceneid,
-			'forceReprocess' => "1",
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		)) ;
-		$this->_lastResponse =$request->send () ;
+	public function ProcessScene ($photosceneid, $json =false) {
+		$this->_lastResponse =$this->_Client->post (
+			"photoscene/{$photosceneid}",
+			[ 'body' => [
+				'clientID' => $this->_clientID,
+				($json == true ? 'json' : 'xml') => 1,
+				'photosceneid' => $photosceneid,
+				'forceReprocess' => "1",
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("(post) photoscene/... raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function SceneProgress ($photosceneid) {
-		$request =$this->_Client->get ("photoscene/{$photosceneid}/progress") ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array (
-			'photosceneid' => $photosceneid,
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		)) ;
-		$this->_lastResponse =$request->send () ;
+	public function SceneProgress ($photosceneid, $json =false) {
+		$this->_lastResponse =$this->_Client->get (
+			"photoscene/{$photosceneid}/progress",
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				'photosceneid' => $photosceneid,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/.../progress raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function GetPointCloudArchive ($photosceneid, $format) {
-		$request =$this->_Client->get ("photoscene/{$photosceneid}") ;
-		$request->getQuery ()->clear () ; // Not needed as this is a new request object, but.as I am going to use merge(), it is safer
-		$request->getQuery ()->merge (array (
-			'photosceneid' => $photosceneid,
-			'format' => $format,
-			'clientID' => $this->_clientID,
-			'timestamp' => time (),
-		)) ;
-		$this->_lastResponse =$request->send () ;
+	public function GetPointCloudArchive ($photosceneid, $format, $json =false) {
+		$this->_lastResponse =$this->_Client->get (
+			"photoscene/{$photosceneid}",
+			[ 'query' => [
+				'clientID' => $this->_clientID,
+				'photosceneid' => $photosceneid,
+				'format' => $format,
+				($json == true ? 'json' : 'xml') => 1,
+			] ]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("(get) photoscene/... raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
 	}
 
-	public function DeleteScene ($photosceneid) {
-		//$this->_Client->setDefaultOption ('headers', array ('Content-Type' => 'multipart/form-data')) ;
-		//curl_setopt($this->ch, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
-		$request =$this->_Client->delete ("photoscene/{$photosceneid}") ; //, null, null, array ( CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data") )) ;
-		$request->addPostFields (array ( 'clientID' => $this->_clientID, 'timestamp' => time (), )) ;
-		$this->_lastResponse =$request->send () ;
+	public function DeleteScene ($photosceneid, $json =false) {
+		$request =$this->_Client->createRequest (
+			'DELETE',
+			"photoscene/{$photosceneid}",
+			[ 'body' => [  'clientID' => $this->_clientID, ($json == true ? 'json' : 'xml') => 1, ] ]
+		) ;
+		$body =$request->getBody () ;
+		//$body->replaceFields (array ( 'clientID' => $this->_clientID, ($json == true ? 'json' : 'xml') => 1, )) ;
+		$body->forceMultipartUpload (true) ;
+		$this->_lastResponse =$this->_Client->send ($request) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("(delete) photoscene/... raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
@@ -310,8 +314,16 @@ class AdskReCap {
 		return ($this->_lastResponse->xml ()) ;
 	}
 
+	public function json () {
+		if ( empty ($this->_lastResponse) )
+			return (null) ;
+		return ($this->_lastResponse->json ()) ;
+	}
+	
 	public function isOk () {
 		if ( empty ($this->_lastResponse) )
+			return (false) ;
+		if ( $this->_lastResponse->getStatusCode () < 200 || $this->_lastResponse->getStatusCode () >= 300 )
 			return (false) ;
 		$st =$this->ToString () ;
 		return (stripos ($st, "<error>") === false) ;
@@ -326,7 +338,7 @@ class AdskReCap {
 	public static function NSLog ($message, $response) {
 		if ( $message == null )
 			$message ="Response Body" ;
-		echo "$message\n-------\n", $response->getBody (), "======\n\n" ;
+		echo "$message\n-------\n", $response->getBody (), "\n======\n\n" ;
 	}
 
 }
