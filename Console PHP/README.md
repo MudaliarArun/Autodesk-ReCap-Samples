@@ -45,14 +45,15 @@ Setup Instructions
    Linux - On CentOS host console (or remotely using putty/ssh)
      pecl install oauth
      server httpd restart
-```	 
-	 
+```
 2. Install Composer
-  1. go to your 'PHP' directory, and create a Composer directory
-  2. execute 'php -r "readfile('https://getcomposer.org/installer');" | php'
+  1. go to your 'PHP' install directory,
+  2. create a Composer directory (i.e. mkdir Composer)
+  3. go in your Composer directory (i.e. cd Composer)
+  4. execute 'php -r "readfile('https://getcomposer.org/installer');" | php'
   
 3. Install Guzzle in your project
-  1. go to your project directory
+  1. go to your project directory (i.e. the 'PHP Console' directory)
   2. execute 'php composer.phar install'
   
 4. Configure the sample
@@ -64,26 +65,26 @@ Setup Instructions
 	 * Email
 
 5. If you wish to use Fiddler to debug Guzzle Curl requests, add the following option to each Guzzle call
+```
    [ 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ] ]
-   an example is provided in AdskReCap.php, line #176
-   http://guzzle.readthedocs.org/en/latest/faq.html#how-can-i-add-custom-curl-options
+```
+   an example is provided in AdskReCap.php, line #176  
+   http://guzzle.readthedocs.org/en/latest/faq.html#how-can-i-add-custom-curl-options  
    http://docs.telerik.com/fiddler/configure-fiddler/tasks/configurephpcurl
 	 
 Usage Instructions
 -------------------------
 
-Log on the Autodesk Oxygen server using the oAuthLog.php script, i.e:
+Log on the Autodesk oAuth server using the oAuthLog.php script, i.e:
 
 	php -f oAuthLog.php
 	
-this command needs to be ran only once, unless your credential expired. It saves your access token into a file named oauth.txt that the ReCap sample will consume.
-
-
+this command needs to be ran only once, unless your credential has expired. The command saves your access token into a file named oauth.txt that the ReCap sample will refresh and consume later.
+```
 Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
 	-r	Refresh Access token only
 	-d	Debug mode. Display the RESTful response
-
 	-c	Command list
 			version - Displays the current ReCap server version
 			current - Displays the current photosceneid in use
@@ -97,11 +98,11 @@ Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 			progress - Launch your Photoscene
 			result - Get the result
 			delete - Delete the Photoscene and resources from server
-
 	-h	Help - this message
+```
 
-Example
-
+Typical scenario:
+```
 php -f oAuthLog.php
 php -f ReCap.php -- -c create
 php -f ReCap.php -- -c upload -p ../Examples/Tirelire
@@ -113,8 +114,7 @@ once 'progress' reports no error and completion at 100%
 
 php -f ReCap.php -- -c properties
 php -f ReCap.php -- -c result
-
-
+```
 
 --------
 
