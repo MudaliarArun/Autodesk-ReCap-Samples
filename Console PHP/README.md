@@ -18,11 +18,11 @@ Setup Instructions
 -------------------------
 
 1. Install PHP 5.4.0+ 
-  a. make sure to include the openssl and curl extensions in your php.ini
-  b. after installing PHP on your system, you may need to install the php_oauth extension if your 
+  1. make sure to include the openssl and curl extensions in your php.ini
+  2. after installing PHP on your system, you may need to install the php_oauth extension if your 
       distribution does not yet include it. Copy the dll into your PHP extension folder (I.e.: <PHP folder>\ext)
       and add the following lines in your php.ini 
- 
+```
    Windows
 		[PHP_OAUTH]
 		extension=php_oauth.dll
@@ -45,19 +45,19 @@ Setup Instructions
    Linux - On CentOS host console (or remotely using putty/ssh)
      pecl install oauth
      server httpd restart
-	 
+```	 
 	 
 2. Install Composer
-  a. go to your 'PHP' directory, and create a Composer directory
-  b. execute 'php -r "readfile('https://getcomposer.org/installer');" | php'
+  1. go to your 'PHP' directory, and create a Composer directory
+  2. execute 'php -r "readfile('https://getcomposer.org/installer');" | php'
   
 3. Install Guzzle in your project
-  a. go to your project directory
-  b. execute 'php composer.phar install'
+  1. go to your project directory
+  2. execute 'php composer.phar install'
   
 4. Configure the sample
-  a. copy UserSettings_.php into UserSettings.php
-  b. edit UserSettings.php, and replace the following key strings with appropriate value
+  1. copy UserSettings_.php into UserSettings.php
+  2. edit UserSettings.php, and replace the following key strings with appropriate value
      * CONSUMER_KEY
 	 * CONSUMER_SECRET
 	 * ReCapClientID

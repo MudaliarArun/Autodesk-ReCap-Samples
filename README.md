@@ -41,6 +41,13 @@ See the sample' README.md file in the sample folders.
 
 
 --------
-Written by the Autodesk Developer Network
-http://www.autodesk.com/adn  
 
+## License
+
+This sample is licensed under the terms of the [MIT License](http://opensource.org/licenses/MIT). Please see the [LICENSE](LICENSE) file for full details.
+
+
+## Written by
+
+Autodesk Developer Network
+http://www.autodesk.com/adn
