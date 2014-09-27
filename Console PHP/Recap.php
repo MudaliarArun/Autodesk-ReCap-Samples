@@ -22,8 +22,9 @@
  */
 require 'vendor/autoload.php' ;
 use GuzzleHttp\Client ;
-use GuzzleHttp\Subscriber\Oauth\Oauth1 ;
+//use GuzzleHttp\Subscriber\Oauth\Oauth1 ;
 require_once ('UserSettings.php') ;
+require_once ('oAuth4ReCap.php') ;
 require_once ('AdskReCap.php') ;
 
 // http://www.php.net/manual/en/function.getopt.php
@@ -289,6 +290,7 @@ function UploadPhotos ($photosceneid, $filesref) {
 		echo "file - Failed to get a valid response from the ReCap server!\n" ;
 		exit ;
 	}
+	echo "File(s) uploaded:\n" ;
 	$xml =$recap->xml () ;
 	$xpath =$xml->xpath ("Files/file") ;
 	foreach ( $xpath as $node ) {

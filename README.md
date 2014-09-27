@@ -13,6 +13,7 @@ The samples
 3. The [.Net Samples + Toolkit](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/.Net%20Samples%20%2B%20Toolkit)
 4. The [Android sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Android)
 5. The [iOS sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/iOS)
+6. The [C++ Console sample](https://github.com/ADN-DevTech/Autodesk-ReCap-Samples/tree/master/Console%20Cpp)
 
 Use of the samples:
 

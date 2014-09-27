@@ -52,6 +52,7 @@ try {
 	//- 2nd leg: Authorize the token
 	//- Currently, Autodesk Oxygen service requires you to manually log into the system, so we are using your default browser
 	$url =OAUTH_AUTHORIZE . "?oauth_token=" . urlencode (stripslashes ($token ['oauth_token'])) ;
+	//echo $url . "\n" ;
 	exec (DEFAULT_BROWSER . $url) ;
 	//- We need to wait for the user to have logged in
 	echo "Press [Enter] when logged" ;

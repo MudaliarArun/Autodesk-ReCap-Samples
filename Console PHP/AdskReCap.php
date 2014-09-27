@@ -59,7 +59,9 @@ class AdskReCap {
 			[ 'query' => [
 				'clientID' => $this->_clientID,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("service/date raw response: ", $this->_lastResponse) ;
@@ -73,7 +75,9 @@ class AdskReCap {
 			[ 'query' => [
 				'clientID' => $this->_clientID,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("version raw response: ", $this->_lastResponse) ;
@@ -88,7 +92,9 @@ class AdskReCap {
 				($json == true ? 'json' : 'xml') => 1,
 				'emailType' => $emailType,
 				'emailTxt' => $emailTxt,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("notification/template raw response: ", $this->_lastResponse) ;
@@ -105,7 +111,9 @@ class AdskReCap {
 				'meshquality' => $meshQuality,
 				'format' => $format,
 				'callback' => Email,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene raw response: ", $this->_lastResponse) ;
@@ -122,7 +130,12 @@ class AdskReCap {
 			'callback' => Email,
 		) ;
 		$params =array_merge ($params, $options) ;
-		$this->_lastResponse =$this->_Client->post ('photoscene', [ 'body' => $params ]) ;
+		$this->_lastResponse =$this->_Client->post (
+			'photoscene',
+			[ 'body' => $params
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
+		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene raw response: ", $this->_lastResponse) ;
 		return ($this->isOk ()) ;
@@ -136,7 +149,9 @@ class AdskReCap {
 				'attributeName' => $attributeName,
 				'attributeValue' => $attributeValue,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/properties raw response: ", $this->_lastResponse) ;
@@ -149,7 +164,9 @@ class AdskReCap {
 			[ 'query' => [
 				'clientID' => $this->_clientID,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/.../properties raw response: ", $this->_lastResponse) ;
@@ -196,9 +213,10 @@ class AdskReCap {
 			[ 'body' => [
 				'clientID' => $this->_clientID,
 				($json == true ? 'json' : 'xml') => 1,
-				'photosceneid' => $photosceneid,
 				'forceReprocess' => "1",
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("(post) photoscene/... raw response: ", $this->_lastResponse) ;
@@ -210,9 +228,10 @@ class AdskReCap {
 			"photoscene/{$photosceneid}/progress",
 			[ 'query' => [
 				'clientID' => $this->_clientID,
-				'photosceneid' => $photosceneid,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("photoscene/.../progress raw response: ", $this->_lastResponse) ;
@@ -224,10 +243,11 @@ class AdskReCap {
 			"photoscene/{$photosceneid}",
 			[ 'query' => [
 				'clientID' => $this->_clientID,
-				'photosceneid' => $photosceneid,
 				'format' => $format,
 				($json == true ? 'json' : 'xml') => 1,
-			] ]
+			]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		if ( $this->_outputlog == true )
 			$this->NSLog ("(get) photoscene/... raw response: ", $this->_lastResponse) ;
@@ -238,7 +258,9 @@ class AdskReCap {
 		$request =$this->_Client->createRequest (
 			'DELETE',
 			"photoscene/{$photosceneid}",
-			[ 'body' => [  'clientID' => $this->_clientID, ($json == true ? 'json' : 'xml') => 1, ] ]
+			[ 'body' => [  'clientID' => $this->_clientID, ($json == true ? 'json' : 'xml') => 1, ]
+			// , 'config' => [ 'curl' => [ CURLOPT_PROXY => '127.0.0.1:8888' ] ]
+			]
 		) ;
 		$body =$request->getBody () ;
 		//$body->replaceFields (array ( 'clientID' => $this->_clientID, ($json == true ? 'json' : 'xml') => 1, )) ;
