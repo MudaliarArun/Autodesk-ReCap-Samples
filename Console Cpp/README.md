@@ -28,10 +28,11 @@ Log on the Autodesk oAuth server using the oAuthLog.C++ script, i.e:
 	
 this command needs to be ran only once, unless your credential has expired. The command saves your access token into a file named oauth.txt that the ReCap sample will refresh and consume later.
 ```
-Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
+Usage:    ReCap [-d] [-y] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
 	-r	Refresh Access token only
 	-d	Debug mode. Display the RESTful response
+	-y	Enable proxy debug when using Fiddler
 	-c	Command list
 			version - Displays the current ReCap server version
 			current - Displays the current photosceneid in use
@@ -50,17 +51,16 @@ Usage:    ReCap [-d] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
 Typical scenario:
 ```
-C++ -f oAuthLog.C++
-C++ -f ReCap.C++ -- -c create
-C++ -f ReCap.C++ -- -c upload -p ../Examples/Tirelire
-C++ -f ReCap.C++ -- -c properties
-C++ -f ReCap.C++ -- -c start
-C++ -f ReCap.C++ -- -c progress
+ReCap -c create
+ReCap -c upload -p ../Examples/Tirelire
+ReCap -c properties
+ReCap -c start
+ReCap -c progress
 
 once 'progress' reports no error and completion at 100%
 
-C++ -f ReCap.C++ -- -c properties
-C++ -f ReCap.C++ -- -c result
+ReCap -c properties
+ReCap -c result
 ```
 
 --------

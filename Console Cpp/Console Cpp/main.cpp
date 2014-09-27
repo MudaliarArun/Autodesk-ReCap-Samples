@@ -85,7 +85,7 @@ int _tmain (int argc, _TCHAR *argv []) {
 		// http://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html
 		// http://www.gnu.org/software/libc/manual/html_node/Argp-Examples.html#Argp-Examples
 		// http://stackoverflow.com/questions/13251732/c-how-to-specify-an-optstring-in-the-getopt-function
-		int c =getopt_long (argc, argv, U("vbdyhlrc:i:p:"), long_options, &option_index) ;
+		int c =getopt_long (argc, argv, U("dyhlrc:i:p:"), long_options, &option_index) ;
 		// Check for end of operation or error
 		if ( c == -1 )
 			break ;
@@ -152,30 +152,30 @@ int _tmain (int argc, _TCHAR *argv []) {
 		oauth1_token tokens (token, secret) ;
 		tokens.set_session (session) ;
 		config.set_token (tokens) ;
-		//if ( oAuthRefreshTokensAsync (config) ) {
-		//	ucout << U("Failed to refresh the oAuth tokens! Trying to log you on...") << std::endl ;
-		//	oauth1_token tokens (U(""), U("")) ;
-		//	config.set_token (tokens) ;
-		//	if ( oAuthLogonAsync (config) ) {
-		//		ucout << U("Could not log on the oAuth server! Exiting...") << std::endl ;
-		//		return (1) ;
-		//	}
-		//}
+		if ( oAuthRefreshTokensAsync (config) ) {
+			ucout << U("Failed to refresh the oAuth tokens! Trying to log you on...") << std::endl ;
+			oauth1_token tokens (U(""), U("")) ;
+			config.set_token (tokens) ;
+			if ( oAuthLogonAsync (config) ) {
+				ucout << U("Could not log on the oAuth server! Exiting...") << std::endl ;
+				return (1) ;
+			}
+		}
 	}
 
-	//ReCap
+	// ReCap
 	ReCapClient recap (ReCapClientID, config, proxy_flag != 0) ;
 	recap.debug () =(debug_flag != 0) ;
 
 	//- Requesting the ReCap service/date to start and check our connection/authentication
 	//- We always do regardless of the command line option to version our connection
-	//ucout << std::endl << U("Verifying ReCap Server connection - ") ;
-	//if ( recap.Time () == false ) {
-	//	ucout << U("service/date - Failed to get a valid response from the ReCap server!") << std::endl ;
-	//	return (2) ;
-	//}
-	//json::value dt =recap.json ().at (U("date")) ;
-	//ucout << U("service/date response: ") << dt.as_string () << std::endl << std::endl ;
+	ucout << std::endl << U("Verifying ReCap Server connection - ") ;
+	if ( recap.Time () == false ) {
+		ucout << U("service/date - Failed to get a valid response from the ReCap server!") << std::endl ;
+		return (2) ;
+	}
+	json::value dt =recap.json ().at (U("date")) ;
+	ucout << U("service/date response: ") << dt.as_string () << std::endl << std::endl ;
 
 	// Command processing
 	if ( command == U("version") ) {
@@ -408,8 +408,10 @@ int _tmain (int argc, _TCHAR *argv []) {
 		ucout << U("Invalid command") << std::endl ;
 	}
 
-	//ucout << U("Press any key to terminate") << std::endl ;
-	//for ( ; !_kbhit () ; ) ;
+#ifdef _DEBUG
+	ucout << U("Press any key to terminate") << std::endl ;
+	for ( ; !_kbhit () ; ) ;
+#endif
 	ucout << U("Done.") << std::endl ;
 	return (0) ;
 }
