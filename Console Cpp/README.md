@@ -8,25 +8,67 @@ This sample is a command line sample where you control the various ReCap stage i
 
 Dependencies
 --------------------
-This sample is dependent of the following 3rd party extensions:
+This sample is dependent of the following 3rd party extension:
 
-* The Casablanca C++ RESTful SDK [oAuth extension](http://C++.net/manual/en/book.oauth.C++)
-* The [Guzzle C++](https://github.com/guzzle/guzzle) extension, document [here](http://guzzle.readthedocs.org/en/latest/)
+* The Casablanca C++ RESTful SDK [Source code](https://casablanca.codeplex.com/)
+
+Because the oAuth1.0a experimental implementation is buggy, you will need to modify the source code and recompile the library.
+Required code changes has been submitted to Microsoft for future release.
 
 
 Setup Instructions
 -------------------------
 
+* Recompile Casablanca
 
+	1. Open the ReCap project in Visual Studio 2012 (or 2013)
+
+	2. Compile (this is required to force NuGet to create the Casablanca NuGet local package)
+
+	3. Download Casablanca source code from [https://casablanca.codeplex.com/SourceControl/latest#](https://casablanca.codeplex.com/SourceControl/latest#)
+
+	4. Open the Casablanca project in Visual Studio 2012 (or 2013)
+	
+		- casablanca110.desktop.sln = Visual Studio 2012
+		- casablanca120.desktop.sln = Visual Studio 2013
+
+	5. Patch the:
+
+		- Release/include/http_constants.dat
+		- Release/include/oauth1.h
+		- Release/src/http/oauth/oauth1.cpp
+
+	  files with the ones from the Casablanca directory from the ReCap download
+	  
+	6. Recompile Casablanca in the configurations you need
+	
+	7. Copy for each configurations the following files (target folder may change depending of your platform/configuration)
+	
+		- Release/include/oauth1.h and Release/include/http_constants.dat to 'Autodesk-ReCap-Samples\Console Cpp\packages\cpprestsdk.2.2.0\build\native\include\cpprest'
+		- <Your_Casablanca>\Binaries\x64\Debug\*.lib to 'Autodesk-ReCap-Samples\Console Cpp\packages\cpprestsdk.2.2.0\build\native\lib\x64\v110\Debug\Desktop'
+		- <Your_Casablanca>\Binaries\x64\Debug\*.* to 'Autodesk-ReCap-Samples\Console Cpp\packages\cpprestsdk.2.2.0\build\native\bin\x64\v110\Debug\Desktop'
+	
+	
+* Compile the ReCap sample
+
+	1. Copy the UserSettings_.h into UserSettings.h
+	
+	2. Open the ReCap project in Visual Studio 2012 (or 2013)
+
+	3. Edit UserSettings.h, and replace the following key strings with appropriate value
+     * CONSUMER_KEY
+	 * CONSUMER_SECRET
+	 * ReCapClientID
+	 * Email
 	 
+	4. Compile and you are ready to go.
+	  use the -h command argument to get help.
+	
 Usage Instructions
 -------------------------
 
-Log on the Autodesk oAuth server using the oAuthLog.C++ script, i.e:
+The command will save your current PhotosceneID and oAuth token in local files, you can delete these files to reset the system.
 
-	C++ -f oAuthLog.C++
-	
-this command needs to be ran only once, unless your credential has expired. The command saves your access token into a file named oauth.txt that the ReCap sample will refresh and consume later.
 ```
 Usage:    ReCap [-d] [-y] [-r] [-h] [-i photosceneid] [-c command] [-p photo(s)]
 
