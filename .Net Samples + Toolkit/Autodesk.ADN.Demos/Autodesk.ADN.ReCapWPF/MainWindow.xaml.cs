@@ -221,6 +221,8 @@ namespace Autodesk.ADN.ReCapWPF
             }
 
             AppendText(msg, Brushes.Black, false);
+
+            _logger.ScrollToEnd();
         }
 
         void LogError(
@@ -234,6 +236,8 @@ namespace Autodesk.ADN.ReCapWPF
             }
 
             AppendText(msg, Brushes.Red, false);
+
+            _logger.ScrollToEnd();
         }
 
         void LogReCapError(ReCapError error)

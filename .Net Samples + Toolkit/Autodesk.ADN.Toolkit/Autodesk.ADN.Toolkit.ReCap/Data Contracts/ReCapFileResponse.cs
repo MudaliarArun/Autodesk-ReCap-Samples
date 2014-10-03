@@ -116,7 +116,9 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         {
             PhotosceneId = photosceneId;
 
-            Files = files;
+            Files = (files != null ?
+                files : 
+                new List<ReCapFile>());
         }
 
         public ReCapFileResponse()
@@ -177,7 +179,9 @@ namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
         public ReCapFileCollection(
             List<ReCapFile> file)
         {
-            File = file;
+            File = (file != null ?
+                file :
+                new List<ReCapFile>());
         }
     }
 

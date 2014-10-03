@@ -9,7 +9,7 @@
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="295" />
             <ColumnDefinition Width="5" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -29,6 +29,7 @@
             </TreeView.ItemTemplate>
 
             <TreeView.Resources>
+                
                 <ContextMenu x:Key ="RootCtx"  StaysOpen="true">
                     <MenuItem Header="Add Photoscene ..." Click="AddScene_Click">
                         <MenuItem.Icon>

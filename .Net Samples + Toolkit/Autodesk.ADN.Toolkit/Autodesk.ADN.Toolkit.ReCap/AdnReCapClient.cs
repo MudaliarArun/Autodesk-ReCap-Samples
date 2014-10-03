@@ -343,24 +343,26 @@ namespace Autodesk.ADN.Toolkit.ReCap
         //
         //
         /////////////////////////////////////////////////////////////////////////////////
-        //public async Task<ReCapPhotoSceneDeleteResponse> 
-        //    DeletePhotosceneAsync(
-        //        string photosceneId)
-        //{
-        //    var request = new RestRequest(
-        //        string.Format("photoscene/{0}", photosceneId), 
-        //        Method.DELETE);
-
-        //    request.AddParameter("clientID", _clientId);
-        //    request.AddParameter("json", 1);
-
-        //    return await _restClient.ExecuteAsync
-        //        <ReCapPhotoSceneDeleteResponse>(
-        //            request);
-        //}
-
         public async Task<ReCapPhotosceneDeleteResponse>
             DeletePhotosceneAsync(
+                string photosceneId)
+        {
+            var request = new RestRequest(
+                string.Format("photoscene/{0}", photosceneId),
+                Method.DELETE);
+
+            request.AlwaysMultipartFormData = true;
+
+            request.AddParameter("clientID", _clientId);
+            request.AddParameter("json", 1);
+
+            return await _restClient.ExecuteAsync
+                <ReCapPhotosceneDeleteResponse>(
+                    request);
+        }
+
+        public async Task<ReCapPhotosceneDeleteResponse>
+            DeletePhotosceneAsync1(
                 string photosceneId)
         {
             ReCapPhotosceneDeleteResponse reCapResponse =
@@ -448,6 +450,25 @@ namespace Autodesk.ADN.Toolkit.ReCap
 
             return await _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
+                    request);
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        // GET 
+        //
+        /////////////////////////////////////////////////////////////////////////////////
+        public async Task<ReCapUserResponse>
+            GetUserIdAsync(string accessToken, string email)
+        {
+            var request = new RestRequest("user", Method.GET);
+
+            request.AddParameter("clientID", _clientId);
+            request.AddParameter ("O2ID", accessToken);
+            request.AddParameter ("email", email);
+            request.AddParameter("json", 1);
+
+            return await _restClient.ExecuteAsync
+                <ReCapUserResponse>(
                     request);
         }
     }

@@ -328,6 +328,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
                             i++;
                         }
                     }
+
                     bodyString += "--" + boundary + "--\r\n";
                 }
                 byte[] byte1 = Encoding.UTF8.GetBytes(bodyString);

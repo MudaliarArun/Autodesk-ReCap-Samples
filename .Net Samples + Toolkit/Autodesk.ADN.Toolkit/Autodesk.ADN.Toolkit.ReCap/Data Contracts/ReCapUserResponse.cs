@@ -18,22 +18,52 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using Newtonsoft.Json;
 
-namespace Autodesk.ADN.ReCapDemo
+namespace Autodesk.ADN.Toolkit.ReCap.DataContracts
 {
-    static class Program
+    /////////////////////////////////////////////////////////////////////////////////
+    // ReCap User Response
+    //
+    /////////////////////////////////////////////////////////////////////////////////
+    public class ReCapUserResponse
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
+        public string UserID
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            get;
+            private set;
+        }
+
+        public string Email
+        {
+            get;
+            private set;
+        }
+
+        public string OxygenID
+        {
+            get;
+            private set;
+        }
+
+        [JsonConstructor]
+        public ReCapUserResponse(
+            string userID,
+            string email,
+            string oxygenID)
+        {
+            UserID = userID;
+
+            Email = email;
+
+            OxygenID = oxygenID;
+        }
+
+        public ReCapUserResponse()
+        { 
+        
         }
     }
 }

@@ -23,11 +23,16 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace Autodesk.ADN.Toolkit.UI
 {
     public class UIHelper
     {
+        /////////////////////////////////////////////////////////////////////////////////
+        // Removes invalid chars from filename
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static string GetValidFileName(
             string fileName, 
             char replacement = '_')
@@ -42,6 +47,10 @@ namespace Autodesk.ADN.Toolkit.UI
             return result;
         }
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // Selects one or multiple files
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static string[] FileSelect(
             string title, 
             string filter, 
@@ -59,7 +68,7 @@ namespace Autodesk.ADN.Toolkit.UI
             ofDlg.Multiselect = multiselect;
 
             if (ofDlg.ShowDialog() != DialogResult.OK)
-                return null;
+                return new string[]{};
 
             if (multiselect)
                 return ofDlg.FileNames;
@@ -70,6 +79,10 @@ namespace Autodesk.ADN.Toolkit.UI
                 };
         }
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // Selects folder
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static string FolderSelect(
             string title,
             bool showNewFolderButton = true,
@@ -93,6 +106,10 @@ namespace Autodesk.ADN.Toolkit.UI
             return fb.SelectedPath;
         }
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // Prompts for saving file
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static string GetSaveFileName(string fileName)
         {
             string validName = UIHelper.GetValidFileName(fileName);
@@ -115,6 +132,10 @@ namespace Autodesk.ADN.Toolkit.UI
             return sfd.FileName;
         }
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // Display centered error dialog
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static void DisplayError(Control parent, string msg, string caption)
         {
             using (new CenterWinDialog(parent))
@@ -127,6 +148,10 @@ namespace Autodesk.ADN.Toolkit.UI
             }
         }
 
+        /////////////////////////////////////////////////////////////////////////////////
+        // Gets filename without extension
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public static string GetFileName(string fullFileName)
         {
             System.IO.FileInfo fi = new System.IO.FileInfo(fullFileName);
@@ -134,7 +159,53 @@ namespace Autodesk.ADN.Toolkit.UI
             return fi.Name.Substring(0, fi.Name.Length - fi.Extension.Length);
         }
 
-        //Used to display Error MessageBox centered on parent
+        /////////////////////////////////////////////////////////////////////////////////
+        // Gets default browser path from registry
+        //
+        /////////////////////////////////////////////////////////////////////////////////
+        public static string GetDefaultBrowserPath()
+        {
+            try
+            {
+                string browserPath = string.Empty;
+
+                //Read default browser path from Win XP registry key
+                var browserKey = Registry.ClassesRoot.OpenSubKey(@"HTTP\shell\open\command", false);
+
+                //If browser path wasn't found, try Win Vista (and newer) registry key
+                if (browserKey == null)
+                {
+                    browserKey = Registry.CurrentUser.OpenSubKey(
+                        @"Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http", false); ;
+                }
+
+                //If browser path was found, clean it
+                if (browserKey != null)
+                {
+                    //Remove quotation marks
+                    browserPath = (browserKey.GetValue(null) as string).ToLower().Replace("\"", "");
+
+                    //Cut off optional parameters
+                    if (!browserPath.EndsWith("exe"))
+                    {
+                        browserPath = browserPath.Substring(0, browserPath.LastIndexOf(".exe") + 4);
+                    }
+
+                    browserKey.Close();
+                }
+
+                return browserPath;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        /////////////////////////////////////////////////////////////////////////////////
+        // Used to display Error MessageBox centered on parent
+        //
+        /////////////////////////////////////////////////////////////////////////////////
         public class CenterWinDialog : IDisposable
         {
             private int mTries = 0;

@@ -148,7 +148,7 @@ namespace Autodesk.ADN.Toolkit.OAuth
         }
 
         // Generates the Authorize Uri
-        private async Task<Uri> GetAuthorizeUri()
+        public async Task<Uri> GetAuthorizeUri()
         {
             try
             {
