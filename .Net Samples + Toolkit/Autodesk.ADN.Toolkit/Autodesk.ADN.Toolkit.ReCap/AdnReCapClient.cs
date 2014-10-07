@@ -27,6 +27,7 @@ using Newtonsoft.Json.Serialization;
 using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Contrib;
+using MoreLinq;
 
 namespace Autodesk.ADN.Toolkit.ReCap
 {
@@ -82,7 +83,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET /service/date
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapServerTimeResponse> 
+        public Task<ReCapServerTimeResponse> 
             GetServerTimeAsync()
         {
             var request = new RestRequest("service/date", Method.GET);
@@ -90,7 +91,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapServerTimeResponse>(
                     request);
         }
@@ -99,7 +100,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET /version
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapVersionResponse> 
+        public Task<ReCapVersionResponse> 
             GetVersionAsync()
         {
             var request = new RestRequest("version", Method.GET);
@@ -107,7 +108,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapVersionResponse>(
                     request);
         }
@@ -116,7 +117,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // POST /photoscene
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             CreatePhotosceneAsync(
                 string sceneName,
                 ReCapPhotosceneOptionsBuilder options)
@@ -135,7 +136,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
                     request.AddParameter(entry.Key, entry.Value);
             }
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -166,7 +167,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET /photoscene/{photosceneid}/progress 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             GetPhotosceneProgressAsync(
                 string photosceneId)
         {
@@ -177,7 +178,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -186,7 +187,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET /photoscene/{photosceneid}/processingtime
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             GetPhotosceneProcessingTimeAsync(
                 string photosceneId)
         {
@@ -197,7 +198,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -206,7 +207,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         //
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneListResponse>
+        public Task<ReCapPhotosceneListResponse>
             GetPhotosceneListAsync()
         {
             var request = new RestRequest(
@@ -216,7 +217,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("clientID", _clientId);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneListResponse>(
                     request);
         }
@@ -225,7 +226,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         //
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneListResponse> 
+        public Task<ReCapPhotosceneListResponse> 
             GetPhotosceneListByUserIdAsync(
                 string userId)
         {
@@ -238,47 +239,57 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("attributeValue", HttpUtility.UrlDecode(userId));
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneListResponse>(
                     request);
         }
 
         /////////////////////////////////////////////////////////////////////////////////
         // POST /file
-        //
+        // For uploading large files see:
+        // http://stackoverflow.com/questions/8988542/restsharp-is-loading-the-whole-file-into-memory-when-uploading-how-to-avoid-it
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapFileResponse> 
+        public Task<ReCapFileResponse[]> 
             UploadFilesAsync(
                 string photosceneId,
                 string[] files)
         {
-            var request = new RestRequest("file", Method.POST);
+            List<Task<ReCapFileResponse>> tasks = new List<Task<ReCapFileResponse>> ();
 
-            request.Timeout = 1 * 60 * 60 * 1000;
-
-            request.AddParameter("clientID", _clientId);
-            request.AddParameter("photosceneid", photosceneId);
-            request.AddParameter("type", "image");
-            request.AddParameter("json", 1);
-
-            int idx = 0;
-
-            foreach (var filename in files)
+            foreach (var fileArray in files.Batch(10))
             {
-                string key = string.Format("file[{0}]", idx++);
-                request.AddFile(key, filename);
+                var request = new RestRequest("file", Method.POST);
+
+                request.Timeout = 1 * 60 * 60 * 1000;
+
+                request.AddParameter("clientID", _clientId);
+                request.AddParameter("photosceneid", photosceneId);
+                request.AddParameter("type", "image");
+                request.AddParameter("json", 1);
+
+                int idx = 0;
+
+                foreach (var filename in fileArray)
+                {
+                    string key = string.Format("file[{0}]", idx++);
+                    request.AddFile(key, filename);
+
+                    //AddFile (string name, Action writer, string fileName) 
+                }
+
+                tasks.Add(_restClient.ExecuteAsync
+                    <ReCapFileResponse>(
+                        request));
             }
 
-            return await _restClient.ExecuteAsync
-                <ReCapFileResponse>(
-                    request);
+            return Task.WhenAll<ReCapFileResponse> (tasks);
         }
 
         /////////////////////////////////////////////////////////////////////////////////
         // GET /file/{fileid}/get 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapFileResponse> 
+        public Task<ReCapFileResponse> 
             GetFileLinkAsync(
                 string fileId)
         {
@@ -290,7 +301,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("type", "image");
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapFileResponse>(
                     request);
         }
@@ -299,7 +310,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // POST /photoscene/{photosceneid} 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             ProcessPhotosceneAsync(
                 string photosceneId,
                 bool forceReprocess = true)
@@ -312,7 +323,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("forceReprocess", (forceReprocess ? "1" : "0"));
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -321,7 +332,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET /photoscene/{photosceneid} 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             GetPhotosceneLinkAsync(
                 string photosceneId,
                 MeshFormatEnum meshFormat)
@@ -334,7 +345,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("format", meshFormat.ToReCapString());
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -343,26 +354,26 @@ namespace Autodesk.ADN.Toolkit.ReCap
         //
         //
         /////////////////////////////////////////////////////////////////////////////////
+        //public Task<ReCapPhotosceneDeleteResponse>
+        //    DeletePhotosceneAsync(
+        //        string photosceneId)
+        //{
+        //    var request = new RestRequest(
+        //        string.Format("photoscene/{0}", photosceneId),
+        //        Method.DELETE);
+
+        //    request.AlwaysMultipartFormData = true;
+
+        //    request.AddParameter("clientID", _clientId);
+        //    request.AddParameter("json", 1);
+
+        //    return _restClient.ExecuteAsync
+        //        <ReCapPhotosceneDeleteResponse>(
+        //            request);
+        //}
+
         public async Task<ReCapPhotosceneDeleteResponse>
             DeletePhotosceneAsync(
-                string photosceneId)
-        {
-            var request = new RestRequest(
-                string.Format("photoscene/{0}", photosceneId),
-                Method.DELETE);
-
-            request.AlwaysMultipartFormData = true;
-
-            request.AddParameter("clientID", _clientId);
-            request.AddParameter("json", 1);
-
-            return await _restClient.ExecuteAsync
-                <ReCapPhotosceneDeleteResponse>(
-                    request);
-        }
-
-        public async Task<ReCapPhotosceneDeleteResponse>
-            DeletePhotosceneAsync1(
                 string photosceneId)
         {
             ReCapPhotosceneDeleteResponse reCapResponse =
@@ -436,7 +447,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // POST /notification/template 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapPhotosceneResponse> 
+        public Task<ReCapPhotosceneResponse> 
             SendNotificationAsync(
                 string emailText,
                 bool error = false)
@@ -448,7 +459,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter("emailType", (error ? "ERROR" : "DONE"));
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapPhotosceneResponse>(
                     request);
         }
@@ -457,7 +468,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
         // GET 
         //
         /////////////////////////////////////////////////////////////////////////////////
-        public async Task<ReCapUserResponse>
+        public Task<ReCapUserResponse>
             GetUserIdAsync(string accessToken, string email)
         {
             var request = new RestRequest("user", Method.GET);
@@ -467,7 +478,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
             request.AddParameter ("email", email);
             request.AddParameter("json", 1);
 
-            return await _restClient.ExecuteAsync
+            return _restClient.ExecuteAsync
                 <ReCapUserResponse>(
                     request);
         }
@@ -489,16 +500,17 @@ namespace Autodesk.ADN.Toolkit.ReCap
             });
         }
 
-        public static async Task<T> ExecuteAsync<T>(
+
+        public static Task<T> ExecuteAsync<T>(
             this RestClient client,
             RestRequest request) where T : new()
         {
-            return await Task<T>.Factory.StartNew(() =>
+            var tcs = new TaskCompletionSource<T>();
+
+            client.ExecuteAsync<T>(request, (response) =>
             {
                 try
                 {
-                    IRestResponse response = client.Execute(request);
-
                     if (response.StatusCode != System.Net.HttpStatusCode.OK)
                     {
                         dynamic reCapError = new T();
@@ -506,10 +518,11 @@ namespace Autodesk.ADN.Toolkit.ReCap
                         reCapError.Error = new ReCapError(
                             response.StatusCode);
 
-                        return reCapError;
+                        tcs.SetResult(reCapError);
+                        return;
                     }
 
-                    List<ErrorEventArgs> jsonErrors = 
+                    List<ErrorEventArgs> jsonErrors =
                         new List<ErrorEventArgs>();
 
                     T reCapResponse =
@@ -518,7 +531,7 @@ namespace Autodesk.ADN.Toolkit.ReCap
                             new JsonSerializerSettings
                             {
                                 Error = (
-                                    object sender, 
+                                    object sender,
                                     ErrorEventArgs args) =>
                                 {
                                     args.ErrorContext.Handled = true;
@@ -535,21 +548,24 @@ namespace Autodesk.ADN.Toolkit.ReCap
                         reCapResponseWithErrors.Error =
                             new ReCapError(jsonErrors);
 
-                        return reCapResponseWithErrors;
+                        tcs.SetResult(reCapResponseWithErrors);
+                        return;
                     }
 
-                    return reCapResponse;
+                    tcs.SetResult(reCapResponse);
                 }
                 catch (Exception ex)
                 {
                     dynamic reCapError = new T();
 
-                    reCapError.Error = 
+                    reCapError.Error =
                         new ReCapError(ex);
 
-                    return reCapError;
+                    tcs.SetResult(reCapError);
                 }
             });
+
+            return tcs.Task;
         }
     }
 }

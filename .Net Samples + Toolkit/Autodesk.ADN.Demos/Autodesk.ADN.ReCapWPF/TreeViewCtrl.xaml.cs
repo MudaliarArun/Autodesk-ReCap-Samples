@@ -438,14 +438,16 @@ namespace Autodesk.ADN.ReCapWPF
             if (files == null)
                 return;
 
-            var uploadResult = await _reCapClient.UploadFilesAsync(
+            var uploadResultArray = await _reCapClient.UploadFilesAsync(
                 scene.PhotosceneId,
                 files);
 
-            if (!uploadResult.IsOk())
+            foreach (var uploadResult in uploadResultArray)
             {
-                OnLogReCapError(uploadResult.Error);
-                return;
+                if (!uploadResult.IsOk())
+                {
+                    OnLogReCapError(uploadResult.Error);               
+                }            
             }
 
             OnLogMessage("Files uploaded for scene: " + scene.SceneName);
@@ -538,16 +540,6 @@ namespace Autodesk.ADN.ReCapWPF
 
             if (id != string.Empty)
             {
-                var sceneWithInfo = await RetrieveSceneInfo(id);
-
-                if (sceneWithInfo != null)
-                {
-                    RootNode.AddNode(
-                       new ReCapTreeItem(
-                           sceneWithInfo,
-                           Properties.Resources.file));
-                }
-
                 ShowProgressDlg(settingsDlg.SceneName, id);
             }
         }
@@ -612,21 +604,39 @@ namespace Autodesk.ADN.ReCapWPF
                 return string.Empty;
             }
 
-            OnLogMessage("New scene created: " + sceneName);
+            OnLogMessage("New scene created: " + sceneName +
+                " [Id: " + createResult.Photoscene.PhotosceneId + "]");
+
+            var sceneWithInfo = await RetrieveSceneInfo(
+                createResult.Photoscene.PhotosceneId);
+
+            if (sceneWithInfo != null)
+            {
+                RootNode.AddNode(
+                   new ReCapTreeItem(
+                       sceneWithInfo,
+                       Properties.Resources.file));
+            }
 
             // Step 2 - Upload pictures
 
+            OnLogMessage("Uploading " + files.Length + 
+                " images for scene: " + sceneName);
+
             string photosceneId = createResult.Photoscene.PhotosceneId;
 
-            var uploadResult = await _reCapClient.UploadFilesAsync(
+            var uploadResultArray = await _reCapClient.UploadFilesAsync(
                 photosceneId,
                 files);
 
-            if (!uploadResult.IsOk())
+            foreach (var uploadResult in uploadResultArray)
             {
-                OnLogReCapError(uploadResult.Error);
+                if (!uploadResult.IsOk())
+                {
+                    OnLogReCapError(uploadResult.Error);
 
-                return string.Empty;
+                    //return;
+                }
             }
 
             OnLogMessage("Files uploaded for scene: " + sceneName);
@@ -640,7 +650,7 @@ namespace Autodesk.ADN.ReCapWPF
             {
                 OnLogReCapError(processResult.Error);
 
-                return string.Empty;
+                return photosceneId;
             }
 
             OnLogMessage("Start processing for scene: " + sceneName);
