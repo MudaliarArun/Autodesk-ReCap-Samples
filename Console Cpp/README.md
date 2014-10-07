@@ -13,7 +13,7 @@ This sample is dependent of the following 3rd party extension:
 * The [Casablanca C++ RESTful SDK](https://casablanca.codeplex.com/)
 
 Because the oAuth1.0a experimental implementation is buggy, you will need to modify the source code and recompile the library.
-Required code changes has been [submitted](https://casablanca.codeplex.com/SourceControl/network/forks/cyrillef/Casablanca/contribution/7531) to Microsoft for future release.
+Required code changes has been submitted to Microsoft for future release.
 
 
 Setup Instructions
