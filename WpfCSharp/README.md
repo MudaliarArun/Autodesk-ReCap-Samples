@@ -68,6 +68,6 @@ If you are, it will refresh your access token immediately. If not, it will ask y
 
 --------
 Written by Cyrille Fauvel (Autodesk Developer Network)  
-January 2014
+January 2014 <br />
 http://www.autodesk.com/adn  
 http://around-the-corner.typepad.com/  
